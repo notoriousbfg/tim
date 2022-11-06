@@ -118,12 +118,12 @@ func (l *Lexer) AddToken(tokenType token.TokenType, text string) {
 	})
 }
 
-func (l *Lexer) TokenTypeStrings() []string {
-	var strings []string
+func (l *Lexer) TokenTypes() []token.TokenType {
+	var types []token.TokenType
 	for _, token := range l.Tokens {
-		strings = append(strings, token.Type.String())
+		types = append(types, token.Type)
 	}
-	return strings
+	return types
 }
 
 func (l *Lexer) isAtEnd() bool {
