@@ -11,6 +11,7 @@ const (
 	COLON
 	PLUS
 	MINUS
+	QUESTION
 
 	// two-char tokens
 	DOUBLE_ARROW
@@ -53,6 +54,16 @@ func (tt TokenType) String() string {
 		return "PLUS"
 	case MINUS:
 		return "MINUS"
+	case QUESTION:
+		return "QUESTION"
+	case LESS:
+		return "LESS"
+	case LESS_EQUAL:
+		return "LESS_EQUAL"
+	case GREATER:
+		return "GREATER"
+	case GREATER_EQUAL:
+		return "GREATER_EQUAL"
 	case STRING:
 		return "STRING"
 	case NUMBER:

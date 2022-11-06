@@ -11,6 +11,7 @@ import (
 func New(input string) Lexer {
 	lexer := Lexer{
 		Input:   input,
+		Line:    1,
 		Start:   0,
 		Current: 0,
 	}
@@ -26,6 +27,7 @@ type Lexer struct {
 	Tokens  []token.Token
 	Start   int
 	Current int
+	Line    int
 }
 
 func (l *Lexer) ReadInput() error {
@@ -60,6 +62,20 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.PLUS, char)
 	case "-":
 		l.AddToken(token.MINUS, char)
+	case "?":
+		l.AddToken(token.QUESTION, char)
+	case "<":
+		if l.matchNext("=") {
+			l.AddToken(token.LESS_EQUAL, "<=")
+		} else {
+			l.AddToken(token.LESS, char)
+		}
+	case ">":
+		if l.matchNext("=") {
+			l.AddToken(token.GREATER_EQUAL, ">=")
+		} else {
+			l.AddToken(token.GREATER, char)
+		}
 	case ":":
 		l.AddToken(token.COLON, char)
 	case "\"":
@@ -134,7 +150,6 @@ func (l *Lexer) matchString() {
 	}
 
 	l.NextChar()
-
 	l.AddToken(token.STRING, l.Input[l.Start+1:l.Current-1])
 }
 
@@ -144,6 +159,14 @@ func (l *Lexer) matchIdentifier() {
 	}
 
 	l.AddToken(token.IDENTIFIER, l.Input[l.Start:l.Current])
+}
+
+func (l *Lexer) matchNext(expected string) bool {
+	if string(l.Input[l.Current]) != expected {
+		return false
+	}
+	l.NextChar()
+	return true
 }
 
 func (l *Lexer) PrintTokens() {

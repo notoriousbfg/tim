@@ -35,6 +35,19 @@ func TestLexer(t *testing.T) {
 				"EOF",
 			},
 		},
+		"greater than or equal operator": {
+			InputString: "(five: 5 >= 4)",
+			Types: []string{
+				"LEFT_PAREN",
+				"IDENTIFIER",
+				"COLON",
+				"NUMBER",
+				"GREATER_EQUAL",
+				"NUMBER",
+				"RIGHT_PAREN",
+				"EOF",
+			},
+		},
 	}
 
 	for name, testcase := range cases {
