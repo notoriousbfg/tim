@@ -1,9 +1,11 @@
 package lexer
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"tim/token"
+	"unicode"
 )
 
 func New(input string) {
@@ -16,7 +18,7 @@ func New(input string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v", lexer.Tokens)
+	lexer.printTokens()
 }
 
 type Lexer struct {
@@ -29,7 +31,6 @@ type Lexer struct {
 func (l *Lexer) ReadInput() error {
 	for !l.isAtEnd() {
 		l.Start = l.Current
-		fmt.Printf("%d:%d \n", l.Start, l.Current)
 		err := l.ReadChar()
 		if err != nil {
 			return err
@@ -47,17 +48,20 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.LEFT_PAREN, char)
 	case ")":
 		l.AddToken(token.RIGHT_PAREN, char)
-	case " ", "\n", "\t":
-		break
+	case ":":
+		l.AddToken(token.COLON, char)
 	case "\"":
 		l.matchString()
+	case " ", "\n", "\t":
+		break
 	default:
 		if isDigit(char) {
 			l.matchNumber()
+		} else if isLetter(char) {
+			l.matchIdentifier()
+		} else {
+			return errors.New("unsupported type")
 		}
-		// } else {
-		// 	return errors.New("unsupported type")
-		// }
 	}
 	return nil
 }
@@ -114,7 +118,34 @@ func (l *Lexer) matchString() {
 	l.AddToken(token.STRING, l.Input[l.Start+1:l.Current-1])
 }
 
-func isDigit(input string) bool {
-	_, err := strconv.Atoi(input)
+func (l *Lexer) matchIdentifier() {
+	for isAlphaNumeric(l.peek()) {
+		l.NextChar()
+	}
+
+	l.AddToken(token.IDENTIFIER, l.Input[l.Start:l.Current])
+}
+
+func (l *Lexer) printTokens() {
+	for _, token := range l.Tokens {
+		fmt.Printf("%+v \n", token)
+	}
+}
+
+func isDigit(ch string) bool {
+	_, err := strconv.Atoi(ch)
 	return err == nil
+}
+
+func isLetter(ch string) bool {
+	for _, r := range ch {
+		if !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func isAlphaNumeric(ch string) bool {
+	return isDigit(ch) || isLetter(ch)
 }

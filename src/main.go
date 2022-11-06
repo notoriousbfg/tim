@@ -3,5 +3,5 @@ package main
 import "tim/lexer"
 
 func main() {
-	lexer.New("(hello \"hello\")")
+	lexer.New("(hello: \"hello\")")
 }

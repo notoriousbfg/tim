@@ -39,6 +39,14 @@ func (tt TokenType) String() string {
 		return "LEFT_PAREN"
 	case RIGHT_PAREN:
 		return "RIGHT_PAREN"
+	case COLON:
+		return "COLON"
+	case STRING:
+		return "STRING"
+	case NUMBER:
+		return "NUMBER"
+	case IDENTIFIER:
+		return "IDENTIFIER"
 	case EOF:
 		return "EOF"
 	default:
