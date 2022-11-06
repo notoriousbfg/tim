@@ -50,7 +50,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		"function": {
-			InputString: "(addOne: (myNumber) => { myNumber + 1 })",
+			InputString: "(addOne: (myNumber) => { return myNumber + 1 })",
 			Types: []token.TokenType{
 				token.LEFT_PAREN,
 				token.IDENTIFIER,
@@ -60,6 +60,7 @@ func TestLexer(t *testing.T) {
 				token.RIGHT_PAREN,
 				token.DOUBLE_ARROW,
 				token.LEFT_BRACE,
+				token.IDENTIFIER,
 				token.IDENTIFIER,
 				token.PLUS,
 				token.NUMBER,

@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"tim/token"
@@ -86,15 +85,17 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.COLON, char)
 	case "\"":
 		l.matchString()
-	case " ", "\n", "\t":
+	case " ", "\r", "\t":
 		break
+	case "\n":
+		l.Line++
 	default:
 		if isDigit(char) {
 			l.matchNumber()
 		} else if isLetter(char) {
 			l.matchIdentifier()
 		} else {
-			return errors.New("unsupported type")
+			return fmt.Errorf("unsupported type: %s", char)
 		}
 	}
 	return nil
