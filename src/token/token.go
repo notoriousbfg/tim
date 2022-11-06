@@ -80,6 +80,20 @@ func (tt TokenType) String() string {
 		return "NUMBER"
 	case IDENTIFIER:
 		return "IDENTIFIER"
+	case CALL:
+		return "CALL"
+	case RETURN:
+		return "RETURN"
+	case TRUE:
+		return "TRUE"
+	case FALSE:
+		return "FALSE"
+	case EACH:
+		return "EACH"
+	case FILTER:
+		return "FILTER"
+	case MAP:
+		return "MAP"
 	case EOF:
 		return "EOF"
 	default:

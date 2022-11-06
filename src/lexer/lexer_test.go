@@ -1,7 +1,6 @@
 package lexer_test
 
 import (
-	"reflect"
 	"testing"
 	"tim/lexer"
 	"tim/token"
@@ -80,14 +79,77 @@ func TestLexer(t *testing.T) {
 				token.EOF,
 			},
 		},
+		"longer addition function example": {
+			InputString: `
+				(five: 5)
+				(ten: 10)
+				(add: (x, y) => {
+					return x + y
+				})
+				(result: (five, ten).call(add))
+			`,
+			Types: []token.TokenType{
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.NUMBER,
+				token.RIGHT_PAREN,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.NUMBER,
+				token.RIGHT_PAREN,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COMMA,
+				token.IDENTIFIER,
+				token.RIGHT_PAREN,
+				token.DOUBLE_ARROW,
+				token.LEFT_BRACE,
+				token.RETURN,
+				token.IDENTIFIER,
+				token.PLUS,
+				token.IDENTIFIER,
+				token.RIGHT_BRACE,
+				token.RIGHT_PAREN,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COMMA,
+				token.IDENTIFIER,
+				token.RIGHT_PAREN,
+				token.DOT,
+				token.CALL,
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.RIGHT_PAREN,
+				token.RIGHT_PAREN,
+				token.EOF,
+			},
+		},
 	}
 
 	for name, testcase := range cases {
 		t.Run(name, func(t *testing.T) {
 			l := lexer.New(testcase.InputString)
-			if !reflect.DeepEqual(l.TokenTypes(), testcase.Types) {
+			if !slicesMatch(l.TokenTypes(), testcase.Types) {
 				t.Fatal("types do not match", testcase.Types, l.TokenTypes())
 			}
 		})
 	}
+}
+
+func slicesMatch(a []token.TokenType, b []token.TokenType) bool {
+	for index, aType := range a {
+		bType := b[index]
+		if bType != aType {
+			return false
+		}
+	}
+	return true
 }
