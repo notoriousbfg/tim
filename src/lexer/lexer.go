@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-func New(input string) {
+func New(input string) Lexer {
 	lexer := Lexer{
 		Input:   input,
 		Start:   0,
@@ -18,7 +18,7 @@ func New(input string) {
 	if err != nil {
 		panic(err)
 	}
-	lexer.printTokens()
+	return lexer
 }
 
 type Lexer struct {
@@ -84,6 +84,14 @@ func (l *Lexer) AddToken(tokenType token.TokenType, text string) {
 	})
 }
 
+func (l *Lexer) TokenTypeStrings() []string {
+	var strings []string
+	for _, token := range l.Tokens {
+		strings = append(strings, token.Type.String())
+	}
+	return strings
+}
+
 func (l *Lexer) isAtEnd() bool {
 	return l.Current >= len(l.Input)
 }
@@ -126,7 +134,7 @@ func (l *Lexer) matchIdentifier() {
 	l.AddToken(token.IDENTIFIER, l.Input[l.Start:l.Current])
 }
 
-func (l *Lexer) printTokens() {
+func (l *Lexer) PrintTokens() {
 	for _, token := range l.Tokens {
 		fmt.Printf("%+v \n", token)
 	}
