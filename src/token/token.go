@@ -28,6 +28,12 @@ const (
 
 	// keywords
 	CALL
+	RETURN
+	TRUE
+	FALSE
+	EACH
+	FILTER
+	MAP
 
 	EOF
 )

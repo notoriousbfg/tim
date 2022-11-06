@@ -14,6 +14,7 @@ func New(input string) Lexer {
 		Start:   0,
 		Current: 0,
 	}
+	lexer.initialiseKeywords()
 	err := lexer.ReadInput()
 	if err != nil {
 		panic(err)
@@ -22,11 +23,12 @@ func New(input string) Lexer {
 }
 
 type Lexer struct {
-	Input   string
-	Tokens  []token.Token
-	Start   int
-	Current int
-	Line    int
+	Input    string
+	Tokens   []token.Token
+	Start    int
+	Current  int
+	Line     int
+	Keywords map[string]token.TokenType
 }
 
 func (l *Lexer) ReadInput() error {
@@ -165,7 +167,13 @@ func (l *Lexer) matchIdentifier() {
 		l.NextChar()
 	}
 
-	l.AddToken(token.IDENTIFIER, l.Input[l.Start:l.Current])
+	text := l.Input[l.Start:l.Current]
+
+	if tokenType, ok := l.Keywords[text]; ok {
+		l.AddToken(tokenType, text)
+	} else {
+		l.AddToken(token.IDENTIFIER, text)
+	}
 }
 
 func (l *Lexer) matchNext(expected string) bool {
@@ -179,6 +187,18 @@ func (l *Lexer) matchNext(expected string) bool {
 func (l *Lexer) PrintTokens() {
 	for _, token := range l.Tokens {
 		fmt.Printf("%+v \n", token)
+	}
+}
+
+func (l *Lexer) initialiseKeywords() {
+	l.Keywords = map[string]token.TokenType{
+		"call":   token.CALL,
+		"return": token.RETURN,
+		"true":   token.TRUE,
+		"false":  token.FALSE,
+		"each":   token.EACH,
+		"filter": token.FILTER,
+		"map":    token.MAP,
 	}
 }
 
