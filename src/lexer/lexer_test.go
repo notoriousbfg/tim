@@ -48,6 +48,25 @@ func TestLexer(t *testing.T) {
 				"EOF",
 			},
 		},
+		"function": {
+			InputString: "(addOne: (myNumber) => { myNumber + 1 })",
+			Types: []string{
+				"LEFT_PAREN",
+				"IDENTIFIER",
+				"COLON",
+				"LEFT_PAREN",
+				"IDENTIFIER",
+				"RIGHT_PAREN",
+				"DOUBLE_ARROW",
+				"LEFT_BRACE",
+				"IDENTIFIER",
+				"PLUS",
+				"NUMBER",
+				"RIGHT_BRACE",
+				"RIGHT_PAREN",
+				"EOF",
+			},
+		},
 	}
 
 	for name, testcase := range cases {

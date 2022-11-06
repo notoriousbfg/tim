@@ -56,6 +56,10 @@ func (tt TokenType) String() string {
 		return "MINUS"
 	case QUESTION:
 		return "QUESTION"
+	case EQUAL:
+		return "EQUAL"
+	case DOUBLE_ARROW:
+		return "DOUBLE_ARROW"
 	case LESS:
 		return "LESS"
 	case LESS_EQUAL:
