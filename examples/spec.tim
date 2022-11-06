@@ -1,0 +1,31 @@
+// indexed list
+('Tim', 27)
+
+// assoc list, can also behave like indexed
+(name: 'Tim', age: 27)
+
+// variables
+(names: ('Tim', 'Paul'))
+
+(treesAndColours: (fir (name 'Fir', colour 'Green')))
+treesAndColours.get(fir.name) // 'Fir'
+treesAndColours.get(0).get(0) // 'Fir'
+
+// function
+(helloWorld: (name) => "Hello " . name)
+(helloNames: (...names).each(helloWorld))
+
+// no args
+().call(myFun)
+
+// if/else
+?(
+    (true) => // do this,
+    (false) => // don't do this,
+    () => // else
+)
+
+// loops
+.each
+.filter
+.map

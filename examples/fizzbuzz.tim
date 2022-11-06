@@ -1,0 +1,9 @@
+(fizzBuzz: (number) => {
+    ?(
+        (number % 15) => print 'fizzbuzz',
+        (number % 3) => print 'fizz',
+        (number % 5) => print 'buzz'
+    )
+})
+
+(1, 100).range().each(fizzBuzz)
