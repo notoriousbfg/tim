@@ -13,7 +13,7 @@ const (
 	MINUS
 
 	// two-char tokens
-	FUNC_BODY
+	DOUBLE_ARROW
 	EQUAL
 	GREATER
 	LESS
@@ -39,8 +39,20 @@ func (tt TokenType) String() string {
 		return "LEFT_PAREN"
 	case RIGHT_PAREN:
 		return "RIGHT_PAREN"
+	case LEFT_BRACE:
+		return "LEFT_BRACE"
+	case RIGHT_BRACE:
+		return "RIGHT_BRACE"
+	case COMMA:
+		return "COMMA"
+	case DOT:
+		return "DOT"
 	case COLON:
 		return "COLON"
+	case PLUS:
+		return "PLUS"
+	case MINUS:
+		return "MINUS"
 	case STRING:
 		return "STRING"
 	case NUMBER:
