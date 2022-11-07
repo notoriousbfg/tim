@@ -79,6 +79,23 @@ func TestLexer(t *testing.T) {
 				token.EOF,
 			},
 		},
+		"double equal and star": {
+			InputString: "(isTrue: (5 * 10) == 50)",
+			Types: []token.TokenType{
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.LEFT_PAREN,
+				token.NUMBER,
+				token.STAR,
+				token.NUMBER,
+				token.RIGHT_PAREN,
+				token.DOUBLE_EQUAL,
+				token.NUMBER,
+				token.RIGHT_PAREN,
+				token.EOF,
+			},
+		},
 		"longer addition function example": {
 			InputString: `
 				(five: 5)

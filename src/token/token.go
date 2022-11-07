@@ -11,10 +11,12 @@ const (
 	COLON
 	PLUS
 	MINUS
+	STAR
 	QUESTION
 
 	// two-char tokens
 	DOUBLE_ARROW
+	DOUBLE_EQUAL
 	EQUAL
 	GREATER
 	LESS
