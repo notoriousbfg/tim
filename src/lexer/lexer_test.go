@@ -145,6 +145,10 @@ func TestLexer(t *testing.T) {
 }
 
 func slicesMatch(a []token.TokenType, b []token.TokenType) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
 	for index, aType := range a {
 		bType := b[index]
 		if bType != aType {
