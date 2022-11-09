@@ -1,13 +1,12 @@
 package parser_test
 
 import (
+	"reflect"
 	"testing"
 	"tim/lexer"
 	"tim/parser"
 	"tim/token"
 	"tim/tree"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 type ExpressionCase struct {
@@ -41,7 +40,7 @@ func TestParser(t *testing.T) {
 			l := lexer.New(testcase.InputString)
 			p := parser.New(l.Tokens)
 			parsedExpression := p.Parse()
-			if !cmp.Equal(testcase.Expression, parsedExpression) {
+			if !reflect.DeepEqual(testcase.Expression, parsedExpression) {
 				t.Fatal("expressions do not match", tree.Print(testcase.Expression), tree.Print(parsedExpression))
 			}
 		})
