@@ -39,6 +39,7 @@ const (
 	FILTER
 	MAP
 
+	NEWLINE
 	EOF
 )
 
@@ -109,4 +110,5 @@ type Token struct {
 	Type     TokenType
 	Text     string
 	Position int
+	Line     int
 }

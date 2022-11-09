@@ -96,6 +96,7 @@ func (l *Lexer) ReadChar() error {
 	case " ", "\r", "\t":
 		break
 	case "\n":
+		l.AddToken(token.NEWLINE, char)
 		l.Line++
 	default:
 		if isDigit(char) {
@@ -124,6 +125,7 @@ func (l *Lexer) AddToken(tokenType token.TokenType, text string) {
 		Type:     tokenType,
 		Text:     text,
 		Position: l.Start,
+		Line:     l.Line,
 	})
 }
 
@@ -148,10 +150,6 @@ func (l *Lexer) peek() string {
 }
 
 func (l *Lexer) matchNumber() {
-	if l.isAtEnd() {
-		return
-	}
-
 	for isDigit(l.peek()) {
 		l.NextChar()
 	}

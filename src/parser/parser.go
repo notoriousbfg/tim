@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"tim/token"
 	"tim/tree"
 )
@@ -15,6 +16,10 @@ func New(tokens []token.Token) Parser {
 type Parser struct {
 	Tokens  []token.Token
 	Current int
+}
+
+func (p *Parser) Parse() tree.Expr {
+	return p.Expression()
 }
 
 func (p *Parser) Expression() tree.Expr {
@@ -98,7 +103,7 @@ func (p *Parser) Primary() tree.Expr {
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		return tree.Grouping{Expression: p.Expression()}
 	}
-	// TODO: return val!
+	panic(p.error(p.peek(), "Expect expression."))
 }
 
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {
@@ -145,12 +150,40 @@ func (p *Parser) consume(tokenType token.TokenType, message string) token.Token 
 	panic(p.error(p.peek(), message))
 }
 
-func (p *Parser) error(thisToken token.Token, message string) string {
-	var errorLocation string
-	if thisToken.Type == token.EOF {
-		errorLocation = " at end"
-	} else {
-		errorLocation = " at '" + thisToken.Text + "'"
+func (p *Parser) synchronise() {
+	p.advance()
+
+	for !p.isAtEnd() {
+		if p.previous().Type == token.NEWLINE {
+			return
+		}
+
+		switch p.peek().Type {
+		case token.LEFT_BRACE: // almost all new statements in timlang begin with a left brace
+			return
+		}
+
+		p.advance()
 	}
-	return errorLocation
+}
+
+func (p *Parser) error(thisToken token.Token, message string) *ParseError {
+	var where string
+	if thisToken.Type == token.EOF {
+		where = " at end"
+	} else {
+		where = " at '" + thisToken.Text + "'"
+	}
+	err := &ParseError{
+		Message: fmt.Sprintf("[line %d] Error%s: %s\n", thisToken.Line+1, where, message),
+	}
+	return err
+}
+
+type ParseError struct {
+	Message string
+}
+
+func (pe *ParseError) Error() string {
+	return pe.Message
 }
