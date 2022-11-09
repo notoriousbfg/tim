@@ -1,6 +1,9 @@
 package main
 
-import "tim/lexer"
+import (
+	"tim/lexer"
+	"tim/parser"
+)
 
 func main() {
 	l := lexer.New(`
@@ -13,7 +16,8 @@ func main() {
 
 		(result: (five, ten).call(add))
 	`)
-	l.PrintTokens()
+
+	p := parser.New(l.Tokens)
 
 	// expression := tree.Binary{
 	// 	Left: tree.Unary{

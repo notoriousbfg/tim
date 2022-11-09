@@ -202,6 +202,7 @@ func (l *Lexer) initialiseKeywords() {
 		"return": token.RETURN,
 		"true":   token.TRUE,
 		"false":  token.FALSE,
+		"nil":    token.NIL,
 		"each":   token.EACH,
 		"filter": token.FILTER,
 		"map":    token.MAP,

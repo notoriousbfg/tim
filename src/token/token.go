@@ -34,6 +34,7 @@ const (
 	RETURN
 	TRUE
 	FALSE
+	NIL
 	EACH
 	FILTER
 	MAP

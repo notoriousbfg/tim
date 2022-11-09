@@ -5,6 +5,13 @@ import (
 	"tim/tree"
 )
 
+func New(tokens []token.Token) Parser {
+	return Parser{
+		Tokens:  tokens,
+		Current: 0,
+	}
+}
+
 type Parser struct {
 	Tokens  []token.Token
 	Current int
@@ -74,6 +81,26 @@ func (p *Parser) Unary() tree.Expr {
 	return p.Primary()
 }
 
+func (p *Parser) Primary() tree.Expr {
+	if p.match(token.FALSE) {
+		return tree.Literal{Value: false}
+	}
+	if p.match(token.TRUE) {
+		return tree.Literal{Value: true}
+	}
+	if p.match(token.NIL) {
+		return tree.Literal{Value: nil}
+	}
+	if p.match(token.NUMBER, token.STRING) {
+		return tree.Literal{Value: p.previous().Text}
+	}
+	if p.match(token.LEFT_PAREN) {
+		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
+		return tree.Grouping{Expression: p.Expression()}
+	}
+	// TODO: return val!
+}
+
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {
 	for _, tokenType := range tokenTypes {
 		if p.check(tokenType) {
@@ -108,4 +135,22 @@ func (p *Parser) peek() token.Token {
 
 func (p *Parser) previous() token.Token {
 	return p.Tokens[p.Current-1]
+}
+
+func (p *Parser) consume(tokenType token.TokenType, message string) token.Token {
+	if p.check(tokenType) {
+		return p.advance()
+	}
+
+	panic(p.error(p.peek(), message))
+}
+
+func (p *Parser) error(thisToken token.Token, message string) string {
+	var errorLocation string
+	if thisToken.Type == token.EOF {
+		errorLocation = " at end"
+	} else {
+		errorLocation = " at '" + thisToken.Text + "'"
+	}
+	return errorLocation
 }
