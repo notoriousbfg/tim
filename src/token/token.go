@@ -14,9 +14,10 @@ const (
 	STAR
 	QUESTION
 
-	// two-char tokens
+	// one or two-char tokens
 	DOUBLE_ARROW
 	DOUBLE_EQUAL
+	BANG
 	BANG_EQUAL
 	EQUAL
 	GREATER

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	l := lexer.New("1 + 2 + 3 + 4 + 5")
+	l := lexer.New("200 + 200 != 400")
 	p := parser.New(l.Tokens)
 	tree.Print(p.Parse())
 
