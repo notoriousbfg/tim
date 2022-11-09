@@ -1,0 +1,4 @@
+("hello", " ", "tim").join() // to compose strings
+
+("hello", 1, 2, 3, "tim").join() // "hello123tim"
+("hello", 1, 2, 3, "tim").join("-") // "hello-1-2-3-"tim"

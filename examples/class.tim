@@ -1,0 +1,9 @@
+(
+    myClass: (
+        hello: "hello",
+        name: "tim",
+        sayHello: () => {
+            (this.hello, " ", this.name).join().print()
+        }
+    )
+)

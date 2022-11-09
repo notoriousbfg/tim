@@ -1,7 +1,9 @@
-(five: 5, ten: (two: 2, three: 3))
+(five: 5, ten: 10)
 
 (add: (x, y) => {
     return x + y
 })
 
 (result: (five, ten).call(add))
+
+(result).print()
