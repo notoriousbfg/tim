@@ -1,5 +1,4 @@
-(five: 5)
-(ten: 10)
+(five: 5, ten: (two: 2, three: 3))
 
 (add: (x, y) => {
     return x + y

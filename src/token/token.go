@@ -17,6 +17,7 @@ const (
 	// two-char tokens
 	DOUBLE_ARROW
 	DOUBLE_EQUAL
+	BANG_EQUAL
 	EQUAL
 	GREATER
 	LESS

@@ -8,7 +8,7 @@
 (names: ('Tim', 'Paul'))
 
 (treesAndColours: (fir (name 'Fir', colour 'Green')))
-treesAndColours.get(fir.name) // 'Fir'
+treesAndColours.get("fir.name") // 'Fir'
 treesAndColours.get(0).get(0) // 'Fir'
 
 // function
