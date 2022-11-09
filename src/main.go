@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"tim/lexer"
 	"tim/parser"
 	"tim/tree"
@@ -9,7 +10,7 @@ import (
 func main() {
 	l := lexer.New("200 + 200 != 400")
 	p := parser.New(l.Tokens)
-	tree.Print(p.Parse())
+	fmt.Println(tree.Print(p.Parse()))
 
 	// expression := tree.Binary{
 	// 	Left: tree.Unary{

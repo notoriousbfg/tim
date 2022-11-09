@@ -18,5 +18,5 @@ There were many reasons for naming the language Tim. Notably, there wasn't anoth
 
 When friends ask me I give them some variation of the following:
 
-When my sister was about to give birth to her first child, a boy (also around the time I started writing this language) the subject of my own name arose. I've never really liked "Tim" (mostly because I think us Tims embody the name). Tim isn't a very popular name these days, despite the handful of famous Tims: Tim Berners-Lee, Tim Cook, Timothy Spall, Tim Peake, Timotheé Chalamet (alright, that one's a little contentious). For a while I considered changing it by deed poll (something you can do in the UK relatively cheaply) but the Tim programming language is me doubling-down on the name.
+When my sister was about to give birth to her first child, a boy (also around the time I started writing this language) the subject of my own name arose. I've never really liked "Tim" (and us Tims are an unusual breed). Tim isn't a very popular name these days, despite the handful of famous Tims: Tim Berners-Lee, Tim Cook, Timothy Spall, Tim Peake, Timotheé Chalamet (alright, that one's a little contentious). For a while I considered changing it by deed poll (something you can do in the UK relatively cheaply) but the language is me almost doubling-down on "Tim".
 

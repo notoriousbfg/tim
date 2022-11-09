@@ -2,9 +2,9 @@ package tree
 
 import "fmt"
 
-func Print(expr Expr) {
+func Print(expr Expr) string {
 	printer := &Printer{}
-	fmt.Println(printer.Print(expr))
+	return printer.Print(expr)
 }
 
 type Printer struct{}
