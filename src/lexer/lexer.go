@@ -65,6 +65,8 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.MINUS, char)
 	case "*":
 		l.AddToken(token.STAR, char)
+	case "/":
+		l.AddToken(token.SLASH, char)
 	case "?":
 		l.AddToken(token.QUESTION, char)
 	case "!":

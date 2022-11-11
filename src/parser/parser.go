@@ -66,7 +66,7 @@ func (p *Parser) Term() tree.Expr {
 
 func (p *Parser) Factor() tree.Expr {
 	expr := p.Unary()
-	for p.match(token.STAR) {
+	for p.match(token.STAR, token.SLASH) {
 		expr = tree.Binary{
 			Left:     expr,
 			Operator: p.previous(),

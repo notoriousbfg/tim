@@ -12,6 +12,7 @@ const (
 	PLUS
 	MINUS
 	STAR
+	SLASH
 	QUESTION
 
 	// one or two-char tokens
