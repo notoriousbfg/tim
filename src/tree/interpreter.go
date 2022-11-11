@@ -1,17 +1,27 @@
 package tree
 
 import (
+	"encoding/json"
 	"fmt"
-	"math"
 	"strconv"
 	"tim/token"
 )
 
+func Interpret(expression Expr) {
+	interpreter := &Interpreter{}
+	value, err := interpreter.evaluate(expression)
+	if err != nil {
+		panic(err) // todo - how to report runtime errors?
+	}
+	json, _ := json.Marshal(value)
+	fmt.Println(string(json))
+}
+
 type Interpreter struct{}
 
-func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
-	left := i.evaluate(expr.Left)
-	right := i.evaluate(expr.Right)
+func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
+	left, _ := i.evaluate(expr.Left)
+	right, _ := i.evaluate(expr.Right)
 
 	leftFloat, err := convertInterfaceToFloat(left)
 	if err != nil {
@@ -24,55 +34,67 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 
 	switch expr.Operator.Type {
 	case token.MINUS:
-		return leftFloat - rightFloat
+		return leftFloat - rightFloat, nil
 	case token.PLUS:
-		return leftFloat + rightFloat
+		return leftFloat + rightFloat, nil
 	case token.STAR:
-		return leftFloat * rightFloat
+		return leftFloat * rightFloat, nil
 	case token.GREATER:
-		return leftFloat > rightFloat
+		return leftFloat > rightFloat, nil
 	case token.GREATER_EQUAL:
-		return leftFloat >= rightFloat
+		return leftFloat >= rightFloat, nil
 	case token.LESS:
-		return leftFloat < rightFloat
+		return leftFloat < rightFloat, nil
 	case token.LESS_EQUAL:
-		return leftFloat <= rightFloat
+		return leftFloat <= rightFloat, nil
 	case token.BANG_EQUAL:
-		return !i.IsEqual(left, right)
+		return !i.IsEqual(left, right), nil
 	case token.DOUBLE_EQUAL:
-		return i.IsEqual(left, right)
+		return i.IsEqual(left, right), nil
 	}
-	return nil
+	return nil, nil
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr Literal) interface{} {
-	return expr.Value
+func (i *Interpreter) VisitLiteralExpr(expr Literal) (interface{}, error) {
+	return expr.Value, nil
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr Grouping) interface{} {
+func (i *Interpreter) VisitGroupingExpr(expr Grouping) (interface{}, error) {
 	return i.evaluate(expr.Expression)
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
-	right := i.evaluate(expr)
+func (i *Interpreter) VisitUnaryExpr(expr Unary) (interface{}, error) {
+	right, _ := i.evaluate(expr)
 	switch expr.Operator.Type {
 	case token.BANG:
-		return !i.IsTruthy(right)
+		return !i.IsTruthy(right), nil
 	case token.MINUS:
-		return right.(float64) * -1 // ? zeros are going to be a PITA
+		return right.(float64) * -1, nil // ? zeros are going to be a PITA
 	}
-	return nil
+	return nil, nil
 }
 
 func (i *Interpreter) IsTruthy(val interface{}) bool {
 	if val == nil {
 		return false
 	}
-	floatVal, err := convertInterfaceToFloat(val)
-	if err != nil {
-		return false
+	switch i := val.(type) {
+	case float64:
+	case float32:
+	case int64:
+	case int32:
+	case int:
+	case uint64:
+	case uint32:
+	case uint:
+		return i != 0
+	case string:
+		converted, _ := strconv.Atoi(i)
+		return converted != 0
+		// default:
+		// return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val))
 	}
-	return floatVal != 0
+	return true
 }
 
 func (i *Interpreter) IsEqual(a interface{}, b interface{}) bool {
@@ -85,8 +107,12 @@ func (i *Interpreter) IsEqual(a interface{}, b interface{}) bool {
 	return a == b
 }
 
-func (i *Interpreter) evaluate(expr Expr) interface{} {
-	return expr.Accept(i)
+func (i *Interpreter) evaluate(expr Expr) (interface{}, error) {
+	expression, err := expr.Accept(i)
+	if err != nil {
+		return nil, err
+	}
+	return expression, nil
 }
 
 func convertInterfaceToFloat(val interface{}) (float64, error) {
@@ -101,8 +127,8 @@ func convertInterfaceToFloat(val interface{}) (float64, error) {
 	case uint32:
 	case uint:
 		return float64(i), nil
-	case string:
-		return strconv.ParseFloat(i, 64)
+	default:
+		// return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val))
 	}
-	return math.NaN(), fmt.Errorf("can't convert %v to float64", val)
+	return 0, nil // never
 }

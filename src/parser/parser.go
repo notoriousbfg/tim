@@ -103,7 +103,7 @@ func (p *Parser) Primary() tree.Expr {
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		return tree.Grouping{Expression: p.Expression()}
 	}
-	panic(p.error(p.peek(), "Expect expression."))
+	panic(p.error(p.peek(), "expect expression."))
 }
 
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {
