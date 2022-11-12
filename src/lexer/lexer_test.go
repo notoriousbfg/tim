@@ -149,6 +149,17 @@ func TestLexer(t *testing.T) {
 				token.EOF,
 			},
 		},
+		"decimal number": {
+			InputString: "(five: 200.32)",
+			Types: []token.TokenType{
+				token.LEFT_PAREN,
+				token.IDENTIFIER,
+				token.COLON,
+				token.NUMBER,
+				token.RIGHT_PAREN,
+				token.EOF,
+			},
+		},
 	}
 
 	for name, testcase := range cases {

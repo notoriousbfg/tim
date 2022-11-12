@@ -1,20 +1,18 @@
 package tree
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"tim/token"
 )
 
-func Interpret(expression Expr) {
+func Interpret(expression Expr) interface{} {
 	interpreter := &Interpreter{}
 	value, err := interpreter.evaluate(expression)
 	if err != nil {
 		panic(err) // todo - how to report runtime errors?
 	}
-	json, _ := json.Marshal(value)
-	fmt.Println(string(json))
+	return value
 }
 
 type Interpreter struct{}
@@ -23,34 +21,32 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
 	left, _ := i.evaluate(expr.Left)
 	right, _ := i.evaluate(expr.Right)
 
-	leftFloat, err := convertInterfaceToFloat(left)
-	if err != nil {
-		panic(err)
-	}
-	rightFloat, err := convertInterfaceToFloat(right)
-	if err != nil {
-		panic(err)
-	}
-
 	switch expr.Operator.Type {
 	case token.MINUS:
-		return leftFloat - rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) - right.(float64), nil
 	case token.PLUS:
-		return leftFloat + rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) + right.(float64), nil
 	case token.STAR:
-		return leftFloat * rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) * right.(float64), nil
 	case token.GREATER:
-		return leftFloat > rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) > right.(float64), nil
 	case token.GREATER_EQUAL:
-		return leftFloat >= rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) >= right.(float64), nil
 	case token.LESS:
-		return leftFloat < rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) < right.(float64), nil
 	case token.LESS_EQUAL:
-		return leftFloat <= rightFloat, nil
+		i.CheckNumberOperands(left, right)
+		return left.(float64) <= right.(float64), nil
 	case token.BANG_EQUAL:
-		return !i.IsEqual(left, right), nil
+		return left == right, nil
 	case token.DOUBLE_EQUAL:
-		return i.IsEqual(left, right), nil
+		return left != right, nil
 	}
 	return nil, nil
 }
@@ -92,15 +88,13 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	return true
 }
 
-func (i *Interpreter) IsEqual(a interface{}, b interface{}) bool {
-	if a == nil && b == nil {
-		return false
+func (i *Interpreter) CheckNumberOperands(left interface{}, right interface{}) {
+	if _, ok := left.(float64); ok {
+		if _, ok = right.(float64); ok {
+			return
+		}
 	}
-	if a == nil {
-		return false
-	}
-	fmt.Printf("isequal2: %t \n", a == b)
-	return a == b
+	panic(NewRuntimeError("operands must be a number"))
 }
 
 func (i *Interpreter) evaluate(expr Expr) (interface{}, error) {

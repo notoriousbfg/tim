@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"tim/lexer"
 	"tim/parser"
@@ -12,5 +13,7 @@ func main() {
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 	fmt.Println(tree.Print(parsed))
-	tree.Interpret(parsed)
+	json, _ := json.Marshal(tree.Interpret(parsed))
+	fmt.Println(string(json))
+
 }

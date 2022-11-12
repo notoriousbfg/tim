@@ -156,9 +156,24 @@ func (l *Lexer) peek() string {
 	return string(l.Input[l.Current])
 }
 
+func (l *Lexer) peekNext() string {
+	if l.Current+1 >= len(l.Input) {
+		return "0"
+	}
+	return string(l.Input[l.Current+1])
+}
+
 func (l *Lexer) matchNumber() {
 	for isDigit(l.peek()) {
 		l.NextChar()
+	}
+
+	if l.peek() == "." && isDigit(l.peekNext()) {
+		l.NextChar()
+
+		for isDigit(l.peek()) {
+			l.NextChar()
+		}
 	}
 
 	text := l.Input[l.Start:l.Current]

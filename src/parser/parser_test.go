@@ -20,16 +20,17 @@ func TestParser(t *testing.T) {
 			InputString: "2 + 4",
 			Expression: tree.Binary{
 				Left: tree.Literal{
-					Value: "2",
+					Value: 2.00,
 				},
 				Operator: token.Token{
 					Type:     token.PLUS,
 					Text:     "+",
+					Literal:  "+",
 					Position: 2,
 					Line:     1,
 				},
 				Right: tree.Literal{
-					Value: "4",
+					Value: 4.00,
 				},
 			},
 		},
