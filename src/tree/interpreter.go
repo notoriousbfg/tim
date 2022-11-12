@@ -32,9 +32,6 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
 		panic(err)
 	}
 
-	fmt.Printf("left: %t \n", left)
-	fmt.Printf("right: %t \n", right)
-
 	switch expr.Operator.Type {
 	case token.MINUS:
 		return leftFloat - rightFloat, nil
@@ -91,9 +88,6 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	case uint32:
 	case uint:
 		return i != 0
-	case string:
-		converted, _ := strconv.Atoi(i)
-		return converted != 0
 	}
 	return true
 }
