@@ -111,6 +111,7 @@ func (tt TokenType) String() string {
 type Token struct {
 	Type     TokenType
 	Text     string
+	Literal  interface{}
 	Position int
 	Line     int
 }

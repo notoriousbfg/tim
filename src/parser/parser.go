@@ -97,7 +97,7 @@ func (p *Parser) Primary() tree.Expr {
 		return tree.Literal{Value: nil}
 	}
 	if p.match(token.NUMBER, token.STRING) {
-		return tree.Literal{Value: p.previous().Text}
+		return tree.Literal{Value: p.previous().Literal}
 	}
 	if p.match(token.LEFT_PAREN) {
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")

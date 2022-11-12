@@ -32,6 +32,9 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
 		panic(err)
 	}
 
+	fmt.Printf("left: %t \n", left)
+	fmt.Printf("right: %t \n", right)
+
 	switch expr.Operator.Type {
 	case token.MINUS:
 		return leftFloat - rightFloat, nil
@@ -91,8 +94,6 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	case string:
 		converted, _ := strconv.Atoi(i)
 		return converted != 0
-		// default:
-		// return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val))
 	}
 	return true
 }
@@ -104,6 +105,7 @@ func (i *Interpreter) IsEqual(a interface{}, b interface{}) bool {
 	if a == nil {
 		return false
 	}
+	fmt.Printf("isequal2: %t \n", a == b)
 	return a == b
 }
 
@@ -127,8 +129,14 @@ func convertInterfaceToFloat(val interface{}) (float64, error) {
 	case uint32:
 	case uint:
 		return float64(i), nil
+	case string:
+		converted, err := strconv.ParseFloat(i, 64)
+		if err != nil {
+			return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", i))
+		}
+		return converted, nil
 	default:
-		// return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val))
+		return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", i))
 	}
-	return 0, nil // never
+	return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val)) // never
 }

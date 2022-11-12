@@ -40,7 +40,7 @@ func (l *Lexer) ReadInput() error {
 		}
 	}
 	l.Start++
-	l.AddToken(token.EOF, "")
+	l.AddToken(token.EOF, "", "")
 	return nil
 }
 
@@ -48,61 +48,61 @@ func (l *Lexer) ReadChar() error {
 	char := l.NextChar()
 	switch char {
 	case "(":
-		l.AddToken(token.LEFT_PAREN, char)
+		l.AddToken(token.LEFT_PAREN, char, char)
 	case ")":
-		l.AddToken(token.RIGHT_PAREN, char)
+		l.AddToken(token.RIGHT_PAREN, char, char)
 	case "{":
-		l.AddToken(token.LEFT_BRACE, char)
+		l.AddToken(token.LEFT_BRACE, char, char)
 	case "}":
-		l.AddToken(token.RIGHT_BRACE, char)
+		l.AddToken(token.RIGHT_BRACE, char, char)
 	case ",":
-		l.AddToken(token.COMMA, char)
+		l.AddToken(token.COMMA, char, char)
 	case ".":
-		l.AddToken(token.DOT, char)
+		l.AddToken(token.DOT, char, char)
 	case "+":
-		l.AddToken(token.PLUS, char)
+		l.AddToken(token.PLUS, char, char)
 	case "-":
-		l.AddToken(token.MINUS, char)
+		l.AddToken(token.MINUS, char, char)
 	case "*":
-		l.AddToken(token.STAR, char)
+		l.AddToken(token.STAR, char, char)
 	case "/":
-		l.AddToken(token.SLASH, char)
+		l.AddToken(token.SLASH, char, char)
 	case "?":
-		l.AddToken(token.QUESTION, char)
+		l.AddToken(token.QUESTION, char, char)
 	case "!":
 		if l.matchNext("=") {
-			l.AddToken(token.BANG_EQUAL, "!=")
+			l.AddToken(token.BANG_EQUAL, "!=", "!=")
 		} else {
-			l.AddToken(token.BANG, char)
+			l.AddToken(token.BANG, char, char)
 		}
 	case "=":
 		if l.matchNext(">") {
-			l.AddToken(token.DOUBLE_ARROW, "=>")
+			l.AddToken(token.DOUBLE_ARROW, "=>", "=>")
 		} else if l.matchNext("=") {
-			l.AddToken(token.DOUBLE_EQUAL, "==")
+			l.AddToken(token.DOUBLE_EQUAL, "==", "==")
 		} else {
-			l.AddToken(token.EQUAL, char)
+			l.AddToken(token.EQUAL, char, char)
 		}
 	case "<":
 		if l.matchNext("=") {
-			l.AddToken(token.LESS_EQUAL, "<=")
+			l.AddToken(token.LESS_EQUAL, "<=", "<=")
 		} else {
-			l.AddToken(token.LESS, char)
+			l.AddToken(token.LESS, char, char)
 		}
 	case ">":
 		if l.matchNext("=") {
-			l.AddToken(token.GREATER_EQUAL, ">=")
+			l.AddToken(token.GREATER_EQUAL, ">=", ">=")
 		} else {
-			l.AddToken(token.GREATER, char)
+			l.AddToken(token.GREATER, char, char)
 		}
 	case ":":
-		l.AddToken(token.COLON, char)
+		l.AddToken(token.COLON, char, char)
 	case "\"":
 		l.matchString()
 	case " ", "\r", "\t":
 		break
 	case "\n":
-		l.AddToken(token.NEWLINE, char)
+		l.AddToken(token.NEWLINE, char, char)
 		l.Line++
 	default:
 		if isDigit(char) {
@@ -126,10 +126,11 @@ func (l *Lexer) NextChar() string {
 	return string(l.Input[l.Current])
 }
 
-func (l *Lexer) AddToken(tokenType token.TokenType, text string) {
+func (l *Lexer) AddToken(tokenType token.TokenType, text string, literal interface{}) {
 	l.Tokens = append(l.Tokens, token.Token{
 		Type:     tokenType,
 		Text:     text,
+		Literal:  literal,
 		Position: l.Start,
 		Line:     l.Line,
 	})
@@ -160,7 +161,9 @@ func (l *Lexer) matchNumber() {
 		l.NextChar()
 	}
 
-	l.AddToken(token.NUMBER, l.Input[l.Start:l.Current])
+	text := l.Input[l.Start:l.Current]
+	val, _ := strconv.ParseFloat(text, 64)
+	l.AddToken(token.NUMBER, text, val)
 }
 
 func (l *Lexer) matchString() {
@@ -169,7 +172,8 @@ func (l *Lexer) matchString() {
 	}
 
 	l.NextChar()
-	l.AddToken(token.STRING, l.Input[l.Start+1:l.Current-1])
+	text := l.Input[l.Start+1 : l.Current-1]
+	l.AddToken(token.STRING, text, text)
 }
 
 func (l *Lexer) matchIdentifier() {
@@ -178,11 +182,10 @@ func (l *Lexer) matchIdentifier() {
 	}
 
 	text := l.Input[l.Start:l.Current]
-
 	if tokenType, ok := l.Keywords[text]; ok {
-		l.AddToken(tokenType, text)
+		l.AddToken(tokenType, text, text)
 	} else {
-		l.AddToken(token.IDENTIFIER, text)
+		l.AddToken(token.IDENTIFIER, text, text)
 	}
 }
 

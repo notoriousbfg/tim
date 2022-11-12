@@ -10,11 +10,11 @@ func Print(expr Expr) string {
 type Printer struct{}
 
 func (p *Printer) VisitBinaryExpr(expr Binary) (interface{}, error) {
-	return p.Parenthesise(expr.Operator.Text, expr.Left, expr.Right), nil
+	return p.parenthesise(expr.Operator.Text, expr.Left, expr.Right), nil
 }
 
 func (p *Printer) VisitGroupingExpr(expr Grouping) (interface{}, error) {
-	return p.Parenthesise("group", expr.Expression), nil
+	return p.parenthesise("group", expr.Expression), nil
 }
 
 func (p *Printer) VisitLiteralExpr(expr Literal) (interface{}, error) {
@@ -26,7 +26,7 @@ func (p *Printer) VisitLiteralExpr(expr Literal) (interface{}, error) {
 }
 
 func (p *Printer) VisitUnaryExpr(expr Unary) (interface{}, error) {
-	return p.Parenthesise(expr.Operator.Text, expr.Right), nil
+	return p.parenthesise(expr.Operator.Text, expr.Right), nil
 }
 
 func (p *Printer) Print(expr Expr) string {
@@ -37,7 +37,7 @@ func (p *Printer) Print(expr Expr) string {
 	return expression.(string)
 }
 
-func (p *Printer) Parenthesise(name string, exprs ...Expr) string {
+func (p *Printer) parenthesise(name string, exprs ...Expr) string {
 	var str string
 	str += "(" + name
 	for _, expr := range exprs {
