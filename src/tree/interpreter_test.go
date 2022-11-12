@@ -15,13 +15,17 @@ type InterpretedCase struct {
 
 func TestInterpreter(t *testing.T) {
 	cases := map[string]InterpretedCase{
-		"basic addition": {
+		"basic addition: 2 integers": {
 			InputString: "200 + 200",
-			Expected:    400.00,
+			Expected:    400,
 		},
-		"basic addition with decimals": {
-			InputString: "200.23 + 200",
-			Expected:    400.23,
+		"basic addition: 1 integer, 1 float": {
+			InputString: "200 + 200.45",
+			Expected:    400.45,
+		},
+		"basic subtraction: 2 integers": {
+			InputString: "300 - 200",
+			Expected:    100,
 		},
 	}
 
@@ -30,11 +34,9 @@ func TestInterpreter(t *testing.T) {
 			l := lexer.New(testcase.InputString)
 			p := parser.New(l.Tokens)
 			parsed := p.Parse()
-			fmt.Println(tree.Print(parsed))
 			actual := tree.Interpret(parsed)
 			if testcase.Expected != actual {
-				fmt.Printf("%t, %t", testcase.Expected, actual)
-				t.Fatal("expressions do not match", testcase.Expected, actual)
+				t.Fatal("expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))
 			}
 		})
 	}

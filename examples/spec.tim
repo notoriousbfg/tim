@@ -24,7 +24,7 @@ treesAndColours.get(0).get(0) // 'Fir'
 
 // if/else
 ?(
-    (true) => // do this,
+    firstCond: (true) => // do this, // what about named conditions? i.e. the conditional statement is a dict?
     (false) => // don't do this,
     () => // else
 )

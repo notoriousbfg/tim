@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	l := lexer.New("200 + 200 == 400")
+	l := lexer.New("\"hello\" + \"tim\"")
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 	fmt.Println(tree.Print(parsed))

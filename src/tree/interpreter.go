@@ -1,8 +1,7 @@
 package tree
 
 import (
-	"fmt"
-	"strconv"
+	"math"
 	"tim/token"
 )
 
@@ -15,40 +14,65 @@ func Interpret(expression Expr) interface{} {
 	return value
 }
 
+func NewInterpreter() {}
+
 type Interpreter struct{}
 
 func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
 	left, _ := i.evaluate(expr.Left)
 	right, _ := i.evaluate(expr.Right)
 
+	// will timlang inherit the same floating-point arithmetic hell as go?
+	var returnValue interface{}
 	switch expr.Operator.Type {
 	case token.MINUS:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) - right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) - right.(float64)
 	case token.PLUS:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) + right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) + right.(float64)
 	case token.STAR:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) * right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) * right.(float64)
 	case token.GREATER:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) > right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) > right.(float64)
 	case token.GREATER_EQUAL:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) >= right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) >= right.(float64)
 	case token.LESS:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) < right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) < right.(float64)
 	case token.LESS_EQUAL:
-		i.CheckNumberOperands(left, right)
-		return left.(float64) <= right.(float64), nil
+		if err := i.checkNumberOperands(left, right); err != nil {
+			return nil, err
+		}
+		returnValue = left.(float64) <= right.(float64)
 	case token.BANG_EQUAL:
-		return left == right, nil
+		returnValue = left == right
 	case token.DOUBLE_EQUAL:
-		return left != right, nil
+		returnValue = left != right
 	}
-	return nil, nil
+	// if returnValue can be expressed as an int, return it as such
+	if returnFloat, isFloat := returnValue.(float64); isFloat {
+		if wholeFloat := math.Trunc(returnFloat); returnFloat == wholeFloat {
+			return int(wholeFloat), nil
+		}
+		return returnFloat, nil
+	}
+	return returnValue, nil
 }
 
 func (i *Interpreter) VisitLiteralExpr(expr Literal) (interface{}, error) {
@@ -88,15 +112,6 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	return true
 }
 
-func (i *Interpreter) CheckNumberOperands(left interface{}, right interface{}) {
-	if _, ok := left.(float64); ok {
-		if _, ok = right.(float64); ok {
-			return
-		}
-	}
-	panic(NewRuntimeError("operands must be a number"))
-}
-
 func (i *Interpreter) evaluate(expr Expr) (interface{}, error) {
 	expression, err := expr.Accept(i)
 	if err != nil {
@@ -105,26 +120,11 @@ func (i *Interpreter) evaluate(expr Expr) (interface{}, error) {
 	return expression, nil
 }
 
-func convertInterfaceToFloat(val interface{}) (float64, error) {
-	switch i := val.(type) {
-	case float64:
-		return i, nil
-	case float32:
-	case int64:
-	case int32:
-	case int:
-	case uint64:
-	case uint32:
-	case uint:
-		return float64(i), nil
-	case string:
-		converted, err := strconv.ParseFloat(i, 64)
-		if err != nil {
-			return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", i))
+func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) error {
+	if _, ok := left.(float64); ok {
+		if _, ok = right.(float64); ok {
+			return nil
 		}
-		return converted, nil
-	default:
-		return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", i))
 	}
-	return 0, NewRuntimeError(fmt.Sprintf("%v is not a number", val)) // never
+	return NewRuntimeError("Operands must be number")
 }
