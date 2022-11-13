@@ -9,31 +9,28 @@ func Print(expr Expr) string {
 
 type Printer struct{}
 
-func (p *Printer) VisitBinaryExpr(expr Binary) (interface{}, error) {
-	return p.parenthesise(expr.Operator.Text, expr.Left, expr.Right), nil
+func (p *Printer) VisitBinaryExpr(expr Binary) interface{} {
+	return p.parenthesise(expr.Operator.Text, expr.Left, expr.Right)
 }
 
-func (p *Printer) VisitGroupingExpr(expr Grouping) (interface{}, error) {
-	return p.parenthesise("group", expr.Expression), nil
+func (p *Printer) VisitGroupingExpr(expr Grouping) interface{} {
+	return p.parenthesise("group", expr.Expression)
 }
 
-func (p *Printer) VisitLiteralExpr(expr Literal) (interface{}, error) {
+func (p *Printer) VisitLiteralExpr(expr Literal) interface{} {
 	if expr.Value == nil {
-		return "nil", nil
+		return "nil"
 	}
 
-	return fmt.Sprint(expr.Value), nil
+	return fmt.Sprint(expr.Value)
 }
 
-func (p *Printer) VisitUnaryExpr(expr Unary) (interface{}, error) {
-	return p.parenthesise(expr.Operator.Text, expr.Right), nil
+func (p *Printer) VisitUnaryExpr(expr Unary) interface{} {
+	return p.parenthesise(expr.Operator.Text, expr.Right)
 }
 
 func (p *Printer) Print(expr Expr) string {
-	expression, err := expr.Accept(p)
-	if err != nil {
-		return fmt.Sprintf("there was an error")
-	}
+	expression := expr.Accept(p)
 	return expression.(string)
 }
 

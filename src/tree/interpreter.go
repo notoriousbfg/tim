@@ -1,64 +1,59 @@
 package tree
 
 import (
+	"fmt"
+	"io"
 	"math"
 	"tim/token"
 )
 
 func Interpret(expression Expr) interface{} {
 	interpreter := &Interpreter{}
-	value, err := interpreter.evaluate(expression)
-	if err != nil {
-		panic(err) // todo - how to report runtime errors?
-	}
-	return value
+
+	defer func() {
+		if err := recover(); err != nil {
+			if e, ok := err.(RuntimeError); ok {
+				_, _ = interpreter.stdErr.Write([]byte(e.Error() + "\n"))
+			} else {
+				fmt.Printf("Error: %s\n", err)
+			}
+		}
+	}()
+
+	return interpreter.evaluate(expression)
 }
 
-func NewInterpreter() {}
+type Interpreter struct {
+	stdErr io.Writer
+}
 
-type Interpreter struct{}
-
-func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
-	left, _ := i.evaluate(expr.Left)
-	right, _ := i.evaluate(expr.Right)
+func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
+	left := i.evaluate(expr.Left)
+	right := i.evaluate(expr.Right)
 
 	// will timlang inherit the same floating-point arithmetic hell as go?
 	var returnValue interface{}
 	switch expr.Operator.Type {
 	case token.MINUS:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) - right.(float64)
 	case token.PLUS:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) + right.(float64)
 	case token.STAR:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) * right.(float64)
 	case token.GREATER:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) > right.(float64)
 	case token.GREATER_EQUAL:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) >= right.(float64)
 	case token.LESS:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) < right.(float64)
 	case token.LESS_EQUAL:
-		if err := i.checkNumberOperands(left, right); err != nil {
-			return nil, err
-		}
+		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) <= right.(float64)
 	case token.BANG_EQUAL:
 		returnValue = left == right
@@ -68,30 +63,30 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) (interface{}, error) {
 	// if returnValue can be expressed as an int, return it as such
 	if returnFloat, isFloat := returnValue.(float64); isFloat {
 		if wholeFloat := math.Trunc(returnFloat); returnFloat == wholeFloat {
-			return int(wholeFloat), nil
+			return int(wholeFloat)
 		}
-		return returnFloat, nil
+		return returnFloat
 	}
-	return returnValue, nil
+	return returnValue
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr Literal) (interface{}, error) {
-	return expr.Value, nil
+func (i *Interpreter) VisitLiteralExpr(expr Literal) interface{} {
+	return expr.Value
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr Grouping) (interface{}, error) {
+func (i *Interpreter) VisitGroupingExpr(expr Grouping) interface{} {
 	return i.evaluate(expr.Expression)
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr Unary) (interface{}, error) {
-	right, _ := i.evaluate(expr)
+func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
+	right := i.evaluate(expr)
 	switch expr.Operator.Type {
 	case token.BANG:
-		return !i.IsTruthy(right), nil
+		return !i.IsTruthy(right)
 	case token.MINUS:
-		return right.(float64) * -1, nil // ? zeros are going to be a PITA
+		return right.(float64) * -1 // ? zeros are going to be a PITA
 	}
-	return nil, nil
+	return nil
 }
 
 func (i *Interpreter) IsTruthy(val interface{}) bool {
@@ -112,19 +107,16 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	return true
 }
 
-func (i *Interpreter) evaluate(expr Expr) (interface{}, error) {
-	expression, err := expr.Accept(i)
-	if err != nil {
-		return nil, err
-	}
-	return expression, nil
+func (i *Interpreter) evaluate(expr Expr) interface{} {
+	expression := expr.Accept(i)
+	return expression
 }
 
-func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) error {
+func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 	if _, ok := left.(float64); ok {
 		if _, ok = right.(float64); ok {
-			return nil
+			return
 		}
 	}
-	return NewRuntimeError("Operands must be number")
+	panic(NewRuntimeError("operands must be number"))
 }
