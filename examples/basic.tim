@@ -7,3 +7,5 @@
 (result: (five, ten).call(add))
 
 (result).print()
+
+((("hello world") + " and tim") + " and friends").print() // "hello world and tim and friends"

@@ -5,10 +5,10 @@ import (
 )
 
 type Expr interface {
-	Accept(visitor Visitor) interface{}
+	Accept(visitor ExprVisitor) interface{}
 }
 
-type Visitor interface {
+type ExprVisitor interface {
 	VisitBinaryExpr(expr Binary) interface{}
 	VisitGroupingExpr(expr Grouping) interface{}
 	VisitLiteralExpr(expr Literal) interface{}
@@ -21,7 +21,7 @@ type Binary struct {
 	Right    Expr
 }
 
-func (b Binary) Accept(visitor Visitor) interface{} {
+func (b Binary) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitBinaryExpr(b)
 }
 
@@ -29,7 +29,7 @@ type Grouping struct {
 	Expression Expr
 }
 
-func (g Grouping) Accept(visitor Visitor) interface{} {
+func (g Grouping) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitGroupingExpr(g)
 }
 
@@ -37,7 +37,7 @@ type Literal struct {
 	Value interface{}
 }
 
-func (l Literal) Accept(visitor Visitor) interface{} {
+func (l Literal) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitLiteralExpr(l)
 }
 
@@ -46,6 +46,6 @@ type Unary struct {
 	Right    Expr
 }
 
-func (u Unary) Accept(visitor Visitor) interface{} {
+func (u Unary) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitUnaryExpr(u)
 }

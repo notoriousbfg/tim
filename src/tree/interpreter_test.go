@@ -1,10 +1,7 @@
 package tree_test
 
 import (
-	"bytes"
 	"fmt"
-	"log"
-	"os"
 	"testing"
 	"tim/lexer"
 	"tim/parser"
@@ -21,32 +18,36 @@ type InterpretedCase struct {
 
 func TestInterpreter(t *testing.T) {
 	cases := map[string]InterpretedCase{
+		"basic expression": {
+			InputString: "(\"hello world\")",
+			Expected:    "hello world",
+		},
 		"basic addition: 2 integers": {
-			InputString: "200 + 200",
+			InputString: "(200 + 200)",
 			Expected:    400,
 		},
 		"basic addition: 1 integer, 1 float": {
-			InputString: "200 + 200.45",
+			InputString: "(200 + 200.45)",
 			Expected:    400.45,
 		},
 		"basic subtraction: 2 integers": {
-			InputString: "300 - 200",
+			InputString: "(300 - 200)",
 			Expected:    100,
 		},
 		"subtraction: string and number": {
-			InputString: "\"hello\" - 13",
+			InputString: "(\"hello\" - 13)",
 			Err:         tree.NewRuntimeError(tree.OperandsMustBeNumber),
 		},
 		"concatenation: 2 strings": {
-			InputString: "\"hello \" + \"world\"",
+			InputString: "(\"hello \" + \"world\")",
 			Expected:    "hello world",
 		},
 		"concatenation: 1 string and 1 number": {
-			InputString: "\"hello \" + 123",
+			InputString: "(\"hello \" + 123)",
 			Expected:    "hello 123",
 		},
 		"division by zero panics": {
-			InputString: "10 / 0",
+			InputString: "(10 / 0)",
 			Err:         tree.NewRuntimeError(tree.DivisionByZero),
 		},
 	}
@@ -67,12 +68,4 @@ func TestInterpreter(t *testing.T) {
 			assert.Equal(t, testcase.Expected, actual, "expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))
 		})
 	}
-}
-
-func captureOutput(f func()) string {
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	f()
-	log.SetOutput(os.Stderr)
-	return buf.String()
 }

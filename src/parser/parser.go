@@ -100,8 +100,9 @@ func (p *Parser) Primary() tree.Expr {
 		return tree.Literal{Value: p.previous().Literal}
 	}
 	if p.match(token.LEFT_PAREN) {
+		expr := p.Expression()
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
-		return tree.Grouping{Expression: p.Expression()}
+		return tree.Grouping{Expression: expr}
 	}
 	panic(p.error(p.peek(), "expect expression."))
 }
@@ -150,22 +151,22 @@ func (p *Parser) consume(tokenType token.TokenType, message string) token.Token 
 	panic(p.error(p.peek(), message))
 }
 
-func (p *Parser) synchronise() {
-	p.advance()
+// func (p *Parser) synchronise() {
+// 	p.advance()
 
-	for !p.isAtEnd() {
-		if p.previous().Type == token.NEWLINE {
-			return
-		}
+// 	for !p.isAtEnd() {
+// 		if p.previous().Type == token.NEWLINE {
+// 			return
+// 		}
 
-		switch p.peek().Type {
-		case token.LEFT_BRACE: // almost all new statements in timlang begin with a left brace
-			return
-		}
+// 		switch p.peek().Type {
+// 		case token.LEFT_BRACE: // almost all new statements in timlang begin with a left brace
+// 			return
+// 		}
 
-		p.advance()
-	}
-}
+// 		p.advance()
+// 	}
+// }
 
 func (p *Parser) error(thisToken token.Token, message string) *ParseError {
 	var where string
