@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"tim/token"
 )
 
@@ -14,6 +15,7 @@ func Interpret(expression Expr) interface{} {
 		if err := recover(); err != nil {
 			if e, ok := err.(RuntimeError); ok {
 				_, _ = interpreter.stdErr.Write([]byte(e.Error() + "\n"))
+				os.Exit(70)
 			} else {
 				fmt.Printf("Error: %s\n", err)
 			}
@@ -38,8 +40,12 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) - right.(float64)
 	case token.PLUS:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) + right.(float64)
+		if i.checkStringOperand(left) || i.checkStringOperand(right) {
+			returnValue = fmt.Sprint(left, right)
+		} else {
+			i.checkNumberOperands(left, right)
+			returnValue = left.(float64) + right.(float64)
+		}
 	case token.STAR:
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) * right.(float64)
@@ -56,9 +62,9 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) <= right.(float64)
 	case token.BANG_EQUAL:
-		returnValue = left == right
-	case token.DOUBLE_EQUAL:
 		returnValue = left != right
+	case token.DOUBLE_EQUAL:
+		returnValue = left == right
 	}
 	// if returnValue can be expressed as an int, return it as such
 	if returnFloat, isFloat := returnValue.(float64); isFloat {
@@ -110,6 +116,13 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 func (i *Interpreter) evaluate(expr Expr) interface{} {
 	expression := expr.Accept(i)
 	return expression
+}
+
+func (i *Interpreter) checkStringOperand(val interface{}) bool {
+	if _, ok := val.(string); ok {
+		return true
+	}
+	return false
 }
 
 func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {

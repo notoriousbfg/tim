@@ -27,6 +27,14 @@ func TestInterpreter(t *testing.T) {
 			InputString: "300 - 200",
 			Expected:    100,
 		},
+		"concatenation: 2 strings": {
+			InputString: "\"hello \" + \"world\"",
+			Expected:    "hello world",
+		},
+		"concatenation: 1 string and 1 number": {
+			InputString: "\"hello \" + 123",
+			Expected:    "hello 123",
+		},
 	}
 
 	for name, testcase := range cases {
