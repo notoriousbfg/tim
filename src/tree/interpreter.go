@@ -46,6 +46,9 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 			i.checkNumberOperands(left, right)
 			returnValue = left.(float64) + right.(float64)
 		}
+	case token.SLASH:
+		i.checkNumberOperands(left, right)
+		returnValue = left.(float64) / right.(float64)
 	case token.STAR:
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) * right.(float64)
