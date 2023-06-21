@@ -5,28 +5,31 @@ import (
 	"io"
 	"math"
 	"os"
+	"reflect"
 	"tim/token"
 )
 
-func Interpret(expression Expr) interface{} {
+func Interpret(expression Expr, printPanics bool) interface{} {
 	interpreter := &Interpreter{}
-
-	defer func() {
-		if err := recover(); err != nil {
-			if e, ok := err.(RuntimeError); ok {
-				_, _ = interpreter.stdErr.Write([]byte(e.Error() + "\n"))
-				os.Exit(70)
-			} else {
-				fmt.Printf("Error: %s\n", err)
-			}
-		}
-	}()
-
+	if printPanics {
+		defer interpreter.printToStdErr()
+	}
 	return interpreter.evaluate(expression)
 }
 
 type Interpreter struct {
 	stdErr io.Writer
+}
+
+func (i *Interpreter) printToStdErr() {
+	if err := recover(); err != nil {
+		if e, ok := err.(RuntimeError); ok {
+			_, _ = i.stdErr.Write([]byte(e.Error() + "\n"))
+			os.Exit(70)
+		} else {
+			fmt.Printf("Error: %s\n", err)
+		}
+	}
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
@@ -48,6 +51,9 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 		}
 	case token.SLASH:
 		i.checkNumberOperands(left, right)
+		if isZero(left) || isZero(right) {
+			panic(NewRuntimeError(DivisionByZero))
+		}
 		returnValue = left.(float64) / right.(float64)
 	case token.STAR:
 		i.checkNumberOperands(left, right)
@@ -134,5 +140,9 @@ func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 			return
 		}
 	}
-	panic(NewRuntimeError("operands must be number"))
+	panic(NewRuntimeError(OperandsMustBeNumber))
+}
+
+func isZero(v interface{}) bool {
+	return reflect.ValueOf(v).IsZero()
 }

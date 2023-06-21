@@ -13,7 +13,7 @@ func main() {
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 	fmt.Println(tree.Print(parsed))
-	json, _ := json.Marshal(tree.Interpret(parsed))
+	json, _ := json.Marshal(tree.Interpret(parsed, true))
 	fmt.Println(string(json))
 
 }
