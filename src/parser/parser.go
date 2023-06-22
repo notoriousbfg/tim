@@ -18,8 +18,12 @@ type Parser struct {
 	Current int
 }
 
-func (p *Parser) Parse() tree.Expr {
-	return p.Expression()
+func (p *Parser) Parse() []tree.Stmt {
+	statements := make([]tree.Stmt, 0)
+	for !p.isAtEnd() {
+		statements = append(statements, p.statement())
+	}
+	return statements
 }
 
 func (p *Parser) Expression() tree.Expr {
@@ -149,6 +153,37 @@ func (p *Parser) consume(tokenType token.TokenType, message string) token.Token 
 	}
 
 	panic(p.error(p.peek(), message))
+}
+
+func (p *Parser) statement() tree.Stmt {
+	// this will not be a feature of the language but i intend to removed it when i get to function declarations later
+	if p.match(token.PRINT) {
+		return p.printStatement()
+	}
+
+	return p.expressionStatement()
+}
+
+func (p *Parser) printStatement() tree.Stmt {
+	value := p.Expression()
+	// i'm not sure if this is correct. i don't want semicolons
+	p.consume(token.NEWLINE, "Expect '\\n' after value.")
+	printStmt := &tree.PrintStmt{
+		Expr: value,
+	}
+	// printStmt.Print(value)
+	return printStmt
+}
+
+func (p *Parser) expressionStatement() tree.Stmt {
+	value := p.Expression()
+	// i'm not sure if this is correct. i don't want semicolons
+	p.consume(token.NEWLINE, "Expect '\\n' after value.")
+	exprStmt := &tree.ExpressionStmt{
+		Expr: value,
+	}
+	// exprStmt.Expression(value)
+	return exprStmt
 }
 
 // func (p *Parser) synchronise() {

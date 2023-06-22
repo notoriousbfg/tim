@@ -9,16 +9,20 @@ import (
 	"tim/token"
 )
 
-func Interpret(expression Expr, printPanics bool) interface{} {
+func Interpret(statements []Stmt, printPanics bool) (result interface{}) {
 	interpreter := &Interpreter{}
 	if printPanics {
 		defer interpreter.printToStdErr()
 	}
-	return interpreter.evaluate(expression)
+	for _, statement := range statements {
+		result = interpreter.execute(statement)
+	}
+	return
 }
 
 type Interpreter struct {
 	stdErr io.Writer
+	stdOut io.Writer
 }
 
 func (i *Interpreter) printToStdErr() {
@@ -104,6 +108,17 @@ func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
 	return nil
 }
 
+func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
+	return i.evaluate(stmt.Expr)
+}
+
+func (i *Interpreter) VisitPrintStmt(stmt PrintStmt) interface{} {
+	value := i.evaluate(stmt.Expr)
+	// _, _ = i.stdOut.Write([]byte(i.stringify(value) + "\n"))
+	fmt.Println(i.stringify(value))
+	return value
+}
+
 func (i *Interpreter) IsTruthy(val interface{}) bool {
 	if val == nil {
 		return false
@@ -141,6 +156,17 @@ func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 		}
 	}
 	panic(NewRuntimeError(OperandsMustBeNumber))
+}
+
+func (i *Interpreter) execute(stmt Stmt) interface{} {
+	return stmt.Accept(i)
+}
+
+func (i *Interpreter) stringify(value interface{}) string {
+	if value == nil {
+		return "nil"
+	}
+	return fmt.Sprint(value)
 }
 
 func isZero(v interface{}) bool {

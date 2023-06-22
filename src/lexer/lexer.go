@@ -99,11 +99,11 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.COLON, char, char)
 	case "\"":
 		l.matchString()
+	case "\n":
+		l.AddToken(token.NEWLINE, "\\n", "\\n")
+		l.Line++
 	case " ", "\r", "\t":
 		break
-	case "\n":
-		l.AddToken(token.NEWLINE, char, char)
-		l.Line++
 	default:
 		if isDigit(char) {
 			l.matchNumber()
@@ -228,6 +228,7 @@ func (l *Lexer) initialiseKeywords() {
 		"each":   token.EACH,
 		"filter": token.FILTER,
 		"map":    token.MAP,
+		"print":  token.PRINT,
 	}
 }
 

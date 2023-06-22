@@ -40,6 +40,7 @@ const (
 	EACH
 	FILTER
 	MAP
+	PRINT // temporary
 
 	NEWLINE
 	EOF
@@ -101,6 +102,10 @@ func (tt TokenType) String() string {
 		return "FILTER"
 	case MAP:
 		return "MAP"
+	case PRINT:
+		return "PRINT"
+	case NEWLINE:
+		return "NEWLINE"
 	case EOF:
 		return "EOF"
 	default:
