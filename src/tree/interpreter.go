@@ -11,9 +11,9 @@ import (
 
 func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{}
-	// if printPanics {
-	// 	defer interpreter.printToStdErr()
-	// }
+	if printPanics {
+		defer interpreter.printToStdErr()
+	}
 	for _, statement := range statements {
 		// i don't know if this is correct - it's useful for testing
 		result = append(result, interpreter.execute(statement))
