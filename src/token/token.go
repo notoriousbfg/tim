@@ -43,7 +43,7 @@ const (
 	EACH
 	FILTER
 	MAP
-	PRINT // temporary
+	PRINT
 
 	NEWLINE
 	EOF

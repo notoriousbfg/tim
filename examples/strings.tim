@@ -1,3 +1,7 @@
+("hello world")
+("hello tim")
+
+// presence of comma denotes list
 ("hello", " ", "tim").join() // to compose strings
 
 ("hello", 1, 2, 3, "tim").join() // "hello123tim"
@@ -6,4 +10,4 @@
 (1, 2, 3, 56).join() // 12356
 (1, 2, 3, 56).sum() // 62
 
-("hello", (five: 5)).join() // probably an error
+("hello", (five: 5)).join() // probably a runtime error

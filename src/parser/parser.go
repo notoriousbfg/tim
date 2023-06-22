@@ -108,6 +108,9 @@ func (p *Parser) Primary() tree.Expr {
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		return tree.Grouping{Expression: expr}
 	}
+	// if p.match(token.RIGHT_PAREN) {
+
+	// }
 	panic(p.error(p.peek(), "expect expression."))
 }
 
@@ -156,23 +159,22 @@ func (p *Parser) consume(tokenType token.TokenType, message string) token.Token 
 }
 
 func (p *Parser) statement() tree.Stmt {
-	// this will not be a feature of the language but i intend to removed it when i get to function declarations later
-	if p.match(token.PRINT) {
-		return p.printStatement()
-	}
+	// if p.match(token.PRINT) {
+	// 	return p.printStatement()
+	// }
 
 	return p.expressionStatement()
 }
 
-func (p *Parser) printStatement() tree.Stmt {
-	value := p.Expression()
-	p.consume(token.SEMICOLON, "Expect ';' after value.")
-	printStmt := &tree.PrintStmt{
-		Expr: value,
-	}
-	// printStmt.Print(value)
-	return printStmt
-}
+// func (p *Parser) printStatement() tree.Stmt {
+// 	value := p.Expression()
+// 	p.consume(token.SEMICOLON, "Expect ';' after value.")
+// 	printStmt := &tree.PrintStmt{
+// 		Expr: value,
+// 	}
+// 	// printStmt.Print(value)
+// 	return printStmt
+// }
 
 func (p *Parser) expressionStatement() tree.Stmt {
 	value := p.Expression()

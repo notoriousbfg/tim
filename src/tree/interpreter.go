@@ -9,20 +9,20 @@ import (
 	"tim/token"
 )
 
-func Interpret(statements []Stmt, printPanics bool) (result interface{}) {
+func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{}
-	if printPanics {
-		defer interpreter.printToStdErr()
-	}
+	// if printPanics {
+	// 	defer interpreter.printToStdErr()
+	// }
 	for _, statement := range statements {
-		result = interpreter.execute(statement)
+		// i don't know if this is correct - it's useful for testing
+		result = append(result, interpreter.execute(statement))
 	}
 	return
 }
 
 type Interpreter struct {
 	stdErr io.Writer
-	stdOut io.Writer
 }
 
 func (i *Interpreter) printToStdErr() {
