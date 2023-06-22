@@ -1,3 +1,3 @@
-(print "hello world")
-(print "hello tim")
-(print "hello paul")
+print "hello world"
+print "hello tim"
+print "hello paul"

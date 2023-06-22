@@ -166,8 +166,7 @@ func (p *Parser) statement() tree.Stmt {
 
 func (p *Parser) printStatement() tree.Stmt {
 	value := p.Expression()
-	// i'm not sure if this is correct. i don't want semicolons
-	p.consume(token.NEWLINE, "Expect '\\n' after value.")
+	p.consume(token.SEMICOLON, "Expect ';' after value.")
 	printStmt := &tree.PrintStmt{
 		Expr: value,
 	}
@@ -177,8 +176,7 @@ func (p *Parser) printStatement() tree.Stmt {
 
 func (p *Parser) expressionStatement() tree.Stmt {
 	value := p.Expression()
-	// i'm not sure if this is correct. i don't want semicolons
-	p.consume(token.NEWLINE, "Expect '\\n' after value.")
+	p.consume(token.SEMICOLON, "Expect ';' after value.")
 	exprStmt := &tree.ExpressionStmt{
 		Expr: value,
 	}

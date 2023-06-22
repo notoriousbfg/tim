@@ -19,10 +19,16 @@ func main() {
 	// l := lexer.New("(\"hello\" + \" tim\")\n")
 	l := lexer.New(input)
 
-	fmt.Printf("%+v", l.Tokens)
+	// fmt.Printf("%+v", l.Tokens)
 
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
+
+	fmt.Println()
+
+	// for _, p := range parsed {
+	// 	fmt.Println(p)
+	// }
 
 	// doesn't work
 	// for _, stmt := range parsed {

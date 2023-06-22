@@ -23,12 +23,13 @@ func New(input string) Lexer {
 }
 
 type Lexer struct {
-	Input    string
-	Tokens   []token.Token
-	Start    int
-	Current  int
-	Line     int
-	Keywords map[string]token.TokenType
+	Input      string
+	Tokens     []token.Token
+	Start      int
+	Current    int
+	Line       int
+	Keywords   map[string]token.TokenType
+	insertSemi bool
 }
 
 func (l *Lexer) ReadInput() error {
@@ -40,29 +41,48 @@ func (l *Lexer) ReadInput() error {
 		}
 	}
 	l.Start++
+	if l.insertSemi {
+		l.insertSemi = false
+		l.AddToken(token.SEMICOLON, ";", "\\n")
+	}
 	l.AddToken(token.EOF, "", "")
 	return nil
 }
 
 func (l *Lexer) ReadChar() error {
 	char := l.NextChar()
+	canInsertSemi := false
 	switch char {
 	case "(":
 		l.AddToken(token.LEFT_PAREN, char, char)
 	case ")":
+		canInsertSemi = true
 		l.AddToken(token.RIGHT_PAREN, char, char)
 	case "{":
 		l.AddToken(token.LEFT_BRACE, char, char)
 	case "}":
+		canInsertSemi = true
 		l.AddToken(token.RIGHT_BRACE, char, char)
 	case ",":
 		l.AddToken(token.COMMA, char, char)
+	case ";":
+		l.AddToken(token.SEMICOLON, char, char)
 	case ".":
 		l.AddToken(token.DOT, char, char)
 	case "+":
-		l.AddToken(token.PLUS, char, char)
+		if l.matchNext("+") {
+			canInsertSemi = true
+			l.AddToken(token.INCREMENT, "++", "++")
+		} else {
+			l.AddToken(token.PLUS, char, char)
+		}
 	case "-":
-		l.AddToken(token.MINUS, char, char)
+		if l.matchNext("-") {
+			canInsertSemi = true
+			l.AddToken(token.DECREMENT, "--", "--")
+		} else {
+			l.AddToken(token.MINUS, char, char)
+		}
 	case "*":
 		l.AddToken(token.STAR, char, char)
 	case "/":
@@ -99,20 +119,25 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.COLON, char, char)
 	case "\"":
 		l.matchString()
+		canInsertSemi = true
 	case "\n":
-		l.AddToken(token.NEWLINE, "\\n", "\\n")
+		canInsertSemi = false
+		l.AddToken(token.SEMICOLON, ";", "\\n")
 		l.Line++
 	case " ", "\r", "\t":
 		break
 	default:
 		if isDigit(char) {
+			canInsertSemi = true
 			l.matchNumber()
 		} else if isLetter(char) {
+			canInsertSemi = true
 			l.matchIdentifier()
 		} else {
 			return fmt.Errorf("unsupported type: %s", char)
 		}
 	}
+	l.insertSemi = canInsertSemi
 	return nil
 }
 

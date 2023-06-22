@@ -14,6 +14,7 @@ const (
 	STAR
 	SLASH
 	QUESTION
+	SEMICOLON
 
 	// one or two-char tokens
 	DOUBLE_ARROW
@@ -25,6 +26,8 @@ const (
 	LESS
 	GREATER_EQUAL
 	LESS_EQUAL
+	INCREMENT // ++
+	DECREMENT // --
 
 	// literals
 	IDENTIFIER
@@ -70,6 +73,8 @@ func (tt TokenType) String() string {
 		return "MINUS"
 	case QUESTION:
 		return "QUESTION"
+	case SEMICOLON:
+		return "SEMICOLON"
 	case EQUAL:
 		return "EQUAL"
 	case DOUBLE_ARROW:
@@ -82,6 +87,10 @@ func (tt TokenType) String() string {
 		return "GREATER"
 	case GREATER_EQUAL:
 		return "GREATER_EQUAL"
+	case INCREMENT:
+		return "INCREMENT"
+	case DECREMENT:
+		return "DECREMENT"
 	case STRING:
 		return "STRING"
 	case NUMBER:
