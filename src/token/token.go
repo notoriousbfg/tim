@@ -129,3 +129,26 @@ type Token struct {
 	Position int
 	Line     int
 }
+
+func Keywords() map[string]TokenType {
+	return map[string]TokenType{
+		"call":   CALL,
+		"return": RETURN,
+		"true":   TRUE,
+		"false":  FALSE,
+		"nil":    NIL,
+		"each":   EACH,
+		"filter": FILTER,
+		"map":    MAP,
+		"print":  PRINT,
+	}
+}
+
+func IsKeyword(tt TokenType) bool {
+	for _, tokenType := range Keywords() {
+		if tt == tokenType {
+			return true
+		}
+	}
+	return false
+}

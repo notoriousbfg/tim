@@ -19,7 +19,7 @@ func main() {
 	// l := lexer.New("(\"hello\" + \" tim\")\n")
 	l := lexer.New(input)
 
-	// fmt.Printf("%+v", l.Tokens)
+	fmt.Printf("%+v", l.Tokens)
 
 	fmt.Println()
 

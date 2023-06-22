@@ -1,5 +1,7 @@
 package tree
 
+import "tim/token"
+
 type Stmt interface {
 	Accept(visitor StmtVisitor) interface{}
 }
@@ -7,6 +9,7 @@ type Stmt interface {
 type StmtVisitor interface {
 	VisitExpressionStmt(stmt ExpressionStmt) interface{}
 	VisitPrintStmt(stmt PrintStmt) interface{}
+	VisitVarStmt(stmt VariableStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -27,4 +30,13 @@ func (ps *PrintStmt) Print(expr Expr) {
 
 func (ps PrintStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitPrintStmt(ps)
+}
+
+type VariableStmt struct {
+	Name        token.Token
+	Initializer Expr
+}
+
+func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitVarStmt(vs)
 }

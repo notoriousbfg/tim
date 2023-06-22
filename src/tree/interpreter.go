@@ -10,19 +10,21 @@ import (
 )
 
 func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
-	interpreter := &Interpreter{}
+	interpreter := &Interpreter{
+		Environment: &Environment{},
+	}
 	if printPanics {
 		defer interpreter.printToStdErr()
 	}
 	for _, statement := range statements {
-		// i don't know if this is correct - it's useful for testing
 		result = append(result, interpreter.execute(statement))
 	}
 	return
 }
 
 type Interpreter struct {
-	stdErr io.Writer
+	stdErr      io.Writer
+	Environment *Environment
 }
 
 func (i *Interpreter) printToStdErr() {
@@ -117,6 +119,15 @@ func (i *Interpreter) VisitPrintStmt(stmt PrintStmt) interface{} {
 	// _, _ = i.stdOut.Write([]byte(i.stringify(value) + "\n"))
 	fmt.Println(i.stringify(value))
 	return value
+}
+
+func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
+	var value interface{}
+	if stmt.Initializer != nil {
+		value = i.evaluate(stmt.Initializer)
+	}
+	i.Environment.Define(stmt.Name.Text, value)
+	return nil
 }
 
 func (i *Interpreter) IsTruthy(val interface{}) bool {

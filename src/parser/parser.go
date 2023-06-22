@@ -21,7 +21,7 @@ type Parser struct {
 func (p *Parser) Parse() []tree.Stmt {
 	statements := make([]tree.Stmt, 0)
 	for !p.isAtEnd() {
-		statements = append(statements, p.statement())
+		statements = append(statements, p.declaration())
 	}
 	return statements
 }
@@ -108,9 +108,6 @@ func (p *Parser) Primary() tree.Expr {
 		p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		return tree.Grouping{Expression: expr}
 	}
-	// if p.match(token.RIGHT_PAREN) {
-
-	// }
 	panic(p.error(p.peek(), "expect expression."))
 }
 
@@ -158,6 +155,20 @@ func (p *Parser) consume(tokenType token.TokenType, message string) token.Token 
 	panic(p.error(p.peek(), message))
 }
 
+func (p *Parser) declaration() tree.Stmt {
+	fmt.Printf("prev: %t", p.check(token.IDENTIFIER))
+	if p.match(token.IDENTIFIER) {
+		fmt.Printf("prev: %+v", p.previous())
+		// if p.check(token.COLON) {
+		// 	// name := p.consume(token.IDENTIFIER, "expect variable name")
+		// 	// fmt.Printf("var: %s, name: %+v", name)
+		// 	return p.varDeclaration(p.previous())
+		// }
+	}
+
+	return p.statement()
+}
+
 func (p *Parser) statement() tree.Stmt {
 	// if p.match(token.PRINT) {
 	// 	return p.printStatement()
@@ -178,12 +189,21 @@ func (p *Parser) statement() tree.Stmt {
 
 func (p *Parser) expressionStatement() tree.Stmt {
 	value := p.Expression()
-	p.consume(token.SEMICOLON, "Expect ';' after value.")
+	// p.consume(token.SEMICOLON, "Expect ';' after value.")
 	exprStmt := &tree.ExpressionStmt{
 		Expr: value,
 	}
 	// exprStmt.Expression(value)
 	return exprStmt
+}
+
+func (p *Parser) varDeclaration(identifier token.Token) tree.Stmt {
+	initializer := p.Expression()
+
+	return &tree.VariableStmt{
+		Name:        identifier,
+		Initializer: initializer,
+	}
 }
 
 // func (p *Parser) synchronise() {

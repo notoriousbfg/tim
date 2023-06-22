@@ -14,7 +14,6 @@ func New(input string) Lexer {
 		Start:   0,
 		Current: 0,
 	}
-	lexer.initialiseKeywords()
 	err := lexer.ReadInput()
 	if err != nil {
 		panic(err)
@@ -28,7 +27,6 @@ type Lexer struct {
 	Start      int
 	Current    int
 	Line       int
-	Keywords   map[string]token.TokenType
 	insertSemi bool
 }
 
@@ -222,7 +220,7 @@ func (l *Lexer) matchIdentifier() {
 	}
 
 	text := l.Input[l.Start:l.Current]
-	if tokenType, ok := l.Keywords[text]; ok {
+	if tokenType, ok := token.Keywords()[text]; ok {
 		l.AddToken(tokenType, text, text)
 	} else {
 		l.AddToken(token.IDENTIFIER, text, text)
@@ -240,20 +238,6 @@ func (l *Lexer) matchNext(expected string) bool {
 func (l *Lexer) PrintTokens() {
 	for _, token := range l.Tokens {
 		fmt.Printf("%+v \n", token)
-	}
-}
-
-func (l *Lexer) initialiseKeywords() {
-	l.Keywords = map[string]token.TokenType{
-		"call":   token.CALL,
-		"return": token.RETURN,
-		"true":   token.TRUE,
-		"false":  token.FALSE,
-		"nil":    token.NIL,
-		"each":   token.EACH,
-		"filter": token.FILTER,
-		"map":    token.MAP,
-		"print":  token.PRINT,
 	}
 }
 

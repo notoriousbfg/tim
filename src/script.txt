@@ -1,1 +1,1 @@
-("hello" + " tim")
+(myVar: "hello")
