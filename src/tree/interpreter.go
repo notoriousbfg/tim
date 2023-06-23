@@ -11,7 +11,7 @@ import (
 
 func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{
-		Environment: &Environment{},
+		Environment: NewEnvironment(),
 	}
 	if printPanics {
 		defer interpreter.printToStdErr()

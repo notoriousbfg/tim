@@ -45,11 +45,21 @@ func (p *Parser) Declaration() tree.Stmt {
 func (p *Parser) List() tree.Stmt {
 	var statements []tree.Stmt
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
-		statements = append(statements, p.Declaration())
+		if p.check(token.IDENTIFIER) {
+			ident := p.peek()
+			p.advance()
+			if p.match(token.COLON) {
+				statements = append(statements, p.VarDeclaration(ident))
+			}
+		} else {
+			statements = append(statements, p.Declaration())
+		}
+
 		if p.check(token.COMMA) {
 			p.advance()
 		}
 	}
+
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
 
 	// there could be multiple functions
@@ -105,14 +115,14 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 	return exprStmt
 }
 
-// func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
-// 	initializer := p.Expression()
+func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
+	initializer := p.Expression()
 
-// 	return &tree.VariableStmt{
-// 		Name:        identifier,
-// 		Initializer: initializer,
-// 	}
-// }
+	return &tree.VariableStmt{
+		Name:        identifier,
+		Initializer: initializer,
+	}
+}
 
 func (p *Parser) Expression() tree.Expr {
 	return p.Equality()
@@ -229,6 +239,7 @@ func (p *Parser) Primary() tree.Expr {
 	panic(p.error(p.peek(), "expect expression."))
 }
 
+// check that the current token is any of the types and advance if so
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {
 	for _, tokenType := range tokenTypes {
 		if p.check(tokenType) {

@@ -32,3 +32,5 @@ Or are all the methods properties of the list and then get evaluated later? Yes,
 Will a user defined function only be callable as an argument to a native function?
 
 There will probably never be a callable on its own. It will always be a list function, so I should write it as such.
+
+I need to implement variables and scope before thinking about native functions.
