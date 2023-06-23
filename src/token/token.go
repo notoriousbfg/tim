@@ -35,11 +35,13 @@ const (
 	NUMBER
 
 	// keywords
-	CALL
 	RETURN
 	TRUE
 	FALSE
 	NIL
+
+	// list functions
+	CALL
 	EACH
 	FILTER
 	MAP
@@ -128,6 +130,25 @@ type Token struct {
 	Literal  interface{}
 	Position int
 	Line     int
+}
+
+func ListFunctions() map[string]TokenType {
+	return map[string]TokenType{
+		"call":   CALL,
+		"each":   EACH,
+		"filter": FILTER,
+		"map":    MAP,
+		"print":  PRINT,
+	}
+}
+
+func IsListFunction(tt TokenType) bool {
+	for _, tokenType := range ListFunctions() {
+		if tt == tokenType {
+			return true
+		}
+	}
+	return false
 }
 
 func Keywords() map[string]TokenType {

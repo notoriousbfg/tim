@@ -43,8 +43,6 @@ func (p *Parser) Declaration() tree.Stmt {
 }
 
 func (p *Parser) List() tree.Stmt {
-	// initializer := p.Expression()
-
 	var statements []tree.Stmt
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
 		statements = append(statements, p.Declaration())
@@ -52,10 +50,15 @@ func (p *Parser) List() tree.Stmt {
 			p.advance()
 		}
 	}
-
-	// fmt.Printf("%+v", items)
-
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
+
+	if p.check(token.DOT) {
+		tok := p.advance()
+		if token.IsListFunction(tok.Type) {
+
+		}
+	}
+
 	p.expectSemicolon()
 	return tree.ListStmt{
 		Statements: statements,

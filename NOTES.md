@@ -21,3 +21,10 @@ So perhaps using + for concatenating strings should not be allowed. And I don't 
 I would prefer:
 (2, 3).concat(4, 5) // 2, 3, 4, 5
 (3, 3).concat("four") // 2, 3, "four"
+
+How to evaluate the following statement?
+("hello", "world").join(" ").print()
+
+Does join return a list to print?
+
+Or are all the methods properties of the list and then get evaluated later? Yes, probably.
