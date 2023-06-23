@@ -41,11 +41,11 @@ const (
 	NIL
 
 	// list functions
-	CALL
-	EACH
-	FILTER
-	MAP
-	PRINT
+	// CALL
+	// EACH
+	// FILTER
+	// MAP
+	// PRINT
 
 	NEWLINE
 	EOF
@@ -99,22 +99,22 @@ func (tt TokenType) String() string {
 		return "NUMBER"
 	case IDENTIFIER:
 		return "IDENTIFIER"
-	case CALL:
-		return "CALL"
 	case RETURN:
 		return "RETURN"
 	case TRUE:
 		return "TRUE"
 	case FALSE:
 		return "FALSE"
-	case EACH:
-		return "EACH"
-	case FILTER:
-		return "FILTER"
-	case MAP:
-		return "MAP"
-	case PRINT:
-		return "PRINT"
+	// case CALL:
+	// 	return "CALL"
+	// case EACH:
+	// 	return "EACH"
+	// case FILTER:
+	// 	return "FILTER"
+	// case MAP:
+	// 	return "MAP"
+	// case PRINT:
+	// 	return "PRINT"
 	case NEWLINE:
 		return "NEWLINE"
 	case EOF:
@@ -132,19 +132,16 @@ type Token struct {
 	Line     int
 }
 
-func ListFunctions() map[string]TokenType {
-	return map[string]TokenType{
-		"call":   CALL,
-		"each":   EACH,
-		"filter": FILTER,
-		"map":    MAP,
-		"print":  PRINT,
+// temporary
+func ListFunctions() []string {
+	return []string{
+		"print",
 	}
 }
 
-func IsListFunction(tt TokenType) bool {
-	for _, tokenType := range ListFunctions() {
-		if tt == tokenType {
+func IsListFunction(name string) bool {
+	for _, function := range ListFunctions() {
+		if name == function {
 			return true
 		}
 	}
@@ -153,15 +150,10 @@ func IsListFunction(tt TokenType) bool {
 
 func Keywords() map[string]TokenType {
 	return map[string]TokenType{
-		"call":   CALL,
 		"return": RETURN,
 		"true":   TRUE,
 		"false":  FALSE,
 		"nil":    NIL,
-		"each":   EACH,
-		"filter": FILTER,
-		"map":    MAP,
-		"print":  PRINT,
 	}
 }
 

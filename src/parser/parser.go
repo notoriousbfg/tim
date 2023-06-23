@@ -52,16 +52,28 @@ func (p *Parser) List() tree.Stmt {
 	}
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
 
+	// there could be multiple functions
+	var functions []tree.Expr
 	if p.check(token.DOT) {
-		tok := p.advance()
-		if token.IsListFunction(tok.Type) {
+		p.advance()
 
-		}
+		// this would only work for a single call
+		p.consume(token.IDENTIFIER, "expect identifier after '.'")
+		callable := p.Call()
+		functions = append(functions, callable)
+
+		// for !p.check(token.SEMICOLON) && !p.isAtEnd() {
+		// 	// callable := p.Call()
+		// 	// fmt.Printf("%+v", callable)
+		// 	// functions = append(functions, callable)
+		// 	// p.advance()
+		// }
 	}
 
 	p.expectSemicolon()
 	return tree.ListStmt{
-		Statements: statements,
+		Items:     statements,
+		Functions: functions,
 	}
 }
 
@@ -164,6 +176,36 @@ func (p *Parser) Unary() tree.Expr {
 		}
 	}
 	return p.Primary()
+}
+
+func (p *Parser) Call() tree.Expr {
+	var expr tree.Expr
+	for {
+		if p.match(token.LEFT_PAREN) {
+			expr = p.finishCall(expr)
+		} else {
+			break
+		}
+	}
+
+	fmt.Printf("expr: %+v \n\n", expr)
+
+	return expr
+}
+
+func (p *Parser) finishCall(callee tree.Expr) tree.Expr {
+	var arguments []tree.Expr
+	if !p.check(token.RIGHT_PAREN) {
+		for p.match(token.COMMA) {
+			arguments = append(arguments, p.Expression())
+		}
+	}
+	paren := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
+	return tree.Call{
+		Callee:    callee,
+		Paren:     paren,
+		Arguments: arguments,
+	}
 }
 
 func (p *Parser) Primary() tree.Expr {

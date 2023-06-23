@@ -29,6 +29,11 @@ func (p *Printer) VisitUnaryExpr(expr Unary) interface{} {
 	return p.parenthesise(expr.Operator.Text, expr.Right)
 }
 
+func (p *Printer) VisitCallExpr(expr Call) interface{} {
+	panic("not implemented")
+	return nil
+}
+
 func (p *Printer) Print(expr Expr) string {
 	expression := expr.Accept(p)
 	return expression.(string)

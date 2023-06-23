@@ -13,6 +13,7 @@ type ExprVisitor interface {
 	VisitGroupingExpr(expr Grouping) interface{}
 	VisitLiteralExpr(expr Literal) interface{}
 	VisitUnaryExpr(expr Unary) interface{}
+	VisitCallExpr(expr Call) interface{}
 }
 
 type Binary struct {
@@ -48,4 +49,15 @@ type Unary struct {
 
 func (u Unary) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitUnaryExpr(u)
+}
+
+type Call struct {
+	List      ListStmt
+	Callee    Expr
+	Paren     token.Token
+	Arguments []Expr
+}
+
+func (c Call) Accept(visitor ExprVisitor) interface{} {
+	return visitor.VisitCallExpr(c)
 }

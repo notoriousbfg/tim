@@ -43,9 +43,14 @@ func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 type ListStmt struct {
-	Statements []Stmt
+	Items     []Stmt
+	Functions []Expr
 }
 
 func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitListStmt(ls)
+}
+
+func (ls ListStmt) Length() int {
+	return len(ls.Items)
 }

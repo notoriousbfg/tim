@@ -110,6 +110,19 @@ func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
 	return nil
 }
 
+func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
+	callee := i.evaluate(expr.Callee)
+	var arguments []interface{}
+	for _, arg := range expr.Arguments {
+		arguments = append(arguments, i.evaluate(arg))
+	}
+	// var listArguments []interface{}
+	// for _, arg := range expr.ListArguments {
+	// 	listArguments = append(listArguments, i.evaluate(arg))
+	// }
+	return callee.(Callable).Call(i, arguments)
+}
+
 func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
 	return i.evaluate(stmt.Expr)
 }
@@ -132,9 +145,13 @@ func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 
 func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
 	var values []interface{}
-	for _, item := range stmt.Statements {
+	for _, item := range stmt.Items {
 		values = append(values, i.execute(item))
 	}
+	// should we evaluate list here?
+	// for _, function := range stmt.Functions {
+
+	// }
 	return values
 }
 

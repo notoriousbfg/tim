@@ -28,3 +28,7 @@ How to evaluate the following statement?
 Does join return a list to print?
 
 Or are all the methods properties of the list and then get evaluated later? Yes, probably.
+
+Will a user defined function only be callable as an argument to a native function?
+
+There will probably never be a callable on its own. It will always be a list function, so I should write it as such.
