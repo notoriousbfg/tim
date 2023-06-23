@@ -49,12 +49,12 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) - right.(float64)
 	case token.PLUS:
-		if i.checkStringOperand(left) || i.checkStringOperand(right) {
-			returnValue = fmt.Sprint(left, right)
-		} else {
-			i.checkNumberOperands(left, right)
-			returnValue = left.(float64) + right.(float64)
-		}
+		// if i.checkStringOperand(left) || i.checkStringOperand(right) {
+		// 	returnValue = fmt.Sprint(left, right)
+		// } else {
+		i.checkNumberOperands(left, right)
+		returnValue = left.(float64) + right.(float64)
+		// }
 	case token.SLASH:
 		i.checkNumberOperands(left, right)
 		if isZero(left) || isZero(right) {
@@ -114,12 +114,12 @@ func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
 	return i.evaluate(stmt.Expr)
 }
 
-func (i *Interpreter) VisitPrintStmt(stmt PrintStmt) interface{} {
-	value := i.evaluate(stmt.Expr)
-	// _, _ = i.stdOut.Write([]byte(i.stringify(value) + "\n"))
-	fmt.Println(i.stringify(value))
-	return value
-}
+// func (i *Interpreter) VisitPrintStmt(stmt PrintStmt) interface{} {
+// 	value := i.evaluate(stmt.Expr)
+// 	// _, _ = i.stdOut.Write([]byte(i.stringify(value) + "\n"))
+// 	fmt.Println(i.stringify(value))
+// 	return value
+// }
 
 func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 	var value interface{}
@@ -128,6 +128,14 @@ func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 	}
 	i.Environment.Define(stmt.Name.Text, value)
 	return nil
+}
+
+func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
+	var values []interface{}
+	for _, item := range stmt.Statements {
+		values = append(values, i.execute(item))
+	}
+	return values
 }
 
 func (i *Interpreter) IsTruthy(val interface{}) bool {
