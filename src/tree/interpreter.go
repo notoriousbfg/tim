@@ -123,6 +123,10 @@ func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
 	return callee.(Callable).Call(i, arguments)
 }
 
+func (i *Interpreter) VisitVariableExpr(expr Variable) interface{} {
+	return i.Environment.Get(expr.Name)
+}
+
 func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
 	return i.evaluate(stmt.Expr)
 }

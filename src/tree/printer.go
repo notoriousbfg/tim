@@ -34,6 +34,11 @@ func (p *Printer) VisitCallExpr(expr Call) interface{} {
 	return nil
 }
 
+func (p *Printer) VisitVariableExpr(expr Variable) interface{} {
+	panic("not implemented")
+	return nil
+}
+
 func (p *Printer) Print(expr Expr) string {
 	expression := expr.Accept(p)
 	return expression.(string)

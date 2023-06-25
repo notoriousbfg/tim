@@ -36,12 +36,23 @@ func (p *Parser) Declaration() tree.Stmt {
 	// }
 
 	// variable declaration
-	if p.match(token.IDENTIFIER) {
-		identifier := p.previous()
+	// we must use check in case it is not a declaration but an expression
+	// if p.match(token.IDENTIFIER) {
+	// 	identifier := p.previous()
 
-		if p.match(token.COLON) {
-			return p.VarDeclaration(identifier)
-		}
+	// 	if p.match(token.COLON) {
+	// 		return p.VarDeclaration(identifier)
+	// 	} else {
+	// 		// this is REALLY problematic
+	// 		return tree.Variable{Name: p.Expression()}
+	// 	}
+	// }
+
+	if p.checkSequence(token.IDENTIFIER, token.COLON) {
+		identifier := p.peek()
+		p.advance()
+		p.advance()
+		return p.VarDeclaration(identifier)
 	}
 
 	if p.match(token.LEFT_PAREN) {
@@ -49,6 +60,8 @@ func (p *Parser) Declaration() tree.Stmt {
 	}
 
 	return p.Statement()
+
+	// todo: error handling
 }
 
 func (p *Parser) List() tree.Stmt {
@@ -123,6 +136,7 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 	return exprStmt
 }
 
+// todo: allow a variable to be another list
 func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
 	initializer := p.Expression()
 
@@ -237,11 +251,13 @@ func (p *Parser) Primary() tree.Expr {
 	if p.match(token.NUMBER, token.STRING) {
 		return tree.Literal{Value: p.previous().Literal}
 	}
-	// if p.match(token.LEFT_PAREN) {
-	// 	expr := p.Expression()
-	// 	p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
-	// 	return tree.Grouping{Expression: expr}
-	// }
+	if p.match(token.IDENTIFIER) {
+		identifier := p.previous()
+		// we're not declaring a variable
+		if !p.check(token.COLON) {
+			return tree.Variable{Name: identifier}
+		}
+	}
 	panic(p.error(p.peek(), "expect expression."))
 }
 
@@ -264,6 +280,20 @@ func (p *Parser) check(tokenType token.TokenType) bool {
 	return p.peek().Type == tokenType
 }
 
+func (p *Parser) checkSequence(tokens ...token.TokenType) bool {
+	if p.isAtEnd() {
+		return false
+	}
+	startIndex := p.Current
+	for index, tokenType := range tokens {
+		thisToken := p.peekAt(startIndex + index)
+		if thisToken.Type != tokenType {
+			return false
+		}
+	}
+	return true
+}
+
 func (p *Parser) advance() token.Token {
 	if !p.isAtEnd() {
 		p.Current++
@@ -278,6 +308,11 @@ func (p *Parser) isAtEnd() bool {
 // get the token at the current index
 func (p *Parser) peek() token.Token {
 	return p.Tokens[p.Current]
+}
+
+// get the token at the specified index
+func (p *Parser) peekAt(index int) token.Token {
+	return p.Tokens[index]
 }
 
 // get the previous token
