@@ -1,6 +1,8 @@
 package tree
 
-import "tim/token"
+import (
+	"tim/token"
+)
 
 type Stmt interface {
 	Accept(visitor StmtVisitor) interface{}

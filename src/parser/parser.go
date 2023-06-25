@@ -35,6 +35,15 @@ func (p *Parser) Declaration() tree.Stmt {
 	// 	// }
 	// }
 
+	// variable declaration
+	if p.match(token.IDENTIFIER) {
+		identifier := p.previous()
+
+		if p.match(token.COLON) {
+			return p.VarDeclaration(identifier)
+		}
+	}
+
 	if p.match(token.LEFT_PAREN) {
 		return p.List()
 	}
@@ -43,49 +52,48 @@ func (p *Parser) Declaration() tree.Stmt {
 }
 
 func (p *Parser) List() tree.Stmt {
-	var statements []tree.Stmt
-	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
-		if p.check(token.IDENTIFIER) {
-			ident := p.peek()
-			p.advance()
-			if p.match(token.COLON) {
-				statements = append(statements, p.VarDeclaration(ident))
-			}
-		} else {
-			statements = append(statements, p.Declaration())
-		}
+	var items []tree.Stmt
 
-		if p.check(token.COMMA) {
-			p.advance()
+	items = append(items, p.Declaration())
+
+	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
+		if p.match(token.COMMA) {
+			items = append(items, p.Declaration())
 		}
 	}
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
+	p.consume(token.SEMICOLON, "expect ';' after list")
 
-	// there could be multiple functions
-	var functions []tree.Expr
-	if p.check(token.DOT) {
-		p.advance()
+	// // there could be multiple functions
+	// var functions []tree.Expr
+	// if p.check(token.DOT) {
+	// 	p.advance()
 
-		// this would only work for a single call
-		p.consume(token.IDENTIFIER, "expect identifier after '.'")
-		callable := p.Call()
-		functions = append(functions, callable)
+	// 	// this would only work for a single call
+	// 	p.consume(token.IDENTIFIER, "expect identifier after '.'")
+	// 	callable := p.Call()
+	// 	functions = append(functions, callable)
 
-		// for !p.check(token.SEMICOLON) && !p.isAtEnd() {
-		// 	// callable := p.Call()
-		// 	// fmt.Printf("%+v", callable)
-		// 	// functions = append(functions, callable)
-		// 	// p.advance()
-		// }
-	}
+	// 	// for !p.check(token.SEMICOLON) && !p.isAtEnd() {
+	// 	// 	// callable := p.Call()
+	// 	// 	// fmt.Printf("%+v", callable)
+	// 	// 	// functions = append(functions, callable)
+	// 	// 	// p.advance()
+	// 	// }
+	// }
 
 	p.expectSemicolon()
+
 	return tree.ListStmt{
-		Items:     statements,
-		Functions: functions,
+		Items: items,
+		// Functions: functions,
 	}
 }
+
+// func (p *Parser) ListItem() tree.Stmt {
+
+// }
 
 func (p *Parser) Statement() tree.Stmt {
 	// if p.match(token.PRINT) {
@@ -197,8 +205,6 @@ func (p *Parser) Call() tree.Expr {
 			break
 		}
 	}
-
-	fmt.Printf("expr: %+v \n\n", expr)
 
 	return expr
 }

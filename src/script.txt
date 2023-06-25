@@ -1,1 +1,2 @@
-(hello: "hello", tim: "tim")
+(hello: "hello1", tim: "tim1", 1, 2, 3, "foo", 6 + 8, true, false)
+(hi: "hi", "tim")
