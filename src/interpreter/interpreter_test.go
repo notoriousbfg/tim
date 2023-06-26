@@ -1,11 +1,12 @@
-package tree_test
+package interpreter_test
 
 import (
 	"fmt"
 	"testing"
+	"tim/errors"
+	"tim/interpreter"
 	"tim/lexer"
 	"tim/parser"
-	"tim/tree"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -37,7 +38,7 @@ func TestInterpreter(t *testing.T) {
 		},
 		"subtraction: string and number": {
 			InputString: "(\"hello\" - 13)",
-			Err:         tree.NewRuntimeError(tree.OperandsMustBeNumber),
+			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
 		},
 		"concatenation: 2 strings": {
 			InputString: "(\"hello \" + \"world\")",
@@ -49,7 +50,7 @@ func TestInterpreter(t *testing.T) {
 		},
 		"division by zero panics": {
 			InputString: "(10 / 0)",
-			Err:         tree.NewRuntimeError(tree.DivisionByZero),
+			Err:         errors.NewRuntimeError(errors.DivisionByZero),
 		},
 		// "print expression": {
 		// 	InputString: "(print \"hello world\")",
@@ -65,17 +66,17 @@ func TestInterpreter(t *testing.T) {
 
 			if testcase.Err != nil {
 				assert.PanicsWithError(t, testcase.Err.Error(), func() {
-					tree.Interpret(parsed, false)
+					interpreter.Interpret(parsed, false)
 				}, "did not panic with '%s'", testcase.Err.Error())
 			} else {
-				actual := tree.Interpret(parsed, true)
+				actual := interpreter.Interpret(parsed, true)
 				assert.Equal(t, testcase.Expected, actual, "expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))
 			}
 
 			// if len(testcase.StdOut) > 0 {
 			// 	actual = []interface{}{
 			// 		captureStdOut(func() {
-			// 			tree.Interpret(parsed, false)
+			// 			interpreter.Interpret(parsed, false)
 			// 		}),
 			// 	}
 			// 	assert.Equal(t, testcase.StdOut, actual)

@@ -42,3 +42,5 @@ I'm struggling with assignment and global variables. Top level list items aren't
 Maybe this has nothing to do with how lists are executed, but how variables are defined.
 
 Creating a new environment with the same enclosing environment is still new and therefore a different pointer, which means it is different.
+
+Later... I think I have sorted it. I should probably write some tests now.

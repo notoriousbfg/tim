@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"tim/interpreter"
 	"tim/lexer"
 	"tim/parser"
-	"tim/tree"
 )
 
 func main() {
@@ -37,6 +37,6 @@ func main() {
 	// 	fmt.Println(tree.Print(stmt))
 	// }
 
-	json, _ := json.Marshal(tree.Interpret(parsed, true))
+	json, _ := json.Marshal(interpreter.Interpret(parsed, true))
 	fmt.Println(string(json))
 }

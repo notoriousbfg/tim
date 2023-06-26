@@ -1,4 +1,4 @@
-package tree
+package errors
 
 const (
 	OperandsMustBeNumber = "operands must be number"

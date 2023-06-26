@@ -1,4 +1,4 @@
-package tree
+package interpreter
 
 import (
 	"fmt"
@@ -6,15 +6,18 @@ import (
 	"math"
 	"os"
 	"reflect"
+	"tim/env"
+	"tim/errors"
 	"tim/token"
+	"tim/tree"
 )
 
-func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
+func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{
 		Level: 0,
-		Environment: &Environment{
+		Environment: &env.Environment{
 			Enclosing: nil,
-			values:    make(map[string]interface{}),
+			Values:    make(map[string]interface{}),
 		},
 	}
 	if printPanics {
@@ -28,13 +31,13 @@ func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 
 type Interpreter struct {
 	Level       int
-	Environment *Environment
+	Environment *env.Environment
 	stdErr      io.Writer
 }
 
 func (i *Interpreter) printToStdErr() {
 	if err := recover(); err != nil {
-		if e, ok := err.(RuntimeError); ok {
+		if e, ok := err.(errors.RuntimeError); ok {
 			_, _ = i.stdErr.Write([]byte(e.Error() + "\n"))
 			os.Exit(70)
 		} else {
@@ -43,7 +46,7 @@ func (i *Interpreter) printToStdErr() {
 	}
 }
 
-func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
+func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 	left := i.evaluate(expr.Left)
 	right := i.evaluate(expr.Right)
 
@@ -63,7 +66,7 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 	case token.SLASH:
 		i.checkNumberOperands(left, right)
 		if isZero(left) || isZero(right) {
-			panic(NewRuntimeError(DivisionByZero))
+			panic(errors.NewRuntimeError(errors.DivisionByZero))
 		}
 		returnValue = left.(float64) / right.(float64)
 	case token.STAR:
@@ -96,15 +99,15 @@ func (i *Interpreter) VisitBinaryExpr(expr Binary) interface{} {
 	return returnValue
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr Literal) interface{} {
+func (i *Interpreter) VisitLiteralExpr(expr tree.Literal) interface{} {
 	return expr.Value
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr Grouping) interface{} {
+func (i *Interpreter) VisitGroupingExpr(expr tree.Grouping) interface{} {
 	return i.evaluate(expr.Expression)
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
+func (i *Interpreter) VisitUnaryExpr(expr tree.Unary) interface{} {
 	right := i.evaluate(expr)
 	switch expr.Operator.Type {
 	case token.BANG:
@@ -115,7 +118,7 @@ func (i *Interpreter) VisitUnaryExpr(expr Unary) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
+func (i *Interpreter) VisitCallExpr(expr tree.Call) interface{} {
 	callee := i.evaluate(expr.Callee)
 	var arguments []interface{}
 	for _, arg := range expr.Arguments {
@@ -128,11 +131,11 @@ func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
 	return callee.(Callable).Call(i, arguments)
 }
 
-func (i *Interpreter) VisitVariableExpr(expr Variable) interface{} {
+func (i *Interpreter) VisitVariableExpr(expr tree.Variable) interface{} {
 	return i.Environment.Get(expr.Name)
 }
 
-func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
+func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
 	return i.evaluate(stmt.Expr)
 }
 
@@ -143,7 +146,7 @@ func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
 // 	return value
 // }
 
-func (i *Interpreter) VisitVariableStmt(stmt VariableStmt) interface{} {
+func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 	var value interface{}
 	if stmt.Initializer != nil {
 		value = i.evaluate(stmt.Initializer)
@@ -152,7 +155,7 @@ func (i *Interpreter) VisitVariableStmt(stmt VariableStmt) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
+func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 	i.Level++
 	defer func() {
 		i.Level--
@@ -160,12 +163,12 @@ func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
 	// does this suck?
 	environment := i.Environment
 	if i.Level > 1 {
-		environment = NewEnvironment(i.Environment)
+		environment = env.NewEnvironment(i.Environment)
 	}
 	return i.executeList(stmt.Items, environment)
 }
 
-func (i *Interpreter) executeList(items []Stmt, environment *Environment) []interface{} {
+func (i *Interpreter) executeList(items []tree.Stmt, environment *env.Environment) []interface{} {
 	previous := i.Environment
 	i.Environment = environment
 	var values []interface{}
@@ -194,7 +197,7 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	return true
 }
 
-func (i *Interpreter) evaluate(expr Expr) interface{} {
+func (i *Interpreter) evaluate(expr tree.Expr) interface{} {
 	expression := expr.Accept(i)
 	return expression
 }
@@ -212,10 +215,10 @@ func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 			return
 		}
 	}
-	panic(NewRuntimeError(OperandsMustBeNumber))
+	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func (i *Interpreter) execute(stmt Stmt) interface{} {
+func (i *Interpreter) execute(stmt tree.Stmt) interface{} {
 	return stmt.Accept(i)
 }
 
