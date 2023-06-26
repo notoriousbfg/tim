@@ -129,7 +129,6 @@ func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
 }
 
 func (i *Interpreter) VisitVariableExpr(expr Variable) interface{} {
-	fmt.Printf("env pointer: %p, env: %+v, var: %+v \n", i.Environment, i.Environment, expr)
 	return i.Environment.Get(expr.Name)
 }
 
