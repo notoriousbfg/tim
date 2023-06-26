@@ -1,3 +1,1 @@
-(foo: "foo", bar: "bar", (baz: "baz", (boz: "boz")))
-
-(foo, bar, baz)
+(foo: "foo", bar: "bar", (baz: "baz", (boz: "boz"), baz))

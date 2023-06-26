@@ -67,6 +67,7 @@ func (p *Parser) Declaration() tree.Stmt {
 func (p *Parser) List() tree.Stmt {
 	var items []tree.Stmt
 
+	// first item in list
 	items = append(items, p.Declaration())
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
@@ -77,7 +78,7 @@ func (p *Parser) List() tree.Stmt {
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
 
-	if !p.check(token.RIGHT_PAREN) {
+	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) {
 		p.consume(token.SEMICOLON, "expect ';' after list")
 	}
 
