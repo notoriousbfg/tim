@@ -1,2 +1,3 @@
-(hi: "hi", "tim", foo: "bar", 2, 3, 7)
-(hi, foo)
+(foo: "foo", bar: "bar", (baz: "baz", (boz: "boz")))
+
+(foo, bar, baz)

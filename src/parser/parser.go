@@ -76,7 +76,10 @@ func (p *Parser) List() tree.Stmt {
 	}
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after list")
-	p.consume(token.SEMICOLON, "expect ';' after list")
+
+	if !p.check(token.RIGHT_PAREN) {
+		p.consume(token.SEMICOLON, "expect ';' after list")
+	}
 
 	// // there could be multiple functions
 	// var functions []tree.Expr
@@ -132,7 +135,6 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 	exprStmt := tree.ExpressionStmt{
 		Expr: value,
 	}
-	// exprStmt.Expression(value)
 	return exprStmt
 }
 

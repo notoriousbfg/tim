@@ -63,8 +63,8 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.RIGHT_BRACE, char, char)
 	case ",":
 		l.AddToken(token.COMMA, char, char)
-	case ";":
-		l.AddToken(token.SEMICOLON, char, char)
+	// case ";":
+	// 	l.AddToken(token.SEMICOLON, char, char)
 	case ".":
 		l.AddToken(token.DOT, char, char)
 	case "+":

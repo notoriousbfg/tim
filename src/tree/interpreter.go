@@ -11,7 +11,7 @@ import (
 
 func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{
-		Environment: NewEnvironment(),
+		Environment: NewEnvironment(nil),
 	}
 	if printPanics {
 		defer interpreter.printToStdErr()
@@ -148,14 +148,20 @@ func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 }
 
 func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
+	// i only want to create new environment when we go down a level i.e. the statement is another list declaration
+	return i.executeList(stmt.Items, NewEnvironment(i.Environment))
+}
+
+func (i *Interpreter) executeList(items []Stmt, environment *Environment) []interface{} {
+	previous := i.Environment
+	defer func() {
+		i.Environment = previous
+	}()
+	i.Environment = environment
 	var values []interface{}
-	for _, item := range stmt.Items {
+	for _, item := range items {
 		values = append(values, i.execute(item))
 	}
-	// should we evaluate list here?
-	// for _, function := range stmt.Functions {
-
-	// }
 	return values
 }
 
@@ -182,12 +188,12 @@ func (i *Interpreter) evaluate(expr Expr) interface{} {
 	return expression
 }
 
-func (i *Interpreter) checkStringOperand(val interface{}) bool {
-	if _, ok := val.(string); ok {
-		return true
-	}
-	return false
-}
+// func (i *Interpreter) checkStringOperand(val interface{}) bool {
+// 	if _, ok := val.(string); ok {
+// 		return true
+// 	}
+// 	return false
+// }
 
 func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 	if _, ok := left.(float64); ok {
@@ -202,12 +208,12 @@ func (i *Interpreter) execute(stmt Stmt) interface{} {
 	return stmt.Accept(i)
 }
 
-func (i *Interpreter) stringify(value interface{}) string {
-	if value == nil {
-		return "nil"
-	}
-	return fmt.Sprint(value)
-}
+// func (i *Interpreter) stringify(value interface{}) string {
+// 	if value == nil {
+// 		return "nil"
+// 	}
+// 	return fmt.Sprint(value)
+// }
 
 func isZero(v interface{}) bool {
 	return reflect.ValueOf(v).IsZero()
