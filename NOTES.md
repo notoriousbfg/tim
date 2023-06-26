@@ -38,3 +38,7 @@ I need to implement variables and scope before thinking about native functions.
 ### 26/06/23
 
 I'm struggling with assignment and global variables. Top level list items aren't being created as globals that can be used in other parts of the program, only within the same list. I think this is because the first thing we do is enter into a list, which creates a new environment.
+
+Maybe this has nothing to do with how lists are executed, but how variables are defined.
+
+Creating a new environment with the same enclosing environment is still new and therefore a different pointer, which means it is different.

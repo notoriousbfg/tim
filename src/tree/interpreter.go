@@ -11,7 +11,11 @@ import (
 
 func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 	interpreter := &Interpreter{
-		Environment: NewEnvironment(nil),
+		Level: 0,
+		Environment: &Environment{
+			Enclosing: nil,
+			values:    make(map[string]interface{}),
+		},
 	}
 	if printPanics {
 		defer interpreter.printToStdErr()
@@ -23,8 +27,9 @@ func Interpret(statements []Stmt, printPanics bool) (result []interface{}) {
 }
 
 type Interpreter struct {
-	stdErr      io.Writer
+	Level       int
 	Environment *Environment
+	stdErr      io.Writer
 }
 
 func (i *Interpreter) printToStdErr() {
@@ -124,6 +129,7 @@ func (i *Interpreter) VisitCallExpr(expr Call) interface{} {
 }
 
 func (i *Interpreter) VisitVariableExpr(expr Variable) interface{} {
+	fmt.Printf("env pointer: %p, env: %+v, var: %+v \n", i.Environment, i.Environment, expr)
 	return i.Environment.Get(expr.Name)
 }
 
@@ -138,7 +144,7 @@ func (i *Interpreter) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
 // 	return value
 // }
 
-func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
+func (i *Interpreter) VisitVariableStmt(stmt VariableStmt) interface{} {
 	var value interface{}
 	if stmt.Initializer != nil {
 		value = i.evaluate(stmt.Initializer)
@@ -148,7 +154,16 @@ func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 }
 
 func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
-	return i.executeList(stmt.Items, NewEnvironment(i.Environment))
+	i.Level++
+	defer func() {
+		i.Level--
+	}()
+	// does this suck?
+	environment := i.Environment
+	if i.Level > 1 {
+		environment = NewEnvironment(i.Environment)
+	}
+	return i.executeList(stmt.Items, environment)
 }
 
 func (i *Interpreter) executeList(items []Stmt, environment *Environment) []interface{} {

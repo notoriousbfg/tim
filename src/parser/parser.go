@@ -14,9 +14,8 @@ func New(tokens []token.Token) *Parser {
 }
 
 type Parser struct {
-	Tokens   []token.Token
-	Current  int
-	topLevel bool
+	Tokens  []token.Token
+	Current int
 }
 
 func (p *Parser) Parse() []tree.Stmt {
@@ -52,8 +51,7 @@ func (p *Parser) List() tree.Stmt {
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
 		if p.match(token.COMMA) {
-			statement := p.Declaration()
-			items = append(items, statement)
+			items = append(items, p.Declaration())
 		}
 	}
 
@@ -88,10 +86,6 @@ func (p *Parser) List() tree.Stmt {
 		// Functions: functions,
 	}
 }
-
-// func (p *Parser) ListItem() tree.Stmt {
-
-// }
 
 func (p *Parser) Statement() tree.Stmt {
 	// if p.match(token.PRINT) {
