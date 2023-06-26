@@ -19,7 +19,8 @@ type Environment struct {
 func (e *Environment) Define(name string, value interface{}) {
 	e.values[name] = value
 
-	if e.Enclosing != nil {
+	// only modify global if exists
+	if _, ok := e.Enclosing.values[name]; ok {
 		e.Enclosing.values[name] = value
 	}
 }

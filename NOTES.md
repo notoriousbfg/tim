@@ -34,3 +34,7 @@ Will a user defined function only be callable as an argument to a native functio
 There will probably never be a callable on its own. It will always be a list function, so I should write it as such.
 
 I need to implement variables and scope before thinking about native functions.
+
+### 26/06/23
+
+I'm struggling with assignment and global variables. Top level list items aren't being created as globals that can be used in other parts of the program, only within the same list. I think this is because the first thing we do is enter into a list, which creates a new environment.

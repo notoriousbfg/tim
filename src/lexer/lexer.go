@@ -140,13 +140,9 @@ func (l *Lexer) ReadChar() error {
 }
 
 func (l *Lexer) NextChar() string {
-	defer func() {
-		if !l.isAtEnd() {
-			l.Current++
-		}
-	}()
-
-	return string(l.Input[l.Current])
+	char := string(l.Input[l.Current])
+	l.Current++
+	return char
 }
 
 func (l *Lexer) AddToken(tokenType token.TokenType, text string, literal interface{}) {
@@ -215,7 +211,7 @@ func (l *Lexer) matchString() {
 }
 
 func (l *Lexer) matchIdentifier() {
-	for isAlphaNumeric(l.peek()) {
+	for isAlphaNumeric(l.peek()) && !l.isAtEnd() {
 		l.NextChar()
 	}
 

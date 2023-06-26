@@ -148,20 +148,17 @@ func (i *Interpreter) VisitVarStmt(stmt VariableStmt) interface{} {
 }
 
 func (i *Interpreter) VisitListStmt(stmt ListStmt) interface{} {
-	// i only want to create new environment when we go down a level i.e. the statement is another list declaration
 	return i.executeList(stmt.Items, NewEnvironment(i.Environment))
 }
 
 func (i *Interpreter) executeList(items []Stmt, environment *Environment) []interface{} {
 	previous := i.Environment
-	defer func() {
-		i.Environment = previous
-	}()
 	i.Environment = environment
 	var values []interface{}
 	for _, item := range items {
 		values = append(values, i.execute(item))
 	}
+	i.Environment = previous
 	return values
 }
 

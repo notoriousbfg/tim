@@ -6,16 +6,17 @@ import (
 	"tim/tree"
 )
 
-func New(tokens []token.Token) Parser {
-	return Parser{
+func New(tokens []token.Token) *Parser {
+	return &Parser{
 		Tokens:  tokens,
 		Current: 0,
 	}
 }
 
 type Parser struct {
-	Tokens  []token.Token
-	Current int
+	Tokens   []token.Token
+	Current  int
+	topLevel bool
 }
 
 func (p *Parser) Parse() []tree.Stmt {
@@ -27,27 +28,6 @@ func (p *Parser) Parse() []tree.Stmt {
 }
 
 func (p *Parser) Declaration() tree.Stmt {
-	// if p.match(token.IDENTIFIER) {
-	// 	// if p.check(token.COLON) {
-	// 	// 	// name := p.consume(token.IDENTIFIER, "expect variable name")
-	// 	// 	// fmt.Printf("var: %s, name: %+v", name)
-	// 	// 	return p.varDeclaration(p.previous())
-	// 	// }
-	// }
-
-	// variable declaration
-	// we must use check in case it is not a declaration but an expression
-	// if p.match(token.IDENTIFIER) {
-	// 	identifier := p.previous()
-
-	// 	if p.match(token.COLON) {
-	// 		return p.VarDeclaration(identifier)
-	// 	} else {
-	// 		// this is REALLY problematic
-	// 		return tree.Variable{Name: p.Expression()}
-	// 	}
-	// }
-
 	if p.checkSequence(token.IDENTIFIER, token.COLON) {
 		identifier := p.peek()
 		p.advance()
@@ -72,7 +52,8 @@ func (p *Parser) List() tree.Stmt {
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
 		if p.match(token.COMMA) {
-			items = append(items, p.Declaration())
+			statement := p.Declaration()
+			items = append(items, statement)
 		}
 	}
 
