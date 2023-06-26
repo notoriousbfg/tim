@@ -44,3 +44,5 @@ Maybe this has nothing to do with how lists are executed, but how variables are 
 Creating a new environment with the same enclosing environment is still new and therefore a different pointer, which means it is different.
 
 Later... I think I have sorted it. I should probably write some tests now.
+
+I think a callable will have to be a statement, not an expression. I don't think there's any instance of a function that will not be attached to a list in some way.

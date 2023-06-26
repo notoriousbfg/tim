@@ -29,11 +29,6 @@ func (p *Printer) VisitUnaryExpr(expr Unary) interface{} {
 	return p.parenthesise(expr.Operator.Text, expr.Right)
 }
 
-func (p *Printer) VisitCallExpr(expr Call) interface{} {
-	panic("not implemented")
-	return nil
-}
-
 func (p *Printer) VisitVariableExpr(expr Variable) interface{} {
 	panic("not implemented")
 	return nil

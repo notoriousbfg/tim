@@ -13,6 +13,7 @@ type StmtVisitor interface {
 	// VisitPrintStmt(stmt PrintStmt) interface{}
 	VisitVariableStmt(stmt VariableStmt) interface{}
 	VisitListStmt(stmt ListStmt) interface{}
+	VisitCallStmt(stmt CallStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -55,4 +56,15 @@ func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
 
 func (ls ListStmt) Length() int {
 	return len(ls.Items)
+}
+
+type CallStmt struct {
+	List      ListStmt
+	Callee    Expr
+	Paren     token.Token
+	Arguments []Expr
+}
+
+func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitCallStmt(cs)
 }

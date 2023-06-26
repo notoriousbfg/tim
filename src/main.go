@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"tim/interpreter"
 	"tim/lexer"
 	"tim/parser"
 )
@@ -37,6 +35,6 @@ func main() {
 	// 	fmt.Println(tree.Print(stmt))
 	// }
 
-	json, _ := json.Marshal(interpreter.Interpret(parsed, true))
-	fmt.Println(string(json))
+	// json, _ := json.Marshal(interpreter.Interpret(parsed, true))
+	// fmt.Println(string(json))
 }

@@ -118,21 +118,21 @@ func (i *Interpreter) VisitUnaryExpr(expr tree.Unary) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitCallExpr(expr tree.Call) interface{} {
-	callee := i.evaluate(expr.Callee)
-	var arguments []interface{}
-	for _, arg := range expr.Arguments {
-		arguments = append(arguments, i.evaluate(arg))
-	}
-	// var listArguments []interface{}
-	// for _, arg := range expr.ListArguments {
-	// 	listArguments = append(listArguments, i.evaluate(arg))
-	// }
-	return callee.(Callable).Call(i, arguments)
-}
-
 func (i *Interpreter) VisitVariableExpr(expr tree.Variable) interface{} {
 	return i.Environment.Get(expr.Name)
+}
+
+func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
+	callee := i.evaluate(stmt.Callee)
+	var arguments []interface{}
+	for _, arg := range stmt.Arguments {
+		arguments = append(arguments, i.evaluate(arg))
+	}
+	// // var listArguments []interface{}
+	// // for _, arg := range expr.ListArguments {
+	// // 	listArguments = append(listArguments, i.evaluate(arg))
+	// // }
+	return callee.(Callable).Call(i, arguments)
 }
 
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
