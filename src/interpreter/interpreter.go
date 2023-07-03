@@ -123,15 +123,16 @@ func (i *Interpreter) VisitVariableExpr(expr tree.Variable) interface{} {
 }
 
 func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
-	callee := i.evaluate(stmt.Callee)
+	// do we need to reexecute a statement if it's a pointer to an already executed statement?
+	callee := i.execute(*stmt.Callee)
 	var arguments []interface{}
 	for _, arg := range stmt.Arguments {
 		arguments = append(arguments, i.evaluate(arg))
 	}
-	// // var listArguments []interface{}
-	// // for _, arg := range expr.ListArguments {
-	// // 	listArguments = append(listArguments, i.evaluate(arg))
-	// // }
+	// var listArguments []interface{}
+	// for _, arg := range expr.ListArguments {
+	// 	listArguments = append(listArguments, i.evaluate(arg))
+	// }
 	return callee.(Callable).Call(i, arguments)
 }
 

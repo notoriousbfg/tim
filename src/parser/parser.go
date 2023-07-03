@@ -27,19 +27,24 @@ func (p *Parser) Parse() []tree.Stmt {
 }
 
 func (p *Parser) Declaration() tree.Stmt {
-	if p.checkSequence(token.IDENTIFIER, token.COLON) {
+	if p.matchSequence(token.IDENTIFIER, token.COLON) {
 		identifier := p.peek()
-		p.advance()
-		p.advance()
 		return p.VarDeclaration(identifier)
 	}
 
-	if p.checkSequence(token.DOT, token.IDENTIFIER) {
-		return p.Call()
-	}
+	// if a list or a function precede a function declaration, then we must pass it as the callee
+	// if p.matchSequence(token.DOT, token.IDENTIFIER) {
+	// 	return p.Call()
+	// }
 
 	if p.match(token.LEFT_PAREN) {
-		return p.List()
+		list := p.List()
+
+		if p.matchSequence(token.DOT, token.IDENTIFIER) {
+			return p.Call(&list)
+		}
+
+		return list
 	}
 
 	return p.Statement()
@@ -73,9 +78,16 @@ func (p *Parser) List() tree.Stmt {
 	}
 }
 
-func (p *Parser) Call() tree.Stmt {
+func (p *Parser) Call(stmt *tree.Stmt) tree.Stmt {
+	p.consume(token.LEFT_PAREN, "expect '(' after function declaration")
+	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
+	p.expectSemicolon()
+
 	// callee could be a pointer to a list or another function
-	return tree.CallStmt{}
+	return tree.CallStmt{
+		Callee:       stmt,
+		ClosingParen: closingParen,
+	}
 }
 
 // func (p *Parser) finishCall(callee tree.Expr) tree.Expr {
@@ -228,26 +240,29 @@ func (p *Parser) match(tokenTypes ...token.TokenType) bool {
 	return false
 }
 
+func (p *Parser) matchSequence(tokenTypes ...token.TokenType) bool {
+	if p.isAtEnd() {
+		return false
+	}
+	startIndex := p.Current
+	for index, tokenType := range tokenTypes {
+		thisToken := p.peekAt(startIndex + index)
+		if thisToken.Type != tokenType {
+			return false
+		}
+	}
+	for range tokenTypes {
+		p.advance()
+	}
+	return true
+}
+
 // check that the current token is of a type
 func (p *Parser) check(tokenType token.TokenType) bool {
 	if p.isAtEnd() {
 		return false
 	}
 	return p.peek().Type == tokenType
-}
-
-func (p *Parser) checkSequence(tokens ...token.TokenType) bool {
-	if p.isAtEnd() {
-		return false
-	}
-	startIndex := p.Current
-	for index, tokenType := range tokens {
-		thisToken := p.peekAt(startIndex + index)
-		if thisToken.Type != tokenType {
-			return false
-		}
-	}
-	return true
 }
 
 func (p *Parser) advance() token.Token {

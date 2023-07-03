@@ -59,10 +59,9 @@ func (ls ListStmt) Length() int {
 }
 
 type CallStmt struct {
-	List      ListStmt
-	Callee    Expr
-	Paren     token.Token
-	Arguments []Expr
+	Callee       *Stmt
+	ClosingParen token.Token
+	Arguments    []Expr
 }
 
 func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
