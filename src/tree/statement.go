@@ -24,18 +24,6 @@ func (es ExpressionStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitExpressionStmt(es)
 }
 
-// type PrintStmt struct {
-// 	Expr Expr
-// }
-
-// func (ps *PrintStmt) Print(expr Expr) {
-// 	ps.Expr = expr
-// }
-
-// func (ps PrintStmt) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitPrintStmt(ps)
-// }
-
 type VariableStmt struct {
 	Name        token.Token
 	Initializer Expr
@@ -59,7 +47,8 @@ func (ls ListStmt) Length() int {
 }
 
 type CallStmt struct {
-	Callee       *Stmt
+	Initialiser  Stmt
+	Callee       Expr
 	ClosingParen token.Token
 	Arguments    []Expr
 }

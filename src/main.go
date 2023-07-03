@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"tim/interpreter"
@@ -16,7 +15,6 @@ func main() {
 	}
 	input := string(b)
 
-	// l := lexer.New("(\"hello\" + \" tim\")\n")
 	l := lexer.New(input)
 
 	fmt.Printf("%+v", l.Tokens)
@@ -37,6 +35,8 @@ func main() {
 	// 	fmt.Println(tree.Print(stmt))
 	// }
 
-	json, _ := json.Marshal(interpreter.Interpret(parsed, true))
-	fmt.Println(string(json))
+	// json, _ := json.Marshal(interpreter.Interpret(parsed, true))
+	// fmt.Println(string(json))
+
+	interpreter.Interpret(parsed, true)
 }

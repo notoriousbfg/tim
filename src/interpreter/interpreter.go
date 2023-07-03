@@ -19,7 +19,12 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 			Enclosing: nil,
 			Values:    make(map[string]interface{}),
 		},
+		Globals: &env.Environment{
+			Enclosing: nil,
+			Values:    make(map[string]interface{}),
+		},
 	}
+	interpreter.defineGlobals()
 	if printPanics {
 		defer interpreter.printToStdErr()
 	}
@@ -32,6 +37,7 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 type Interpreter struct {
 	Level       int
 	Environment *env.Environment
+	Globals     *env.Environment
 	stdErr      io.Writer
 }
 
@@ -44,6 +50,10 @@ func (i *Interpreter) printToStdErr() {
 			fmt.Printf("Error: %s\n", err)
 		}
 	}
+}
+
+func (i *Interpreter) defineGlobals() {
+	i.Globals.Define("print", Print{})
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
@@ -119,21 +129,33 @@ func (i *Interpreter) VisitUnaryExpr(expr tree.Unary) interface{} {
 }
 
 func (i *Interpreter) VisitVariableExpr(expr tree.Variable) interface{} {
-	return i.Environment.Get(expr.Name)
+	return i.lookupVariable(expr.Name)
+}
+
+func (i *Interpreter) lookupVariable(name token.Token) interface{} {
+	global, err := i.Globals.Get(name)
+	if err != nil {
+		panic(err)
+	}
+	if global != nil {
+		return global
+	}
+
+	val, err := i.Environment.Get(name)
+	if err != nil {
+		panic(err)
+	}
+	return val
 }
 
 func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
 	// do we need to reexecute a statement if it's a pointer to an already executed statement?
-	callee := i.execute(*stmt.Callee)
+	callee := i.evaluate(stmt.Callee)
 	var arguments []interface{}
 	for _, arg := range stmt.Arguments {
 		arguments = append(arguments, i.evaluate(arg))
 	}
-	// var listArguments []interface{}
-	// for _, arg := range expr.ListArguments {
-	// 	listArguments = append(listArguments, i.evaluate(arg))
-	// }
-	return callee.(Callable).Call(i, arguments)
+	return callee.(Callable).Call(i, stmt.Initialiser, arguments)
 }
 
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
@@ -199,8 +221,7 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 }
 
 func (i *Interpreter) evaluate(expr tree.Expr) interface{} {
-	expression := expr.Accept(i)
-	return expression
+	return expr.Accept(i)
 }
 
 // func (i *Interpreter) checkStringOperand(val interface{}) bool {

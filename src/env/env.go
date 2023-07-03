@@ -28,16 +28,16 @@ func (e *Environment) Define(name string, value interface{}) {
 	}
 }
 
-func (e *Environment) Get(token token.Token) interface{} {
+func (e *Environment) Get(token token.Token) (interface{}, error) {
 	if _, ok := e.Values[token.Text]; ok {
-		return e.Values[token.Text]
+		return e.Values[token.Text], nil
 	}
 
 	if e.Enclosing != nil {
 		if _, ok := e.Enclosing.Values[token.Text]; ok {
-			return e.Enclosing.Values[token.Text]
+			return e.Enclosing.Values[token.Text], nil
 		}
 	}
 
-	panic(errors.NewRuntimeError("Undefined variable '" + token.Text + "'."))
+	return nil, errors.NewRuntimeError("Undefined variable '" + token.Text + "'.")
 }

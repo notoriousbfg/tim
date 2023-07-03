@@ -32,16 +32,14 @@ func (p *Parser) Declaration() tree.Stmt {
 		return p.VarDeclaration(identifier)
 	}
 
-	// if a list or a function precede a function declaration, then we must pass it as the callee
-	// if p.matchSequence(token.DOT, token.IDENTIFIER) {
-	// 	return p.Call()
-	// }
-
 	if p.match(token.LEFT_PAREN) {
 		list := p.List()
 
-		if p.matchSequence(token.DOT, token.IDENTIFIER) {
-			return p.Call(&list)
+		if p.checkSequence(token.DOT, token.IDENTIFIER) {
+			// advance for dot
+			p.advance()
+
+			return p.Call(list)
 		}
 
 		return list
@@ -78,15 +76,28 @@ func (p *Parser) List() tree.Stmt {
 	}
 }
 
-func (p *Parser) Call(stmt *tree.Stmt) tree.Stmt {
+func (p *Parser) Call(list tree.Stmt) tree.Stmt {
+	// name of function
+	callee := p.Primary()
+
 	p.consume(token.LEFT_PAREN, "expect '(' after function declaration")
+
+	var arguments []tree.Expr
+	for !p.check(token.RIGHT_PAREN) {
+		if !p.check(token.COMMA) {
+			arguments = append(arguments, p.Expression())
+		}
+	}
+
 	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
+
 	p.expectSemicolon()
 
-	// callee could be a pointer to a list or another function
 	return tree.CallStmt{
-		Callee:       stmt,
+		Initialiser:  list,
+		Callee:       callee,
 		ClosingParen: closingParen,
+		Arguments:    arguments,
 	}
 }
 
@@ -106,22 +117,8 @@ func (p *Parser) Call(stmt *tree.Stmt) tree.Stmt {
 // }
 
 func (p *Parser) Statement() tree.Stmt {
-	// if p.match(token.PRINT) {
-	// 	return p.printStatement()
-	// }
-
 	return p.ExpressionStatement()
 }
-
-// func (p *Parser) printStatement() tree.Stmt {
-// 	value := p.Expression()
-// 	p.consume(token.SEMICOLON, "Expect ';' after value.")
-// 	printStmt := &tree.PrintStmt{
-// 		Expr: value,
-// 	}
-// 	// printStmt.Print(value)
-// 	return printStmt
-// }
 
 func (p *Parser) ExpressionStatement() tree.Stmt {
 	value := p.Expression()
@@ -221,7 +218,8 @@ func (p *Parser) Primary() tree.Expr {
 	}
 	if p.match(token.IDENTIFIER) {
 		identifier := p.previous()
-		// we're not declaring a variable
+
+		// we're using a variable or function, not declaring one
 		if !p.check(token.COLON) {
 			return tree.Variable{Name: identifier}
 		}
@@ -263,6 +261,20 @@ func (p *Parser) check(tokenType token.TokenType) bool {
 		return false
 	}
 	return p.peek().Type == tokenType
+}
+
+func (p *Parser) checkSequence(tokenTypes ...token.TokenType) bool {
+	if p.isAtEnd() {
+		return false
+	}
+	startIndex := p.Current
+	for index, tokenType := range tokenTypes {
+		thisToken := p.peekAt(startIndex + index)
+		if thisToken.Type != tokenType {
+			return false
+		}
+	}
+	return true
 }
 
 func (p *Parser) advance() token.Token {
