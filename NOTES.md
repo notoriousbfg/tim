@@ -46,3 +46,9 @@ Creating a new environment with the same enclosing environment is still new and 
 Later... I think I have sorted it. I should probably write some tests now.
 
 I think a callable will have to be a statement, not an expression. I don't think there's any instance of a function that will not be attached to a list in some way.
+
+### 04/07/23
+
+I am completely dumbfounded as to how to print statements and expressions. A list is a special kind of statement, whose values (other statements and expressions) we want to print.
+
+The approach I have taken thus far is to create a "PrintVisitor" and then how to handle the printing of each type of statement & expression is handled by the struct itself. However, this is a problem because what I actually want to do is _evaluate_ the value first with the interpreter, then print the values in their own kind of way. But I don't have access to the interpreter in this current implementation.
