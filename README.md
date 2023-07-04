@@ -11,6 +11,7 @@ TBC...
 ## Isn't this awfully like language X?
 In the notes at the end of "Zen & The Art of Motorcycle Maintenance", Pirsig says:
 > ”…there’s an adage to remember, ‘Reading is the enemy of writing.’ I remember telling that to Kay Sexton at B. Dalton who threw up her hands and said, ‘Don’t say that! You’ll put us out of business!’ But it’s true. Any time I did read a book during the years of writing ZMM and Lila it would stop the writing for as much as a week while memories of what I just read or heard gradually faded. That was also true of movies, TV, and parties.”
+
 I try not to read too many other languages for fear I might like them so much that I inadvertently copy them. Tim is based on my experiences with reading and writing various other languages.
 
 ## Wait, isn't it terribly egotistical to name the language after yourself?
