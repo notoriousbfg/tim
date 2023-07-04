@@ -24,11 +24,11 @@ func main() {
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 
-	// fmt.Println()
+	fmt.Println()
 
-	// for _, p := range parsed {
-	// 	fmt.Printf("%+v \n\n", p)
-	// }
+	for _, p := range parsed {
+		fmt.Printf("%+v \n\n", p)
+	}
 
 	// doesn't work
 	// for _, stmt := range parsed {

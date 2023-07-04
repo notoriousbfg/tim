@@ -13,7 +13,7 @@ func (p Print) Arity() int {
 }
 
 func (p Print) Call(i *Interpreter, _ []interface{}) interface{} {
-	fmt.Println(printValue(i.PrevValue))
+	fmt.Println(printValue(i.Environment.PrevValue))
 	return nil
 }
 
@@ -36,20 +36,7 @@ func (j Join) Call(i *Interpreter, arguments []interface{}) interface{} {
 	if len(arguments) == 1 {
 		delimiter = arguments[0].(string)
 	}
-	var args []interface{}
-	var format string
-	if values, ok := i.PrevValue.([]interface{}); ok {
-		for index, item := range values {
-			format += "%v"
-			args = append(args, item)
-
-			if len(delimiter) > 0 && index < len(values)-1 {
-				format += "%s"
-				args = append(args, delimiter)
-			}
-		}
-	}
-	return fmt.Sprintf(format, args...)
+	return joinValues(i.Environment.PrevValue, delimiter)
 }
 
 func (j Join) String() string {
@@ -74,4 +61,31 @@ func printValue(value interface{}) string {
 		output = fmt.Sprintf("%v", value)
 	}
 	return output
+}
+
+func joinValues(values interface{}, delimiter string) string {
+	var args []interface{}
+	var format string
+	if values, ok := values.([]interface{}); ok {
+		for index, item := range values {
+			if itemValues, ok := item.([]interface{}); ok {
+				format += "%v"
+				args = append(args, joinValues(itemValues, delimiter))
+
+				if len(delimiter) > 0 && index < len(values)-1 {
+					format += "%s"
+					args = append(args, delimiter)
+				}
+			} else {
+				format += "%v"
+				args = append(args, item)
+
+				if len(delimiter) > 0 && index < len(values)-1 {
+					format += "%s"
+					args = append(args, delimiter)
+				}
+			}
+		}
+	}
+	return fmt.Sprintf(format, args...)
 }

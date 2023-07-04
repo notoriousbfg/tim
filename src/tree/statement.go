@@ -25,7 +25,7 @@ func (es ExpressionStmt) Accept(visitor StmtVisitor) interface{} {
 
 type VariableStmt struct {
 	Name        token.Token
-	Initializer Expr
+	Initializer Stmt
 }
 
 func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
@@ -33,8 +33,7 @@ func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 type ListStmt struct {
-	Items     []Stmt
-	Functions []Expr
+	Items []Stmt
 }
 
 func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {

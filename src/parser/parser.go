@@ -41,7 +41,6 @@ func (p *Parser) Declaration() tree.Stmt {
 	if p.checkSequence(token.DOT, token.IDENTIFIER) {
 		// advance for dot
 		p.advance()
-
 		return p.Call()
 	}
 
@@ -58,12 +57,16 @@ func (p *Parser) List() tree.ListStmt {
 	var items []tree.Stmt
 
 	// first item in list
-	items = append(items, p.Declaration())
+	// item := p.Declaration()
+
+	// items = append(items, item)
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
-		if p.match(token.COMMA) {
-			items = append(items, p.Declaration())
+		if p.check(token.COMMA) {
+			p.advance()
 		}
+
+		items = append(items, p.Declaration())
 	}
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after expression")
@@ -76,7 +79,6 @@ func (p *Parser) List() tree.ListStmt {
 
 	return tree.ListStmt{
 		Items: items,
-		// Functions: functions,
 	}
 }
 
@@ -134,7 +136,7 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 
 // todo: allow a variable to be another list
 func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
-	initializer := p.Expression()
+	initializer := p.Declaration()
 
 	return &tree.VariableStmt{
 		Name:        identifier,

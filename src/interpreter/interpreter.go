@@ -30,8 +30,9 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 		defer interpreter.printToStdErr()
 	}
 	for _, statement := range statements {
-		interpreter.PrevValue = interpreter.Execute(statement)
-		result = append(result, interpreter.PrevValue)
+		prevValue := interpreter.Execute(statement)
+		interpreter.Environment.PrevValue = prevValue
+		result = append(result, prevValue)
 	}
 	return
 }
@@ -40,7 +41,6 @@ type Interpreter struct {
 	Level       int
 	Environment *env.Environment
 	Globals     *env.Environment
-	PrevValue   interface{}
 	stdErr      io.Writer
 }
 
@@ -173,7 +173,7 @@ func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} 
 func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 	var value interface{}
 	if stmt.Initializer != nil {
-		value = i.Evaluate(stmt.Initializer)
+		value = i.Execute(stmt.Initializer)
 	}
 	i.Environment.Define(stmt.Name.Text, value)
 	return nil
@@ -196,8 +196,12 @@ func (i *Interpreter) executeList(items []tree.Stmt, environment *env.Environmen
 	previous := i.Environment
 	i.Environment = environment
 	var values []interface{}
+	// here lies the issue: there are 2 statements here
+	// but we know that ("hello", "world").join(" ") is a single statement
 	for _, item := range items {
-		values = append(values, i.Execute(item))
+		value := i.Execute(item)
+		i.Environment.PrevValue = value
+		values = append(values, value)
 	}
 	i.Environment = previous
 	return values
