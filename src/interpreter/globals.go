@@ -12,8 +12,8 @@ func (p Print) Arity() int {
 	return 0
 }
 
-func (p Print) Call(i *Interpreter, _ []interface{}) interface{} {
-	fmt.Println(printValue(i.Environment.PrevValue))
+func (p Print) Call(i *Interpreter, caller interface{}, _ []interface{}) interface{} {
+	fmt.Println(printValue(caller))
 	return nil
 }
 
@@ -28,7 +28,7 @@ func (j Join) Arity() int {
 	return 0
 }
 
-func (j Join) Call(i *Interpreter, arguments []interface{}) interface{} {
+func (j Join) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
 	if len(arguments) > 1 {
 		panic(errors.NewRuntimeError("maximum of 1 arguments allowed for method 'join'"))
 	}
@@ -36,7 +36,7 @@ func (j Join) Call(i *Interpreter, arguments []interface{}) interface{} {
 	if len(arguments) == 1 {
 		delimiter = arguments[0].(string)
 	}
-	return joinValues(i.Environment.PrevValue, delimiter)
+	return joinValues(caller, delimiter)
 }
 
 func (j Join) String() string {

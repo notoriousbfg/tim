@@ -30,9 +30,7 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 		defer interpreter.printToStdErr()
 	}
 	for _, statement := range statements {
-		prevValue := interpreter.Execute(statement)
-		interpreter.Environment.PrevValue = prevValue
-		result = append(result, prevValue)
+		result = append(result, interpreter.Execute(statement))
 	}
 	return
 }
@@ -156,14 +154,23 @@ func (i *Interpreter) lookupVariable(name token.Token) interface{} {
 	return val
 }
 
-func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
-	// do we need to reexecute a statement if it's a pointer to an already executed statement?
+// func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
+// 	// do we need to reexecute a statement if it's a pointer to an already executed statement?
+// 	callee := i.Evaluate(stmt.Callee)
+// 	var arguments []interface{}
+// 	for _, arg := range stmt.Arguments {
+// 		arguments = append(arguments, i.Evaluate(arg))
+// 	}
+// 	return callee.(Callable).Call(i, stmt.Caller, arguments)
+// }
+
+func (i *Interpreter) callFunction(stmt tree.CallStmt, caller interface{}) interface{} {
 	callee := i.Evaluate(stmt.Callee)
 	var arguments []interface{}
 	for _, arg := range stmt.Arguments {
 		arguments = append(arguments, i.Evaluate(arg))
 	}
-	return callee.(Callable).Call(i, arguments)
+	return callee.(Callable).Call(i, caller, arguments)
 }
 
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
@@ -189,22 +196,36 @@ func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 	if i.Level > 1 {
 		environment = env.NewEnvironment(i.Environment)
 	}
-	return i.executeList(stmt.Items, environment)
+	return i.executeList(stmt.Items, stmt.Functions, environment)
 }
 
-func (i *Interpreter) executeList(items []tree.Stmt, environment *env.Environment) []interface{} {
+func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, environment *env.Environment) interface{} {
 	previous := i.Environment
 	i.Environment = environment
 	var values []interface{}
 	// here lies the issue: there are 2 statements here
 	// but we know that ("hello", "world").join(" ") is a single statement
 	for _, item := range items {
-		value := i.Execute(item)
-		i.Environment.PrevValue = value
-		values = append(values, value)
+		values = append(values, i.Execute(item))
 	}
+
+	var returnVal interface{}
+	if len(functions) == 0 {
+		returnVal = values
+	} else {
+		// potential performance bottleneck
+		for index, function := range functions {
+			// pipe values into first function call
+			if index == 0 {
+				returnVal = i.callFunction(function, values)
+			} else {
+				returnVal = i.callFunction(function, returnVal)
+			}
+		}
+	}
+
 	i.Environment = previous
-	return values
+	return returnVal
 }
 
 func (i *Interpreter) IsTruthy(val interface{}) bool {

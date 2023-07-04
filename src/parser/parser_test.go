@@ -213,8 +213,8 @@ func TestStatements(t *testing.T) {
 							},
 						},
 					},
-					Functions: []tree.Stmt{
-						tree.CallStmt{
+					Functions: []tree.CallStmt{
+						{
 							Callee: tree.Variable{
 								Name: token.Token{
 									Type:     token.IDENTIFIER,
@@ -254,8 +254,8 @@ func TestStatements(t *testing.T) {
 									},
 								},
 							},
-							Functions: []tree.Stmt{
-								tree.CallStmt{
+							Functions: []tree.CallStmt{
+								{
 									Callee: tree.Variable{
 										Name: token.Token{
 											Type:     token.IDENTIFIER,
@@ -281,8 +281,8 @@ func TestStatements(t *testing.T) {
 							},
 						},
 					},
-					Functions: []tree.Stmt{
-						tree.CallStmt{
+					Functions: []tree.CallStmt{
+						{
 							Callee: tree.Variable{
 								Name: token.Token{
 									Type:     token.IDENTIFIER,

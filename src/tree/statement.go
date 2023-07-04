@@ -12,7 +12,7 @@ type StmtVisitor interface {
 	VisitExpressionStmt(stmt ExpressionStmt) interface{}
 	VisitVariableStmt(stmt VariableStmt) interface{}
 	VisitListStmt(stmt ListStmt) interface{}
-	VisitCallStmt(stmt CallStmt) interface{}
+	// VisitCallStmt(stmt CallStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -34,7 +34,7 @@ func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
 
 type ListStmt struct {
 	Items     []Stmt
-	Functions []Stmt
+	Functions []CallStmt
 }
 
 func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
@@ -52,5 +52,5 @@ type CallStmt struct {
 }
 
 func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitCallStmt(cs)
+	return "" // ??
 }

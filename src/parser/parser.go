@@ -70,9 +70,10 @@ func (p *Parser) List() tree.ListStmt {
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after expression")
 
-	var listFunctions []tree.Stmt
+	var listFunctions []tree.CallStmt
 	for p.checkSequence(token.DOT, token.IDENTIFIER) {
 		p.advance()
+
 		listFunctions = append(listFunctions, p.Call())
 	}
 
@@ -88,7 +89,7 @@ func (p *Parser) List() tree.ListStmt {
 	}
 }
 
-func (p *Parser) Call() tree.Stmt {
+func (p *Parser) Call() tree.CallStmt {
 	// name of function
 	callee := p.Primary()
 
@@ -102,8 +103,6 @@ func (p *Parser) Call() tree.Stmt {
 	}
 
 	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
-
-	// p.expectSemicolon()
 
 	return tree.CallStmt{
 		Callee:       callee,

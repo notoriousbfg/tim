@@ -14,7 +14,6 @@ func NewEnvironment(enclosing *Environment) *Environment {
 
 type Environment struct {
 	Values    map[string]interface{}
-	PrevValue interface{}
 	Enclosing *Environment
 }
 

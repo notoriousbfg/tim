@@ -1,1 +1,1 @@
-(("hello", "tim").join(",")).print()
+(("hello", "tim").join(","), " you bastard").join().print()
