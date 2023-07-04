@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"reflect"
+	"runtime/debug"
 	"tim/env"
 	"tim/errors"
 	"tim/token"
@@ -42,6 +43,8 @@ type Interpreter struct {
 }
 
 func (i *Interpreter) printToStdErr() {
+	// hide stacktrace
+	debug.SetTraceback("none")
 	if err := recover(); err != nil {
 		if e, ok := err.(errors.RuntimeError); ok {
 			_, _ = i.stdErr.Write([]byte(e.Error() + "\n"))
@@ -164,13 +167,6 @@ func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} 
 	return i.evaluate(stmt.Expr)
 }
 
-// func (i *Interpreter) VisitPrintStmt(stmt PrintStmt) interface{} {
-// 	value := i.evaluate(stmt.Expr)
-// 	// _, _ = i.stdOut.Write([]byte(i.stringify(value) + "\n"))
-// 	fmt.Println(i.stringify(value))
-// 	return value
-// }
-
 func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 	var value interface{}
 	if stmt.Initializer != nil {
@@ -220,6 +216,30 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 		return i != 0
 	}
 	return true
+}
+
+func (i *Interpreter) Print(stmt tree.Stmt) {
+	fmt.Println(i.printValue(i.execute(stmt)))
+}
+
+func (i *Interpreter) printValue(value interface{}) string {
+	var output string
+	switch t := value.(type) {
+	case []interface{}:
+		output = "("
+		for index, item := range t {
+			output += i.printValue(item)
+			if index < len(t)-1 {
+				output += ", "
+			}
+		}
+		output += ")"
+	case string:
+		output = fmt.Sprintf("\"%s\"", value.(string))
+	default:
+		output = fmt.Sprintf("%v", value)
+	}
+	return output
 }
 
 func (i *Interpreter) evaluate(expr tree.Expr) interface{} {

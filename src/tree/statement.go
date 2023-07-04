@@ -6,7 +6,6 @@ import (
 
 type Stmt interface {
 	Accept(visitor StmtVisitor) interface{}
-	Print(visitor PrintVisitor) string
 }
 
 type StmtVisitor interface {
@@ -24,20 +23,12 @@ func (es ExpressionStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitExpressionStmt(es)
 }
 
-func (es ExpressionStmt) Print(visitor PrintVisitor) string {
-	return es.Expr.Print(visitor)
-}
-
 type VariableStmt struct {
 	Name        token.Token
 	Initializer Expr
 }
 
 func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitVariableStmt(vs)
-}
-
-func (vs VariableStmt) Print(visitor PrintVisitor) string {
 	return visitor.VisitVariableStmt(vs)
 }
 
@@ -48,15 +39,6 @@ type ListStmt struct {
 
 func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitListStmt(ls)
-}
-
-func (ls ListStmt) Print(visitor PrintVisitor) string {
-	output := "("
-	for _, item := range ls.Items {
-		output += item.Print(visitor)
-	}
-	output += ")"
-	return output
 }
 
 func (ls ListStmt) Length() int {
@@ -72,8 +54,4 @@ type CallStmt struct {
 
 func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitCallStmt(cs)
-}
-
-func (cs CallStmt) Print(visitor PrintVisitor) string {
-	return "call statement"
 }

@@ -17,18 +17,18 @@ func main() {
 
 	l := lexer.New(input)
 
-	fmt.Printf("%+v", l.Tokens)
+	// fmt.Printf("%+v", l.Tokens)
 
-	fmt.Println()
+	// fmt.Println()
 
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 
-	fmt.Println()
+	// fmt.Println()
 
-	for _, p := range parsed {
-		fmt.Printf("%+v \n\n", p)
-	}
+	// for _, p := range parsed {
+	// 	fmt.Printf("%+v \n\n", p)
+	// }
 
 	// doesn't work
 	// for _, stmt := range parsed {

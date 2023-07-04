@@ -11,8 +11,8 @@ func (p Print) Arity() int {
 	return 0
 }
 
-func (p Print) Call(_ *Interpreter, initialiser tree.ListStmt, _ []interface{}) interface{} {
-	tree.Print(initialiser)
+func (p Print) Call(i *Interpreter, initialiser tree.ListStmt, _ []interface{}) interface{} {
+	i.Print(initialiser)
 	return nil
 }
 
