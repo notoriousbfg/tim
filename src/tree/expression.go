@@ -77,5 +77,5 @@ func (v Variable) Accept(visitor ExprVisitor) interface{} {
 }
 
 func (v Variable) Print(visitor PrintVisitor) string {
-	return "variable expression"
+	return ""
 }

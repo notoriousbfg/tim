@@ -3,8 +3,15 @@ package tree
 import "fmt"
 
 type PrintVisitor interface {
-	StmtVisitor
-	ExprVisitor
+	VisitExpressionStmt(stmt ExpressionStmt) string
+	VisitVariableStmt(stmt VariableStmt) string
+	VisitListStmt(stmt ListStmt) string
+	VisitCallStmt(stmt CallStmt) string
+	VisitBinaryExpr(expr Binary) string
+	VisitGroupingExpr(expr Grouping) string
+	VisitLiteralExpr(expr Literal) string
+	VisitUnaryExpr(expr Unary) string
+	VisitVariableExpr(expr Variable) string
 }
 
 func Print(stmt Stmt) {
@@ -15,44 +22,46 @@ func Print(stmt Stmt) {
 // should implement every method in PrintVisitor
 type Printer struct{}
 
-func (p *Printer) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
-	return stmt.Expr.Accept(p)
+func (p *Printer) VisitExpressionStmt(stmt ExpressionStmt) string {
+	// return stmt.Expr.Accept(p)
+	return stmt.Print(p)
 }
 
-func (p *Printer) VisitVariableStmt(stmt VariableStmt) interface{} {
-	return "VisitVariableStmt"
+func (p *Printer) VisitVariableStmt(stmt VariableStmt) string {
+	return stmt.Print(p)
 }
 
-func (p *Printer) VisitListStmt(stmt ListStmt) interface{} {
-	return "VisitListStmt"
+func (p *Printer) VisitListStmt(stmt ListStmt) string {
+	return stmt.Print(p)
 }
 
-func (p *Printer) VisitCallStmt(stmt CallStmt) interface{} {
-	return "VisitCallStmt"
+func (p *Printer) VisitCallStmt(stmt CallStmt) string {
+	return stmt.Print(p)
 }
 
-func (p *Printer) VisitBinaryExpr(expr Binary) interface{} {
-	return "VisitBinaryExpr"
+func (p *Printer) VisitBinaryExpr(expr Binary) string {
+	return expr.Print(p)
 }
 
-func (p *Printer) VisitGroupingExpr(expr Grouping) interface{} {
-	return "VisitGroupingExpr"
+func (p *Printer) VisitGroupingExpr(expr Grouping) string {
+	return expr.Print(p)
 }
 
-func (p *Printer) VisitLiteralExpr(expr Literal) interface{} {
-	if expr.Value == nil {
-		return "nil"
-	}
+func (p *Printer) VisitLiteralExpr(expr Literal) string {
+	// if expr.Value == nil {
+	// 	return "nil"
+	// }
 
-	return fmt.Sprint(expr.Value)
+	// return fmt.Sprint(expr.Value)
+	return expr.Print(p)
 }
 
-func (p *Printer) VisitUnaryExpr(expr Unary) interface{} {
-	return "VisitUnaryExpr"
+func (p *Printer) VisitUnaryExpr(expr Unary) string {
+	return expr.Print(p)
 }
 
-func (p *Printer) VisitVariableExpr(expr Variable) interface{} {
-	return expr.Name
+func (p *Printer) VisitVariableExpr(expr Variable) string {
+	return expr.Print(p)
 }
 
 func (p *Printer) Print(stmt Stmt) {

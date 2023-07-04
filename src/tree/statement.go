@@ -25,7 +25,7 @@ func (es ExpressionStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 func (es ExpressionStmt) Print(visitor PrintVisitor) string {
-	return "expression statement"
+	return es.Expr.Print(visitor)
 }
 
 type VariableStmt struct {
@@ -38,7 +38,7 @@ func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 func (vs VariableStmt) Print(visitor PrintVisitor) string {
-	return "variable statement"
+	return visitor.VisitVariableStmt(vs)
 }
 
 type ListStmt struct {
@@ -51,7 +51,12 @@ func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 func (ls ListStmt) Print(visitor PrintVisitor) string {
-	return "list statement"
+	output := "("
+	for _, item := range ls.Items {
+		output += item.Print(visitor)
+	}
+	output += ")"
+	return output
 }
 
 func (ls ListStmt) Length() int {
