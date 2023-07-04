@@ -30,7 +30,7 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 		defer interpreter.printToStdErr()
 	}
 	for _, statement := range statements {
-		result = append(result, interpreter.execute(statement))
+		result = append(result, interpreter.Execute(statement))
 	}
 	return
 }
@@ -60,8 +60,8 @@ func (i *Interpreter) defineGlobals() {
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
-	left := i.evaluate(expr.Left)
-	right := i.evaluate(expr.Right)
+	left := i.Evaluate(expr.Left)
+	right := i.Evaluate(expr.Right)
 
 	// will timlang inherit the same floating-point arithmetic hell as go?
 	var returnValue interface{}
@@ -117,11 +117,11 @@ func (i *Interpreter) VisitLiteralExpr(expr tree.Literal) interface{} {
 }
 
 func (i *Interpreter) VisitGroupingExpr(expr tree.Grouping) interface{} {
-	return i.evaluate(expr.Expression)
+	return i.Evaluate(expr.Expression)
 }
 
 func (i *Interpreter) VisitUnaryExpr(expr tree.Unary) interface{} {
-	right := i.evaluate(expr)
+	right := i.Evaluate(expr)
 	switch expr.Operator.Type {
 	case token.BANG:
 		return !i.IsTruthy(right)
@@ -155,22 +155,22 @@ func (i *Interpreter) lookupVariable(name token.Token) interface{} {
 
 func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
 	// do we need to reexecute a statement if it's a pointer to an already executed statement?
-	callee := i.evaluate(stmt.Callee)
+	callee := i.Evaluate(stmt.Callee)
 	var arguments []interface{}
 	for _, arg := range stmt.Arguments {
-		arguments = append(arguments, i.evaluate(arg))
+		arguments = append(arguments, i.Evaluate(arg))
 	}
 	return callee.(Callable).Call(i, stmt.Initialiser, arguments)
 }
 
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
-	return i.evaluate(stmt.Expr)
+	return i.Evaluate(stmt.Expr)
 }
 
 func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 	var value interface{}
 	if stmt.Initializer != nil {
-		value = i.evaluate(stmt.Initializer)
+		value = i.Evaluate(stmt.Initializer)
 	}
 	i.Environment.Define(stmt.Name.Text, value)
 	return nil
@@ -194,7 +194,7 @@ func (i *Interpreter) executeList(items []tree.Stmt, environment *env.Environmen
 	i.Environment = environment
 	var values []interface{}
 	for _, item := range items {
-		values = append(values, i.execute(item))
+		values = append(values, i.Execute(item))
 	}
 	i.Environment = previous
 	return values
@@ -218,31 +218,7 @@ func (i *Interpreter) IsTruthy(val interface{}) bool {
 	return true
 }
 
-func (i *Interpreter) Print(stmt tree.Stmt) {
-	fmt.Println(i.printValue(i.execute(stmt)))
-}
-
-func (i *Interpreter) printValue(value interface{}) string {
-	var output string
-	switch t := value.(type) {
-	case []interface{}:
-		output = "("
-		for index, item := range t {
-			output += i.printValue(item)
-			if index < len(t)-1 {
-				output += ", "
-			}
-		}
-		output += ")"
-	case string:
-		output = fmt.Sprintf("\"%s\"", value.(string))
-	default:
-		output = fmt.Sprintf("%v", value)
-	}
-	return output
-}
-
-func (i *Interpreter) evaluate(expr tree.Expr) interface{} {
+func (i *Interpreter) Evaluate(expr tree.Expr) interface{} {
 	return expr.Accept(i)
 }
 
@@ -262,7 +238,7 @@ func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func (i *Interpreter) execute(stmt tree.Stmt) interface{} {
+func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {
 	return stmt.Accept(i)
 }
 
@@ -276,7 +252,7 @@ func (i *Interpreter) execute(stmt tree.Stmt) interface{} {
 // func (i *Interpreter) Print(initialiser tree.ListStmt) {
 // 	var values []interface{}
 // 	for _, item := range initialiser.Items {
-// 		values = append(values, i.execute(item))
+// 		values = append(values, i.Execute(item))
 // 	}
 
 // }
