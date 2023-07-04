@@ -30,7 +30,8 @@ func Interpret(statements []tree.Stmt, printPanics bool) (result []interface{}) 
 		defer interpreter.printToStdErr()
 	}
 	for _, statement := range statements {
-		result = append(result, interpreter.Execute(statement))
+		interpreter.PrevValue = interpreter.Execute(statement)
+		result = append(result, interpreter.PrevValue)
 	}
 	return
 }
@@ -39,13 +40,14 @@ type Interpreter struct {
 	Level       int
 	Environment *env.Environment
 	Globals     *env.Environment
+	PrevValue   interface{}
 	stdErr      io.Writer
 }
 
 func (i *Interpreter) printToStdErr() {
-	// hide stacktrace
-	debug.SetTraceback("none")
 	if err := recover(); err != nil {
+		// hide stacktrace
+		debug.SetTraceback("none")
 		if e, ok := err.(errors.RuntimeError); ok {
 			_, _ = i.stdErr.Write([]byte(e.Error() + "\n"))
 			os.Exit(70)
@@ -57,6 +59,7 @@ func (i *Interpreter) printToStdErr() {
 
 func (i *Interpreter) defineGlobals() {
 	i.Globals.Define("print", Print{})
+	i.Globals.Define("join", Join{})
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
@@ -160,7 +163,7 @@ func (i *Interpreter) VisitCallStmt(stmt tree.CallStmt) interface{} {
 	for _, arg := range stmt.Arguments {
 		arguments = append(arguments, i.Evaluate(arg))
 	}
-	return callee.(Callable).Call(i, stmt.Initialiser, arguments)
+	return callee.(Callable).Call(i, arguments)
 }
 
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
@@ -241,21 +244,6 @@ func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {
 	return stmt.Accept(i)
 }
-
-// func (i *Interpreter) stringify(value interface{}) string {
-// 	if value == nil {
-// 		return "nil"
-// 	}
-// 	return fmt.Sprint(value)
-// }
-
-// func (i *Interpreter) Print(initialiser tree.ListStmt) {
-// 	var values []interface{}
-// 	for _, item := range initialiser.Items {
-// 		values = append(values, i.Execute(item))
-// 	}
-
-// }
 
 func isZero(v interface{}) bool {
 	return reflect.ValueOf(v).IsZero()

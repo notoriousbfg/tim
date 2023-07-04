@@ -46,7 +46,6 @@ func (ls ListStmt) Length() int {
 }
 
 type CallStmt struct {
-	Initialiser  ListStmt
 	Callee       Expr
 	ClosingParen token.Token
 	Arguments    []Expr

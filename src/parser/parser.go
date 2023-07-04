@@ -14,8 +14,9 @@ func New(tokens []token.Token) *Parser {
 }
 
 type Parser struct {
-	Tokens  []token.Token
-	Current int
+	Tokens            []token.Token
+	Current           int
+	PreviousStatement tree.Stmt
 }
 
 func (p *Parser) Parse() []tree.Stmt {
@@ -32,17 +33,15 @@ func (p *Parser) Declaration() tree.Stmt {
 		return p.VarDeclaration(identifier)
 	}
 
+	if p.checkSequence(token.DOT, token.IDENTIFIER) {
+		// advance for dot
+		p.advance()
+
+		return p.Call()
+	}
+
 	if p.match(token.LEFT_PAREN) {
-		list := p.List()
-
-		if p.checkSequence(token.DOT, token.IDENTIFIER) {
-			// advance for dot
-			p.advance()
-
-			return p.Call(list)
-		}
-
-		return list
+		return p.List()
 	}
 
 	return p.Statement()
@@ -62,7 +61,7 @@ func (p *Parser) List() tree.ListStmt {
 		}
 	}
 
-	p.consume(token.RIGHT_PAREN, "expect ')' after list")
+	p.consume(token.RIGHT_PAREN, "expect ')' after expression")
 
 	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) && !p.check(token.DOT) {
 		p.consume(token.SEMICOLON, "expect ';' after list")
@@ -76,7 +75,7 @@ func (p *Parser) List() tree.ListStmt {
 	}
 }
 
-func (p *Parser) Call(list tree.ListStmt) tree.Stmt {
+func (p *Parser) Call() tree.Stmt {
 	// name of function
 	callee := p.Primary()
 
@@ -94,7 +93,6 @@ func (p *Parser) Call(list tree.ListStmt) tree.Stmt {
 	p.expectSemicolon()
 
 	return tree.CallStmt{
-		Initialiser:  list,
 		Callee:       callee,
 		ClosingParen: closingParen,
 		Arguments:    arguments,

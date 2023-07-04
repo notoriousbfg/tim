@@ -52,3 +52,11 @@ I think a callable will have to be a statement, not an expression. I don't think
 I am completely dumbfounded as to how to print statements and expressions. A list is a special kind of statement, whose values (other statements and expressions) we want to print.
 
 The approach I have taken thus far is to create a "PrintVisitor" and then how to handle the printing of each type of statement & expression is handled by the struct itself. However, this is a problem because what I actually want to do is _evaluate_ the value first with the interpreter, then print the values in their own kind of way. But I don't have access to the interpreter in this current implementation.
+
+^^ I think this works now.
+
+I need to figure out how to chain methods. It would mean that the initialiser for a call statement could be another call statement, not a list.
+
+None of that print logic worked. The solution was much simpler.
+
+I really need to write tests. Everything that worked before is now broken.
