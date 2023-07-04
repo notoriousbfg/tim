@@ -97,9 +97,11 @@ func (p *Parser) Call() tree.CallStmt {
 
 	var arguments []tree.Expr
 	for !p.check(token.RIGHT_PAREN) {
-		if !p.check(token.COMMA) {
-			arguments = append(arguments, p.Expression())
+		if p.check(token.COMMA) {
+			p.advance()
 		}
+
+		arguments = append(arguments, p.Expression())
 	}
 
 	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")

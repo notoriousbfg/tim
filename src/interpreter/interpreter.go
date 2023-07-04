@@ -58,6 +58,7 @@ func (i *Interpreter) printToStdErr() {
 func (i *Interpreter) defineGlobals() {
 	i.Globals.Define("print", Print{})
 	i.Globals.Define("join", Join{})
+	i.Globals.Define("range", Range{})
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
@@ -161,7 +162,7 @@ func (i *Interpreter) lookupVariable(name token.Token) interface{} {
 // 	for _, arg := range stmt.Arguments {
 // 		arguments = append(arguments, i.Evaluate(arg))
 // 	}
-// 	return callee.(Callable).Call(i, stmt.Caller, arguments)
+// 	return callee.(Callable).Call(i, , arguments)
 // }
 
 func (i *Interpreter) callFunction(stmt tree.CallStmt, caller interface{}) interface{} {
@@ -223,7 +224,6 @@ func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, 
 			}
 		}
 	}
-
 	i.Environment = previous
 	return returnVal
 }

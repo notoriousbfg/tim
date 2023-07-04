@@ -43,6 +43,32 @@ func (j Join) String() string {
 	return "<native fn>"
 }
 
+type Range struct {
+}
+
+func (r Range) Arity() int {
+	return 0
+}
+
+func (r Range) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
+	if len(arguments) > 2 {
+		panic(errors.NewRuntimeError("maximum of 2 arguments allowed for method 'range'"))
+	}
+	return makeRange(arguments[0].(float64), arguments[1].(float64))
+}
+
+func makeRange(min, max float64) []interface{} {
+	a := make([]interface{}, int(max-min+1))
+	for i := range a {
+		a[i] = min + float64(i)
+	}
+	return a
+}
+
+func (r Range) String() string {
+	return "<native fn>"
+}
+
 func printValue(value interface{}) string {
 	var output string
 	switch t := value.(type) {

@@ -18,7 +18,7 @@ type InterpretedCase struct {
 	StdOut      string
 }
 
-func TestInterpreter(t *testing.T) {
+func TestExpressions(t *testing.T) {
 	cases := map[string]InterpretedCase{
 		"basic expression": {
 			InputString: "(\"hello world\")",

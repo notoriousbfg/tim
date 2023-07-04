@@ -12,7 +12,6 @@ type StmtVisitor interface {
 	VisitExpressionStmt(stmt ExpressionStmt) interface{}
 	VisitVariableStmt(stmt VariableStmt) interface{}
 	VisitListStmt(stmt ListStmt) interface{}
-	// VisitCallStmt(stmt CallStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -52,5 +51,5 @@ type CallStmt struct {
 }
 
 func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
-	return "" // ??
+	return "<not supported>"
 }
