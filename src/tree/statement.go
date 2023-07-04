@@ -33,7 +33,8 @@ func (vs VariableStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 type ListStmt struct {
-	Items []Stmt
+	Items     []Stmt
+	Functions []Stmt
 }
 
 func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {

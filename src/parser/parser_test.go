@@ -9,16 +9,16 @@ import (
 	"tim/tree"
 )
 
-type ExpressionCase struct {
+type StatementCase struct {
 	InputString string
-	Expression  []tree.Stmt
+	Statements  []tree.Stmt
 }
 
 func TestExpressions(t *testing.T) {
-	cases := map[string]ExpressionCase{
+	cases := map[string]StatementCase{
 		"equality: double equal": {
 			InputString: "3 == 3",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
@@ -40,7 +40,7 @@ func TestExpressions(t *testing.T) {
 		},
 		"comparison: greater than": {
 			InputString: "3 > 2",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
@@ -62,7 +62,7 @@ func TestExpressions(t *testing.T) {
 		},
 		"term: addition": {
 			InputString: "2 + 4",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
@@ -84,7 +84,7 @@ func TestExpressions(t *testing.T) {
 		},
 		"factor: multiplication": {
 			InputString: "2 * 4",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
@@ -106,7 +106,7 @@ func TestExpressions(t *testing.T) {
 		},
 		"unary: minus": {
 			InputString: "-4",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Unary{
 						Operator: token.Token{
@@ -125,7 +125,7 @@ func TestExpressions(t *testing.T) {
 		},
 		"primary: identifier": {
 			InputString: "myVariable",
-			Expression: []tree.Stmt{
+			Statements: []tree.Stmt{
 				tree.ExpressionStmt{
 					Expr: tree.Variable{
 						Name: token.Token{
@@ -146,8 +146,173 @@ func TestExpressions(t *testing.T) {
 			l := lexer.New(testcase.InputString)
 			p := parser.New(l.Tokens)
 			parsedExpression := p.Parse()
-			if !reflect.DeepEqual(testcase.Expression, parsedExpression) {
-				t.Fatalf("expressions do not match: expected: %+v, actual: %+v", testcase.Expression, parsedExpression)
+			if !reflect.DeepEqual(testcase.Statements, parsedExpression) {
+				t.Fatalf("expressions do not match: expected: %+v, actual: %+v", testcase.Statements, parsedExpression)
+			}
+		})
+	}
+}
+
+func TestStatements(t *testing.T) {
+	cases := map[string]StatementCase{
+		"list": {
+			InputString: "(1, 2, 3)",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.ExpressionStmt{
+							Expr: tree.Literal{
+								Value: 1.00,
+							},
+						},
+						tree.ExpressionStmt{
+							Expr: tree.Literal{
+								Value: 2.00,
+							},
+						},
+						tree.ExpressionStmt{
+							Expr: tree.Literal{
+								Value: 3.00,
+							},
+						},
+					},
+				},
+			},
+		},
+		"variable declaration": {
+			InputString: "(myVariable: \"testvariable\")",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.VariableStmt{
+							Name: token.Token{
+								Type:     token.IDENTIFIER,
+								Text:     "myVariable",
+								Literal:  "myVariable",
+								Position: 1,
+								Line:     1,
+							},
+							Initializer: tree.ExpressionStmt{
+								Expr: tree.Literal{
+									Value: "testvariable",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"list function": {
+			InputString: "(\"hello\").print()",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.ExpressionStmt{
+							Expr: tree.Literal{
+								Value: "hello",
+							},
+						},
+					},
+					Functions: []tree.Stmt{
+						tree.CallStmt{
+							Callee: tree.Variable{
+								Name: token.Token{
+									Type:     token.IDENTIFIER,
+									Text:     "print",
+									Literal:  "print",
+									Position: 10,
+									Line:     1,
+								},
+							},
+							ClosingParen: token.Token{
+								Type:     token.RIGHT_PAREN,
+								Text:     ")",
+								Literal:  ")",
+								Position: 16,
+								Line:     1,
+							},
+						},
+					},
+				},
+			},
+		},
+		"nested list function": {
+			InputString: "((\"hello\", \"tim\").join(\",\")).print()",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.ListStmt{
+							Items: []tree.Stmt{
+								tree.ExpressionStmt{
+									Expr: tree.Literal{
+										Value: "hello",
+									},
+								},
+								tree.ExpressionStmt{
+									Expr: tree.Literal{
+										Value: "tim",
+									},
+								},
+							},
+							Functions: []tree.Stmt{
+								tree.CallStmt{
+									Callee: tree.Variable{
+										Name: token.Token{
+											Type:     token.IDENTIFIER,
+											Text:     "join",
+											Literal:  "join",
+											Position: 18,
+											Line:     1,
+										},
+									},
+									ClosingParen: token.Token{
+										Type:     token.RIGHT_PAREN,
+										Text:     ")",
+										Literal:  ")",
+										Position: 26,
+										Line:     1,
+									},
+									Arguments: []tree.Expr{
+										tree.Literal{
+											Value: ",",
+										},
+									},
+								},
+							},
+						},
+					},
+					Functions: []tree.Stmt{
+						tree.CallStmt{
+							Callee: tree.Variable{
+								Name: token.Token{
+									Type:     token.IDENTIFIER,
+									Text:     "print",
+									Literal:  "print",
+									Position: 29,
+									Line:     1,
+								},
+							},
+							ClosingParen: token.Token{
+								Type:     token.RIGHT_PAREN,
+								Text:     ")",
+								Literal:  ")",
+								Position: 35,
+								Line:     1,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for name, testcase := range cases {
+		t.Run(name, func(t *testing.T) {
+			l := lexer.New(testcase.InputString)
+			p := parser.New(l.Tokens)
+			parsedExpression := p.Parse()
+			if !reflect.DeepEqual(testcase.Statements, parsedExpression) {
+				t.Fatalf("expressions do not match: expected: %+v, actual: %+v", testcase.Statements, parsedExpression)
 			}
 		})
 	}

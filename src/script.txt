@@ -1,1 +1,1 @@
-(("hello", "tim").join(","))
+(("hello", "tim").join(",")).print()

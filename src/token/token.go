@@ -40,13 +40,6 @@ const (
 	FALSE
 	NIL
 
-	// list functions
-	// CALL
-	// EACH
-	// FILTER
-	// MAP
-	// PRINT
-
 	NEWLINE
 	EOF
 )

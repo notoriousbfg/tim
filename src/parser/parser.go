@@ -38,11 +38,11 @@ func (p *Parser) Declaration() tree.Stmt {
 		return p.VarDeclaration(identifier)
 	}
 
-	if p.checkSequence(token.DOT, token.IDENTIFIER) {
-		// advance for dot
-		p.advance()
-		return p.Call()
-	}
+	// if p.checkSequence(token.DOT, token.IDENTIFIER) {
+	// 	// advance for dot
+	// 	p.advance()
+	// 	return p.Call()
+	// }
 
 	if p.match(token.LEFT_PAREN) {
 		return p.List()
@@ -58,7 +58,6 @@ func (p *Parser) List() tree.ListStmt {
 
 	// first item in list
 	// item := p.Declaration()
-
 	// items = append(items, item)
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
@@ -71,6 +70,12 @@ func (p *Parser) List() tree.ListStmt {
 
 	p.consume(token.RIGHT_PAREN, "expect ')' after expression")
 
+	var listFunctions []tree.Stmt
+	for p.checkSequence(token.DOT, token.IDENTIFIER) {
+		p.advance()
+		listFunctions = append(listFunctions, p.Call())
+	}
+
 	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) && !p.check(token.DOT) {
 		p.consume(token.SEMICOLON, "expect ';' after list")
 	}
@@ -78,7 +83,8 @@ func (p *Parser) List() tree.ListStmt {
 	p.expectSemicolon()
 
 	return tree.ListStmt{
-		Items: items,
+		Items:     items,
+		Functions: listFunctions,
 	}
 }
 
@@ -97,7 +103,7 @@ func (p *Parser) Call() tree.Stmt {
 
 	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
 
-	p.expectSemicolon()
+	// p.expectSemicolon()
 
 	return tree.CallStmt{
 		Callee:       callee,
@@ -138,7 +144,7 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
 	initializer := p.Declaration()
 
-	return &tree.VariableStmt{
+	return tree.VariableStmt{
 		Name:        identifier,
 		Initializer: initializer,
 	}
