@@ -50,7 +50,7 @@ func (p *Parser) Declaration() tree.Stmt {
 	// todo: error handling
 }
 
-func (p *Parser) List() tree.Stmt {
+func (p *Parser) List() tree.ListStmt {
 	var items []tree.Stmt
 
 	// first item in list
@@ -76,7 +76,7 @@ func (p *Parser) List() tree.Stmt {
 	}
 }
 
-func (p *Parser) Call(list tree.Stmt) tree.Stmt {
+func (p *Parser) Call(list tree.ListStmt) tree.Stmt {
 	// name of function
 	callee := p.Primary()
 

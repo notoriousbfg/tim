@@ -135,7 +135,9 @@ func (i *Interpreter) VisitVariableExpr(expr tree.Variable) interface{} {
 func (i *Interpreter) lookupVariable(name token.Token) interface{} {
 	global, err := i.Globals.Get(name)
 	if err != nil {
-		panic(err)
+		if _, ok := err.(*errors.RuntimeError); !ok {
+			panic(err)
+		}
 	}
 	if global != nil {
 		return global
@@ -249,6 +251,14 @@ func (i *Interpreter) execute(stmt tree.Stmt) interface{} {
 // 		return "nil"
 // 	}
 // 	return fmt.Sprint(value)
+// }
+
+// func (i *Interpreter) Print(initialiser tree.ListStmt) {
+// 	var values []interface{}
+// 	for _, item := range initialiser.Items {
+// 		values = append(values, i.execute(item))
+// 	}
+
 // }
 
 func isZero(v interface{}) bool {

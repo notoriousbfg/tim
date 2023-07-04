@@ -2,19 +2,41 @@ package tree
 
 import "fmt"
 
-func Print(expr Expr) string {
-	printer := &Printer{}
-	return printer.Print(expr)
+type PrintVisitor interface {
+	StmtVisitor
+	ExprVisitor
 }
 
+func Print(stmt Stmt) {
+	printer := &Printer{}
+	printer.Print(stmt)
+}
+
+// should implement every method in PrintVisitor
 type Printer struct{}
 
+func (p *Printer) VisitExpressionStmt(stmt ExpressionStmt) interface{} {
+	return stmt.Expr.Accept(p)
+}
+
+func (p *Printer) VisitVariableStmt(stmt VariableStmt) interface{} {
+	return "VisitVariableStmt"
+}
+
+func (p *Printer) VisitListStmt(stmt ListStmt) interface{} {
+	return "VisitListStmt"
+}
+
+func (p *Printer) VisitCallStmt(stmt CallStmt) interface{} {
+	return "VisitCallStmt"
+}
+
 func (p *Printer) VisitBinaryExpr(expr Binary) interface{} {
-	return p.parenthesise(expr.Operator.Text, expr.Left, expr.Right)
+	return "VisitBinaryExpr"
 }
 
 func (p *Printer) VisitGroupingExpr(expr Grouping) interface{} {
-	return p.parenthesise("group", expr.Expression)
+	return "VisitGroupingExpr"
 }
 
 func (p *Printer) VisitLiteralExpr(expr Literal) interface{} {
@@ -26,25 +48,23 @@ func (p *Printer) VisitLiteralExpr(expr Literal) interface{} {
 }
 
 func (p *Printer) VisitUnaryExpr(expr Unary) interface{} {
-	return p.parenthesise(expr.Operator.Text, expr.Right)
+	return "VisitUnaryExpr"
 }
 
 func (p *Printer) VisitVariableExpr(expr Variable) interface{} {
-	panic("not implemented")
-	return nil
+	return expr.Name
 }
 
-func (p *Printer) Print(expr Expr) string {
-	expression := expr.Accept(p)
-	return expression.(string)
+func (p *Printer) Print(stmt Stmt) {
+	fmt.Println(stmt.Print(p))
 }
 
-func (p *Printer) parenthesise(name string, exprs ...Expr) string {
-	var str string
-	str += "(" + name
-	for _, expr := range exprs {
-		str += " " + p.Print(expr)
-	}
-	str += ")"
-	return str
-}
+// func (p *Printer) parenthesise(name string, stmts ...Stmt) string {
+// 	var str string
+// 	str += "(" + name
+// 	for _, stmt := range stmts {
+// 		str += " " + p.Print(stmt)
+// 	}
+// 	str += ")"
+// 	return str
+// }

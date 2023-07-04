@@ -3,5 +3,5 @@ package interpreter
 import "tim/tree"
 
 type Callable interface {
-	Call(interpreter *Interpreter, initialiser tree.Stmt, arguments []interface{}) interface{}
+	Call(interpreter *Interpreter, initialiser tree.ListStmt, arguments []interface{}) interface{}
 }
