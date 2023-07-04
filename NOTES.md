@@ -59,4 +59,4 @@ I need to figure out how to chain methods. It would mean that the initialiser fo
 
 None of that print logic worked. The solution was much simpler.
 
-I really need to write tests. Everything that worked before is now broken.
+I really need to write tests. Everything that worked before is now broken (which I know is insane.)

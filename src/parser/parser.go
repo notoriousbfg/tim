@@ -28,8 +28,13 @@ func (p *Parser) Parse() []tree.Stmt {
 }
 
 func (p *Parser) Declaration() tree.Stmt {
-	if p.matchSequence(token.IDENTIFIER, token.COLON) {
+	if p.checkSequence(token.IDENTIFIER, token.COLON) {
 		identifier := p.peek()
+
+		// advance for identifier and colon
+		p.advance()
+		p.advance()
+
 		return p.VarDeclaration(identifier)
 	}
 
