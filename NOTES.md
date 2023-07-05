@@ -60,3 +60,9 @@ I need to figure out how to chain methods. It would mean that the initialiser fo
 None of that print logic worked. The solution was much simpler.
 
 I really need to write tests. Everything that worked before is now broken (which I know is insane.)
+
+### 05/07
+
+In the parser, how might I distinguish between a list and function args? e.g. (1, 2) Could I say that a function's args are a list? They are parsed differently. Perhaps now is the time to make args a ListStmt? I had thought of args as simple expressions, not statements like lists.
+
+Perhaps the way we parse function args and lists should be similar. Effectively a while (for) loop with a kind of condition. The presence of the => determines whether it is a function or a list and anything else should trickle through the layers. What's the collective term for list and function args? Iterable?

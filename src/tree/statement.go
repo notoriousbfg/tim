@@ -12,6 +12,7 @@ type StmtVisitor interface {
 	VisitExpressionStmt(stmt ExpressionStmt) interface{}
 	VisitVariableStmt(stmt VariableStmt) interface{}
 	VisitListStmt(stmt ListStmt) interface{}
+	VisitFunctionStmt(stmt FuncStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -40,16 +41,21 @@ func (ls ListStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitListStmt(ls)
 }
 
-func (ls ListStmt) Length() int {
-	return len(ls.Items)
-}
-
 type CallStmt struct {
 	Callee       Expr
 	ClosingParen token.Token
 	Arguments    []Expr
 }
 
+// i don't know what to do with this
 func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
 	return "<not supported>"
+}
+
+type FuncStmt struct {
+	Arguments []Stmt
+}
+
+func (fs FuncStmt) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitFunctionStmt(fs)
 }

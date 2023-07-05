@@ -187,6 +187,10 @@ func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 	return nil
 }
 
+func (i *Interpreter) VisitFunctionStmt(stmt tree.FuncStmt) interface{} {
+	return nil
+}
+
 func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 	i.Level++
 	defer func() {

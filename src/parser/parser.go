@@ -28,37 +28,32 @@ func (p *Parser) Parse() []tree.Stmt {
 }
 
 func (p *Parser) Declaration() tree.Stmt {
+	if p.match(token.LEFT_PAREN) {
+		return p.Iterable()
+	}
+
 	if p.checkSequence(token.IDENTIFIER, token.COLON) {
 		identifier := p.peek()
 
 		// advance for identifier and colon
-		p.advance()
-		p.advance()
+		// p.advance()
+		// p.advance()
+		p.advanceBy(2)
 
 		return p.VarDeclaration(identifier)
 	}
 
-	// if p.checkSequence(token.DOT, token.IDENTIFIER) {
-	// 	// advance for dot
-	// 	p.advance()
-	// 	return p.Call()
+	// if p.checkSequence(token.DOUBLE_ARROW, token.RIGHT_BRACE) {
+	// 	return p.FuncDeclaration()
 	// }
-
-	if p.match(token.LEFT_PAREN) {
-		return p.List()
-	}
 
 	return p.Statement()
 
 	// todo: error handling
 }
 
-func (p *Parser) List() tree.ListStmt {
+func (p *Parser) Iterable() tree.Stmt {
 	var items []tree.Stmt
-
-	// first item in list
-	// item := p.Declaration()
-	// items = append(items, item)
 
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
 		if p.check(token.COMMA) {
@@ -68,8 +63,16 @@ func (p *Parser) List() tree.ListStmt {
 		items = append(items, p.Declaration())
 	}
 
-	p.consume(token.RIGHT_PAREN, "expect ')' after expression")
+	p.consume(token.RIGHT_PAREN, "expected ')' after expression")
 
+	// if the next two chars are double arrow and right parent, this is a func declaration
+	if p.checkSequence(token.DOUBLE_ARROW, token.LEFT_BRACE) {
+		p.advanceBy(2)
+
+		return p.FunctionDeclaration(items)
+	}
+
+	// otherwise this is a list
 	var listFunctions []tree.CallStmt
 	for p.checkSequence(token.DOT, token.IDENTIFIER) {
 		p.advance()
@@ -78,7 +81,7 @@ func (p *Parser) List() tree.ListStmt {
 	}
 
 	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) && !p.check(token.DOT) {
-		p.consume(token.SEMICOLON, "expect ';' after list")
+		p.consume(token.SEMICOLON, "expected ')'")
 	}
 
 	p.expectSemicolon()
@@ -104,7 +107,7 @@ func (p *Parser) Call() tree.CallStmt {
 		arguments = append(arguments, p.Expression())
 	}
 
-	closingParen := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
+	closingParen := p.consume(token.RIGHT_PAREN, "expected ')'")
 
 	return tree.CallStmt{
 		Callee:       callee,
@@ -112,21 +115,6 @@ func (p *Parser) Call() tree.CallStmt {
 		Arguments:    arguments,
 	}
 }
-
-// func (p *Parser) finishCall(callee tree.Expr) tree.Expr {
-// 	var arguments []tree.Expr
-// 	if !p.check(token.RIGHT_PAREN) {
-// 		// for p.match(token.COMMA) {
-// 		arguments = append(arguments, p.Expression())
-// 		// }
-// 	}
-// 	paren := p.consume(token.RIGHT_PAREN, "expect ')' after arguments")
-// 	return tree.Call{
-// 		Callee:    callee,
-// 		Paren:     paren,
-// 		Arguments: arguments,
-// 	}
-// }
 
 func (p *Parser) Statement() tree.Stmt {
 	return p.ExpressionStatement()
@@ -141,13 +129,20 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 	return exprStmt
 }
 
-// todo: allow a variable to be another list
 func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
 	initializer := p.Declaration()
 
 	return tree.VariableStmt{
 		Name:        identifier,
 		Initializer: initializer,
+	}
+}
+
+func (p *Parser) FunctionDeclaration(arguments []tree.Stmt) tree.Stmt {
+	// initializer := p.Declaration()
+
+	return tree.FuncStmt{
+		Arguments: arguments,
 	}
 }
 
@@ -250,22 +245,22 @@ func (p *Parser) match(tokenTypes ...token.TokenType) bool {
 	return false
 }
 
-func (p *Parser) matchSequence(tokenTypes ...token.TokenType) bool {
-	if p.isAtEnd() {
-		return false
-	}
-	startIndex := p.Current
-	for index, tokenType := range tokenTypes {
-		thisToken := p.peekAt(startIndex + index)
-		if thisToken.Type != tokenType {
-			return false
-		}
-	}
-	for range tokenTypes {
-		p.advance()
-	}
-	return true
-}
+// func (p *Parser) matchSequence(tokenTypes ...token.TokenType) bool {
+// 	if p.isAtEnd() {
+// 		return false
+// 	}
+// 	startIndex := p.Current
+// 	for index, tokenType := range tokenTypes {
+// 		thisToken := p.peekAt(startIndex + index)
+// 		if thisToken.Type != tokenType {
+// 			return false
+// 		}
+// 	}
+// 	for range tokenTypes {
+// 		p.advance()
+// 	}
+// 	return true
+// }
 
 // check that the current token is of a type
 func (p *Parser) check(tokenType token.TokenType) bool {
@@ -292,6 +287,15 @@ func (p *Parser) checkSequence(tokenTypes ...token.TokenType) bool {
 func (p *Parser) advance() token.Token {
 	if !p.isAtEnd() {
 		p.Current++
+	}
+	return p.previous()
+}
+
+func (p *Parser) advanceBy(count int) token.Token {
+	for i := 0; i < count; i++ {
+		if !p.isAtEnd() {
+			p.Current++
+		}
 	}
 	return p.previous()
 }

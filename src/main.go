@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"tim/interpreter"
 	"tim/lexer"
 	"tim/parser"
 )
 
 func main() {
-	b, err := os.ReadFile("./script.txt")
+	b, err := os.ReadFile("./basic.tim")
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -18,7 +17,6 @@ func main() {
 	l := lexer.New(input)
 
 	// fmt.Printf("%+v", l.Tokens)
-
 	// fmt.Println()
 
 	p := parser.New(l.Tokens)
@@ -38,5 +36,5 @@ func main() {
 	// json, _ := json.Marshal(interpreter.Interpret(parsed, true))
 	// fmt.Println(string(json))
 
-	interpreter.Interpret(parsed, true)
+	// interpreter.Interpret(parsed, true)
 }
