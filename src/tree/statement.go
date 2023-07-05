@@ -53,6 +53,7 @@ func (cs CallStmt) Accept(visitor StmtVisitor) interface{} {
 }
 
 type FuncStmt struct {
+	Body      []Stmt
 	Arguments []Stmt
 }
 

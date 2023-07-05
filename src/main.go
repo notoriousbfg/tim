@@ -16,8 +16,8 @@ func main() {
 
 	l := lexer.New(input)
 
-	// fmt.Printf("%+v", l.Tokens)
-	// fmt.Println()
+	fmt.Printf("%+v", l.Tokens)
+	fmt.Println()
 
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()

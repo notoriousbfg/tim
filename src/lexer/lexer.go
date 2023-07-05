@@ -119,8 +119,8 @@ func (l *Lexer) ReadChar() error {
 		l.matchString()
 		canInsertSemi = true
 	case "\n":
-		canInsertSemi = false
-		l.AddToken(token.SEMICOLON, ";", "\\n")
+		// canInsertSemi = false
+		// l.AddToken(token.SEMICOLON, ";", "\\n")
 		l.Line++
 	case " ", "\r", "\t":
 		break

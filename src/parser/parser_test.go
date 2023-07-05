@@ -304,6 +304,104 @@ func TestStatements(t *testing.T) {
 				},
 			},
 		},
+		"user defined function": {
+			InputString: "(helloName: (name) => { (\"hello\", name).join(\" \").print() })",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.VariableStmt{
+							Name: token.Token{
+								Type:     token.IDENTIFIER,
+								Text:     "helloName",
+								Literal:  "helloName",
+								Position: 1,
+								Line:     1,
+							},
+							Initializer: tree.FuncStmt{
+								Arguments: []tree.Stmt{
+									tree.ExpressionStmt{
+										Expr: tree.Variable{
+											Name: token.Token{
+												Type:     token.IDENTIFIER,
+												Text:     "name",
+												Literal:  "name",
+												Position: 12,
+												Line:     1,
+											},
+										},
+									},
+								},
+								Body: []tree.Stmt{
+									tree.ListStmt{
+										Items: []tree.Stmt{
+											tree.ExpressionStmt{
+												Expr: tree.Literal{
+													Value: "hello",
+												},
+											},
+											tree.ExpressionStmt{
+												Expr: tree.Variable{
+													Name: token.Token{
+														Type:     token.IDENTIFIER,
+														Text:     "name",
+														Literal:  "name",
+														Position: 28,
+														Line:     1,
+													},
+												},
+											},
+										},
+										Functions: []tree.CallStmt{
+											{
+												Callee: tree.Variable{
+													Name: token.Token{
+														Type:     token.IDENTIFIER,
+														Text:     "join",
+														Literal:  "join",
+														Position: 34,
+														Line:     1,
+													},
+												},
+												ClosingParen: token.Token{
+													Type:     token.RIGHT_PAREN,
+													Text:     ")",
+													Literal:  ")",
+													Position: 40,
+													Line:     1,
+												},
+												Arguments: []tree.Expr{
+													tree.Literal{
+														Value: " ",
+													},
+												},
+											},
+											{
+												Callee: tree.Variable{
+													Name: token.Token{
+														Type:     token.IDENTIFIER,
+														Text:     "print",
+														Literal:  "print",
+														Position: 42,
+														Line:     1,
+													},
+												},
+												ClosingParen: token.Token{
+													Type:     token.RIGHT_PAREN,
+													Text:     ")",
+													Literal:  ")",
+													Position: 48,
+													Line:     1,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for name, testcase := range cases {

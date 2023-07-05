@@ -1,5 +1,5 @@
-(helloName: (name) => {
-    ("hello", name).join(" ").print()
-})
-
-("tim").call(helloName)
+(
+    helloName: (name) => {
+        ("hello", name).join(" ").print()
+    }
+)

@@ -66,6 +66,7 @@ func (p *Parser) Iterable() tree.Stmt {
 	p.consume(token.RIGHT_PAREN, "expected ')' after expression")
 
 	// if the next two chars are double arrow and right parent, this is a func declaration
+	// items becomes the function args
 	if p.checkSequence(token.DOUBLE_ARROW, token.LEFT_BRACE) {
 		p.advanceBy(2)
 
@@ -80,7 +81,7 @@ func (p *Parser) Iterable() tree.Stmt {
 		listFunctions = append(listFunctions, p.Call())
 	}
 
-	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) && !p.check(token.DOT) {
+	if !p.check(token.RIGHT_PAREN) && !p.check(token.COMMA) && !p.check(token.DOT) && !p.check(token.RIGHT_BRACE) {
 		p.consume(token.SEMICOLON, "expected ')'")
 	}
 
@@ -116,6 +117,36 @@ func (p *Parser) Call() tree.CallStmt {
 	}
 }
 
+func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
+	initializer := p.Declaration()
+
+	return tree.VariableStmt{
+		Name:        identifier,
+		Initializer: initializer,
+	}
+}
+
+func (p *Parser) FunctionDeclaration(arguments []tree.Stmt) tree.Stmt {
+	body := p.Block()
+
+	return tree.FuncStmt{
+		Body:      body,
+		Arguments: arguments,
+	}
+}
+
+func (p *Parser) Block() []tree.Stmt {
+	statements := make([]tree.Stmt, 0)
+
+	for !p.check(token.RIGHT_BRACE) && !p.isAtEnd() {
+		statements = append(statements, p.Declaration())
+	}
+
+	p.consume(token.RIGHT_BRACE, "expect '}' after block")
+
+	return statements
+}
+
 func (p *Parser) Statement() tree.Stmt {
 	return p.ExpressionStatement()
 }
@@ -127,23 +158,6 @@ func (p *Parser) ExpressionStatement() tree.Stmt {
 		Expr: value,
 	}
 	return exprStmt
-}
-
-func (p *Parser) VarDeclaration(identifier token.Token) tree.Stmt {
-	initializer := p.Declaration()
-
-	return tree.VariableStmt{
-		Name:        identifier,
-		Initializer: initializer,
-	}
-}
-
-func (p *Parser) FunctionDeclaration(arguments []tree.Stmt) tree.Stmt {
-	// initializer := p.Declaration()
-
-	return tree.FuncStmt{
-		Arguments: arguments,
-	}
 }
 
 func (p *Parser) Expression() tree.Expr {
