@@ -22,19 +22,19 @@ func TestExpressions(t *testing.T) {
 	cases := map[string]InterpretedCase{
 		"basic expression": {
 			InputString: "(\"hello world\")",
-			Expected:    []interface{}{"hello world"},
+			Expected:    []interface{}{[]interface{}{"hello world"}},
 		},
 		"basic addition: 2 integers": {
 			InputString: "(200 + 200)",
-			Expected:    []interface{}{400},
+			Expected:    []interface{}{[]interface{}{400}},
 		},
 		"basic addition: 1 integer, 1 float": {
 			InputString: "(200 + 200.45)",
-			Expected:    []interface{}{400.45},
+			Expected:    []interface{}{[]interface{}{400.45}},
 		},
 		"basic subtraction: 2 integers": {
 			InputString: "(300 - 200)",
-			Expected:    []interface{}{100},
+			Expected:    []interface{}{[]interface{}{100}},
 		},
 		"subtraction: string and number": {
 			InputString: "(\"hello\" - 13)",
@@ -42,11 +42,11 @@ func TestExpressions(t *testing.T) {
 		},
 		"concatenation: 2 strings": {
 			InputString: "(\"hello \" + \"world\")",
-			Expected:    []interface{}{"hello world"},
+			Expected:    []interface{}{[]interface{}{"hello world"}},
 		},
 		"concatenation: 1 string and 1 number": {
 			InputString: "(\"hello \" + 123)",
-			Expected:    []interface{}{"hello 123"},
+			Expected:    []interface{}{[]interface{}{"hello 123"}},
 		},
 		"division by zero panics": {
 			InputString: "(10 / 0)",
