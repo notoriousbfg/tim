@@ -72,12 +72,12 @@ func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 		i.checkNumberOperands(left, right)
 		returnValue = left.(float64) - right.(float64)
 	case token.PLUS:
-		// if i.checkStringOperand(left) || i.checkStringOperand(right) {
-		// 	returnValue = fmt.Sprint(left, right)
-		// } else {
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) + right.(float64)
-		// }
+		if i.checkStringOperand(left) || i.checkStringOperand(right) {
+			returnValue = fmt.Sprint(left, right)
+		} else {
+			i.checkNumberOperands(left, right)
+			returnValue = left.(float64) + right.(float64)
+		}
 	case token.SLASH:
 		i.checkNumberOperands(left, right)
 		if isZero(left) || isZero(right) {
@@ -254,12 +254,12 @@ func (i *Interpreter) Evaluate(expr tree.Expr) interface{} {
 	return expr.Accept(i)
 }
 
-// func (i *Interpreter) checkStringOperand(val interface{}) bool {
-// 	if _, ok := val.(string); ok {
-// 		return true
-// 	}
-// 	return false
-// }
+func (i *Interpreter) checkStringOperand(val interface{}) bool {
+	if _, ok := val.(string); ok {
+		return true
+	}
+	return false
+}
 
 func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
 	if _, ok := left.(float64); ok {
