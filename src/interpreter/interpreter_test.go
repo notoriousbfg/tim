@@ -86,6 +86,29 @@ func TestExpressions(t *testing.T) {
 	}
 }
 
+func TestStatements(t *testing.T) {
+	cases := map[string]InterpretedCase{
+		"function declaration": {},
+	}
+
+	for name, testcase := range cases {
+		t.Run(name, func(t *testing.T) {
+			l := lexer.New(testcase.InputString)
+			p := parser.New(l.Tokens)
+			parsed := p.Parse()
+
+			if testcase.Err != nil {
+				assert.PanicsWithError(t, testcase.Err.Error(), func() {
+					interpreter.Interpret(parsed, false)
+				}, "did not panic with '%s'", testcase.Err.Error())
+			} else {
+				actual := interpreter.Interpret(parsed, true)
+				assert.Equal(t, testcase.Expected, actual, "expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))
+			}
+		})
+	}
+}
+
 // func captureStdOut(f func()) string {
 // 	old := os.Stdout // keep backup of the real stdout
 // 	r, w, _ := os.Pipe()
