@@ -66,3 +66,18 @@ I really need to write tests. Everything that worked before is now broken (which
 In the parser, how might I distinguish between a list and function args? e.g. (1, 2) Could I say that a function's args are a list? They are parsed differently. Perhaps now is the time to make args a ListStmt? I had thought of args as simple expressions, not statements like lists.
 
 Perhaps the way we parse function args and lists should be similar. Effectively a while (for) loop with a kind of condition. The presence of the => determines whether it is a function or a list and anything else should trickle through the layers. What's the collective term for list and function args? Iterable?
+
+## 07/07
+
+How should variables be printed? For example:
+
+(myVar: "hello", "world")
+
+and
+
+(helloWorld: (name) => >> "hello" + name, helloWorld)
+
+I'm thinking:
+- If the variable is an expression statement (i.e it has a primitive value) print the value.
+- If it's a function, print "<function>". This seems a bit sucky though! PHP for example prints "Closure Object ()"
+    - Would "function" be a usable type that one could filter out of a list? Or considered a null value.
