@@ -13,10 +13,10 @@ treesAndColours.get(0).get(0) // 'Fir'
 
 // function
 (helloWorld: (name) => {
-    return ("hello ", name).join()
+    >> ("hello ", name).join()
 })
 // lambda func
-(helloWorld: (name) => "Hello " . name)
+(helloWorld: (name) => >> "Hello " . name)
 (helloNames: (...names).each(helloWorld))
 
 // no args

@@ -28,6 +28,7 @@ const (
 	LESS_EQUAL
 	INCREMENT // ++
 	DECREMENT // --
+	RETURN    // >>
 
 	// literals
 	IDENTIFIER
@@ -35,7 +36,6 @@ const (
 	NUMBER
 
 	// keywords
-	RETURN
 	TRUE
 	FALSE
 	NIL
@@ -86,28 +86,18 @@ func (tt TokenType) String() string {
 		return "INCREMENT"
 	case DECREMENT:
 		return "DECREMENT"
+	case RETURN:
+		return "RETURN"
 	case STRING:
 		return "STRING"
 	case NUMBER:
 		return "NUMBER"
 	case IDENTIFIER:
 		return "IDENTIFIER"
-	case RETURN:
-		return "RETURN"
 	case TRUE:
 		return "TRUE"
 	case FALSE:
 		return "FALSE"
-	// case CALL:
-	// 	return "CALL"
-	// case EACH:
-	// 	return "EACH"
-	// case FILTER:
-	// 	return "FILTER"
-	// case MAP:
-	// 	return "MAP"
-	// case PRINT:
-	// 	return "PRINT"
 	case NEWLINE:
 		return "NEWLINE"
 	case EOF:
@@ -143,10 +133,9 @@ func IsListFunction(name string) bool {
 
 func Keywords() map[string]TokenType {
 	return map[string]TokenType{
-		"return": RETURN,
-		"true":   TRUE,
-		"false":  FALSE,
-		"nil":    NIL,
+		"true":  TRUE,
+		"false": FALSE,
+		"nil":   NIL,
 	}
 }
 

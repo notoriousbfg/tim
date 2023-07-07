@@ -110,6 +110,8 @@ func (l *Lexer) ReadChar() error {
 	case ">":
 		if l.matchNext("=") {
 			l.AddToken(token.GREATER_EQUAL, ">=", ">=")
+		} else if l.matchNext(">") {
+			l.AddToken(token.RETURN, ">>", ">>")
 		} else {
 			l.AddToken(token.GREATER, char, char)
 		}

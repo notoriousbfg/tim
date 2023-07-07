@@ -88,7 +88,9 @@ func TestExpressions(t *testing.T) {
 
 func TestStatements(t *testing.T) {
 	cases := map[string]InterpretedCase{
-		"function declaration": {},
+		"function declaration": {
+			InputString: "",
+		},
 	}
 
 	for name, testcase := range cases {
