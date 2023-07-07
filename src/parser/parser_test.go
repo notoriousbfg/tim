@@ -402,6 +402,71 @@ func TestStatements(t *testing.T) {
 				},
 			},
 		},
+		"user defined function with return statement": {
+			InputString: "(helloName: (name) => { >> \"hello\" + name })",
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.VariableStmt{
+							Name: token.Token{
+								Type:     token.IDENTIFIER,
+								Text:     "helloName",
+								Literal:  "helloName",
+								Position: 1,
+								Line:     1,
+							},
+							Initializer: tree.FuncStmt{
+								Arguments: []tree.Stmt{
+									tree.ExpressionStmt{
+										Expr: tree.Variable{
+											Name: token.Token{
+												Type:     token.IDENTIFIER,
+												Text:     "name",
+												Literal:  "name",
+												Position: 13,
+												Line:     1,
+											},
+										},
+									},
+								},
+								Body: []tree.Stmt{
+									tree.ReturnStmt{
+										Token: token.Token{
+											Type:     token.RETURN,
+											Text:     ">>",
+											Literal:  ">>",
+											Position: 24,
+											Line:     1,
+										},
+										Value: tree.ExpressionStmt{
+											Expr: tree.Binary{
+												Left: tree.Literal{Value: "hello"},
+												Operator: token.Token{
+													Type:     token.PLUS,
+													Text:     "+",
+													Literal:  "+",
+													Position: 35,
+													Line:     1,
+												},
+												Right: tree.Variable{
+													Name: token.Token{
+														Type:     token.IDENTIFIER,
+														Text:     "name",
+														Literal:  "name",
+														Position: 37,
+														Line:     1,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for name, testcase := range cases {

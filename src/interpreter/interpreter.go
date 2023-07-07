@@ -174,6 +174,16 @@ func (i *Interpreter) callFunction(stmt tree.CallStmt, caller interface{}) inter
 	return callee.(Callable).Call(i, caller, arguments)
 }
 
+func (i *Interpreter) VisitReturnStmt(stmt tree.ReturnStmt) interface{} {
+	var value interface{}
+	if stmt.Value != nil {
+		value = i.Execute(stmt.Value)
+	}
+	return Return{
+		Value: value,
+	}
+}
+
 func (i *Interpreter) VisitExpressionStmt(stmt tree.ExpressionStmt) interface{} {
 	return i.Evaluate(stmt.Expr)
 }

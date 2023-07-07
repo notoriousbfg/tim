@@ -13,6 +13,7 @@ type StmtVisitor interface {
 	VisitVariableStmt(stmt VariableStmt) interface{}
 	VisitListStmt(stmt ListStmt) interface{}
 	VisitFunctionStmt(stmt FuncStmt) interface{}
+	VisitReturnStmt(stmt ReturnStmt) interface{}
 }
 
 type ExpressionStmt struct {
@@ -59,4 +60,13 @@ type FuncStmt struct {
 
 func (fs FuncStmt) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitFunctionStmt(fs)
+}
+
+type ReturnStmt struct {
+	Token token.Token
+	Value Stmt
+}
+
+func (rs ReturnStmt) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitReturnStmt(rs)
 }

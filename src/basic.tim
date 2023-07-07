@@ -1,8 +1,6 @@
 (
     helloName: (name) => {
         >> ("hello", name).join(" ")
-    },
-    ("tim").call(helloName),
-    ("james", "george).each(helloName)
+    }
 )
 

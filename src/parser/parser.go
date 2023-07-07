@@ -148,7 +148,27 @@ func (p *Parser) Block() []tree.Stmt {
 }
 
 func (p *Parser) Statement() tree.Stmt {
+	if p.match(token.RETURN) {
+		return p.ReturnStatement()
+	}
+
 	return p.ExpressionStatement()
+}
+
+func (p *Parser) ReturnStatement() tree.Stmt {
+	returnToken := p.previous()
+
+	var value tree.Stmt
+	if !p.check(token.SEMICOLON) {
+		value = p.Declaration()
+	}
+
+	p.expectSemicolon()
+
+	return tree.ReturnStmt{
+		Token: returnToken,
+		Value: value,
+	}
 }
 
 func (p *Parser) ExpressionStatement() tree.Stmt {
