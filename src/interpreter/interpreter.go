@@ -59,6 +59,7 @@ func (i *Interpreter) defineGlobals() {
 	i.Globals.Define("print", Print{})
 	i.Globals.Define("join", Join{})
 	i.Globals.Define("range", Range{})
+	i.Globals.Define("get", Get{})
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {

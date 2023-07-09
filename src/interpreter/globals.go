@@ -57,6 +57,34 @@ func (r Range) Call(i *Interpreter, caller interface{}, arguments []interface{})
 	return makeRange(arguments[0].(float64), arguments[1].(float64))
 }
 
+type Get struct {
+}
+
+func (g Get) Arity() int {
+	return 0
+}
+
+func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
+	if len(arguments) > 1 {
+		panic(errors.NewRuntimeError("maximum of 1 argument allowed for method 'get'"))
+	}
+
+	selector := arguments[0]
+
+	switch t := caller.(type) {
+	case []interface{}:
+		if intSelector, ok := selector.(float64); ok {
+			return t[int(intSelector)]
+		}
+
+		// if strSelector, ok := selector.(string); ok {
+
+		// }
+	}
+
+	return nil
+}
+
 func makeRange(min, max float64) []interface{} {
 	a := make([]interface{}, int(max-min+1))
 	for i := range a {

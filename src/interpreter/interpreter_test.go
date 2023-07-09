@@ -103,6 +103,10 @@ func TestStatements(t *testing.T) {
 			InputString: "(myFunc: () => { >> \"hello\"}).print()",
 			StdOut:      "(\"<closure>\")",
 		},
+		"get list offset": {
+			InputString: "((1, 2, 3).get(1)).print()",
+			StdOut:      "(2)",
+		},
 	}
 
 	for name, testcase := range cases {
