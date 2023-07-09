@@ -194,12 +194,13 @@ func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 		value = i.Execute(stmt.Initializer)
 	}
 	i.Environment.Define(stmt.Name.Text, value)
-
 	if _, ok := stmt.Initializer.(tree.FuncStmt); ok {
 		return "<closure>"
 	}
-
-	return "<variable>"
+	if value == nil {
+		return "<variable>"
+	}
+	return value
 }
 
 func (i *Interpreter) VisitFunctionStmt(stmt tree.FuncStmt) interface{} {

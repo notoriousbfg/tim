@@ -91,6 +91,14 @@ func TestExpressions(t *testing.T) {
 
 func TestStatements(t *testing.T) {
 	cases := map[string]InterpretedCase{
+		"list within list": {
+			InputString: "(1, 2, 3, (hello: \"world\")).print()",
+			StdOut:      "(1, 2, 3, (\"world\"))",
+		},
+		"variable declaration": {
+			InputString: "(myVar: \"sup\").print()",
+			StdOut:      "(\"sup\")",
+		},
 		"function declaration": {
 			InputString: "(myFunc: () => { >> \"hello\"}).print()",
 			StdOut:      "(\"<closure>\")",
