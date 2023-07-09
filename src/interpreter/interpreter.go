@@ -194,7 +194,12 @@ func (i *Interpreter) VisitVariableStmt(stmt tree.VariableStmt) interface{} {
 		value = i.Execute(stmt.Initializer)
 	}
 	i.Environment.Define(stmt.Name.Text, value)
-	return nil
+
+	if _, ok := stmt.Initializer.(tree.FuncStmt); ok {
+		return "<closure>"
+	}
+
+	return "<variable>"
 }
 
 func (i *Interpreter) VisitFunctionStmt(stmt tree.FuncStmt) interface{} {
@@ -218,8 +223,6 @@ func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, 
 	previous := i.Environment
 	i.Environment = environment
 	var values []interface{}
-	// here lies the issue: there are 2 statements here
-	// but we know that ("hello", "world").join(" ") is a single statement
 	for _, item := range items {
 		values = append(values, i.Execute(item))
 	}
