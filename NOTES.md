@@ -67,7 +67,7 @@ In the parser, how might I distinguish between a list and function args? e.g. (1
 
 Perhaps the way we parse function args and lists should be similar. Effectively a while (for) loop with a kind of condition. The presence of the => determines whether it is a function or a list and anything else should trickle through the layers. What's the collective term for list and function args? Iterable?
 
-## 07/07
+### 07/07
 
 How should variables be printed? For example:
 
@@ -81,3 +81,21 @@ I'm thinking:
 - If the variable is an expression statement (i.e it has a primitive value) print the value.
 - If it's a function, print "<function>". This seems a bit sucky though! PHP for example prints "Closure Object ()"
     - Would "function" be a usable type that one could filter out of a list? Or considered a null value.
+
+### 10/07
+
+Sometimes native functions need to know what the underlying ast type is in order to determine what to return e.g. the case of "get" with a string. I'm wondering if the interpreter should also do this.
+
+A list can be either an array or a dictionary - there is currently no distinction, but should the interpreter represent it as a `map[string]interface{}` instead of a `[]interface{}`?
+
+Is it possible to iterate over a map in the same order? Go docs say you shouldn't expect the order to be maintained. And we can't order by type if all the keys are interfaces. So perhaps a map with string keys is the way to go. How do other interpreted languages represent maps/dicts?
+
+[Python](https://morepypy.blogspot.com/2015/01/faster-more-memory-efficient-and-more.html) appears to hold a separate, ordered list of mixed indices.
+
+In PHP, an array can be a mixture of indexed and "associative" elements. The docs say "An array in PHP is actually an ordered map". 
+
+How do we know we're on the last item in a map?
+
+So the real question is how to order keys in a map?: The order in which they're defined, which is the order in which they're read by the parser. Though the parser shouldn't be responsible for storing the position because it might change during an interpreter operation.
+
+Writing a programming language is like planting a garden.

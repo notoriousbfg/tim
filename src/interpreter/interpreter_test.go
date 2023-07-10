@@ -107,6 +107,10 @@ func TestStatements(t *testing.T) {
 			InputString: "((1, 2, 3).get(1)).print()",
 			StdOut:      "(2)",
 		},
+		"get list variable": {
+			InputString: "((one: 1, two: 2, three: 3).get(\"one\")).print()",
+			StdOut:      "(1)",
+		},
 	}
 
 	for name, testcase := range cases {

@@ -224,9 +224,9 @@ func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, environment *env.Environment) interface{} {
 	previous := i.Environment
 	i.Environment = environment
-	var values []interface{}
-	for _, item := range items {
-		values = append(values, i.Execute(item))
+	values := make(map[string]interface{}, len(items))
+	for index, item := range items {
+		values[fmt.Sprint(index)] = i.Execute(item)
 	}
 
 	var returnVal interface{}

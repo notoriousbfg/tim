@@ -64,7 +64,7 @@ func (g Get) Arity() int {
 	return 0
 }
 
-func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
+func (g Get) Call(i *Interpreter, caller interface{}, arguments map[interface{}]interface{}) interface{} {
 	if len(arguments) > 1 {
 		panic(errors.NewRuntimeError("maximum of 1 argument allowed for method 'get'"))
 	}
@@ -72,23 +72,37 @@ func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) i
 	selector := arguments[0]
 
 	switch t := caller.(type) {
-	case []interface{}:
+	// case []interface{}:
+	// if intSelector, ok := selector.(float64); ok {
+	// 	return t[int(intSelector)]
+	// }
+	// if strSelector, ok := selector.(string); ok {
+	// 	// do array search for variables
+	// 	// how do we know what a variable is in the evaluated list?
+	// 	// perhaps lists with variables should return map[string]interface{}?
+	// 	return findVariableInList(t, strSelector)
+	// }
+	case map[interface{}]interface{}:
 		if intSelector, ok := selector.(float64); ok {
-			return t[int(intSelector)]
+			return t[fmt.Sprint(intSelector)]
 		}
-
-		// if strSelector, ok := selector.(string); ok {
-
-		// }
+		if strSelector, ok := selector.(string); ok {
+			// do array search for variables
+			// how do we know what a variable is in the evaluated list?
+			return findVariableInList(t, strSelector)
+		}
 	}
 
 	return nil
 }
 
-func makeRange(min, max float64) []interface{} {
-	a := make([]interface{}, int(max-min+1))
+func makeRange(min, max float64) map[interface{}]interface{} {
+	a := make(map[interface{}]interface{}, int(max-min+1))
 	for i := range a {
-		a[i] = min + float64(i)
+		if iFloat, ok := i.(float64); ok {
+			a[i] = min + iFloat
+		}
+
 	}
 	return a
 }
@@ -100,7 +114,7 @@ func (r Range) String() string {
 func printValue(value interface{}) string {
 	var output string
 	switch t := value.(type) {
-	case []interface{}:
+	case map[interface{}]interface{}:
 		output = "("
 		for index, item := range t {
 			output += printValue(item)
@@ -142,4 +156,9 @@ func joinValues(values interface{}, delimiter string) string {
 		}
 	}
 	return fmt.Sprintf(format, args...)
+}
+
+func findVariableInList(list map[string]interface{}, varName string) interface{} {
+	fmt.Print(list)
+	return "dsaads"
 }
