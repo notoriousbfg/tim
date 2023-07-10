@@ -99,3 +99,6 @@ How do we know we're on the last item in a map?
 So the real question is how to order keys in a map?: The order in which they're defined, which is the order in which they're read by the parser. Though the parser shouldn't be responsible for storing the position because it might change during an interpreter operation.
 
 Writing a programming language is like planting a garden.
+
+### 11/07
+

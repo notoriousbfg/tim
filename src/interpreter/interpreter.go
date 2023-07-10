@@ -224,9 +224,16 @@ func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, environment *env.Environment) interface{} {
 	previous := i.Environment
 	i.Environment = environment
-	values := make(map[string]interface{}, len(items))
+	// values := make(map[string]interface{}, len(items))
+	var values OrderedMap
 	for index, item := range items {
-		values[fmt.Sprint(index)] = i.Execute(item)
+		value := i.Execute(item)
+
+		if variableStmt, ok := item.(tree.VariableStmt); ok {
+			values.Set(variableStmt.Name, value)
+		} else {
+			values.Set(index, value)
+		}
 	}
 
 	var returnVal interface{}

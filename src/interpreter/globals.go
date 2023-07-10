@@ -64,7 +64,7 @@ func (g Get) Arity() int {
 	return 0
 }
 
-func (g Get) Call(i *Interpreter, caller interface{}, arguments map[interface{}]interface{}) interface{} {
+func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
 	if len(arguments) > 1 {
 		panic(errors.NewRuntimeError("maximum of 1 argument allowed for method 'get'"))
 	}
@@ -82,21 +82,23 @@ func (g Get) Call(i *Interpreter, caller interface{}, arguments map[interface{}]
 	// 	// perhaps lists with variables should return map[string]interface{}?
 	// 	return findVariableInList(t, strSelector)
 	// }
-	case map[interface{}]interface{}:
-		if intSelector, ok := selector.(float64); ok {
-			return t[fmt.Sprint(intSelector)]
-		}
-		if strSelector, ok := selector.(string); ok {
-			// do array search for variables
-			// how do we know what a variable is in the evaluated list?
-			return findVariableInList(t, strSelector)
-		}
+	case OrderedMap:
+		// if intSelector, ok := selector.(float64); ok {
+		// 	return t[fmt.Sprint(intSelector)]
+		// }
+		// if strSelector, ok := selector.(string); ok {
+		// 	// do array search for variables
+		// 	// how do we know what a variable is in the evaluated list?
+		// 	return findVariableInList(t, strSelector)
+		// }
+		value, _ := t.Get(selector)
+		return value
 	}
 
 	return nil
 }
 
-func makeRange(min, max float64) map[interface{}]interface{} {
+func makeRange(min, max float64) OrderedMap {
 	a := make(map[interface{}]interface{}, int(max-min+1))
 	for i := range a {
 		if iFloat, ok := i.(float64); ok {
@@ -114,15 +116,15 @@ func (r Range) String() string {
 func printValue(value interface{}) string {
 	var output string
 	switch t := value.(type) {
-	case map[interface{}]interface{}:
-		output = "("
-		for index, item := range t {
-			output += printValue(item)
-			if index < len(t)-1 {
-				output += ", "
-			}
-		}
-		output += ")"
+	case OrderedMap:
+		// output = "("
+		// for index, item := range t {
+		// 	output += printValue(item)
+		// 	if index < len(t)-1 {
+		// 		output += ", "
+		// 	}
+		// }
+		// output += ")"
 	case string:
 		output = fmt.Sprintf("\"%s\"", value.(string))
 	default:
@@ -134,31 +136,26 @@ func printValue(value interface{}) string {
 func joinValues(values interface{}, delimiter string) string {
 	var args []interface{}
 	var format string
-	if values, ok := values.([]interface{}); ok {
-		for index, item := range values {
-			if itemValues, ok := item.([]interface{}); ok {
-				format += "%v"
-				args = append(args, joinValues(itemValues, delimiter))
+	if values, ok := values.(OrderedMap); ok {
+		// for index, item := range values {
+		// 	if itemValues, ok := item.([]interface{}); ok {
+		// 		format += "%v"
+		// 		args = append(args, joinValues(itemValues, delimiter))
 
-				if len(delimiter) > 0 && index < len(values)-1 {
-					format += "%s"
-					args = append(args, delimiter)
-				}
-			} else {
-				format += "%v"
-				args = append(args, item)
+		// 		if len(delimiter) > 0 && index < len(values)-1 {
+		// 			format += "%s"
+		// 			args = append(args, delimiter)
+		// 		}
+		// 	} else {
+		// 		format += "%v"
+		// 		args = append(args, item)
 
-				if len(delimiter) > 0 && index < len(values)-1 {
-					format += "%s"
-					args = append(args, delimiter)
-				}
-			}
-		}
+		// 		if len(delimiter) > 0 && index < len(values)-1 {
+		// 			format += "%s"
+		// 			args = append(args, delimiter)
+		// 		}
+		// 	}
+		// }
 	}
 	return fmt.Sprintf(format, args...)
-}
-
-func findVariableInList(list map[string]interface{}, varName string) interface{} {
-	fmt.Print(list)
-	return "dsaads"
 }
