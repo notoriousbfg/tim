@@ -22,7 +22,7 @@ func TestExpressions(t *testing.T) {
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
-							Value: 3.00,
+							Value: 3,
 						},
 						Operator: token.Token{
 							Type:     token.DOUBLE_EQUAL,
@@ -32,7 +32,7 @@ func TestExpressions(t *testing.T) {
 							Line:     1,
 						},
 						Right: tree.Literal{
-							Value: 3.00,
+							Value: 3,
 						},
 					},
 				},
@@ -44,7 +44,7 @@ func TestExpressions(t *testing.T) {
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
-							Value: 3.00,
+							Value: 3,
 						},
 						Operator: token.Token{
 							Type:     token.GREATER,
@@ -54,7 +54,7 @@ func TestExpressions(t *testing.T) {
 							Line:     1,
 						},
 						Right: tree.Literal{
-							Value: 2.00,
+							Value: 2,
 						},
 					},
 				},
@@ -66,7 +66,7 @@ func TestExpressions(t *testing.T) {
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
-							Value: 2.00,
+							Value: 2,
 						},
 						Operator: token.Token{
 							Type:     token.PLUS,
@@ -76,7 +76,7 @@ func TestExpressions(t *testing.T) {
 							Line:     1,
 						},
 						Right: tree.Literal{
-							Value: 4.00,
+							Value: 4,
 						},
 					},
 				},
@@ -88,7 +88,7 @@ func TestExpressions(t *testing.T) {
 				tree.ExpressionStmt{
 					Expr: tree.Binary{
 						Left: tree.Literal{
-							Value: 2.00,
+							Value: 2,
 						},
 						Operator: token.Token{
 							Type:     token.STAR,
@@ -98,7 +98,7 @@ func TestExpressions(t *testing.T) {
 							Line:     1,
 						},
 						Right: tree.Literal{
-							Value: 4.00,
+							Value: 4,
 						},
 					},
 				},
@@ -117,7 +117,7 @@ func TestExpressions(t *testing.T) {
 							Line:     1,
 						},
 						Right: tree.Literal{
-							Value: 4.00,
+							Value: 4,
 						},
 					},
 				},
@@ -162,17 +162,17 @@ func TestStatements(t *testing.T) {
 					Items: []tree.Stmt{
 						tree.ExpressionStmt{
 							Expr: tree.Literal{
-								Value: 1.00,
+								Value: 1,
 							},
 						},
 						tree.ExpressionStmt{
 							Expr: tree.Literal{
-								Value: 2.00,
+								Value: 2,
 							},
 						},
 						tree.ExpressionStmt{
 							Expr: tree.Literal{
-								Value: 3.00,
+								Value: 3,
 							},
 						},
 					},

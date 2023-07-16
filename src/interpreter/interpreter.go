@@ -66,33 +66,29 @@ func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 
 	var returnValue interface{}
 	switch expr.Operator.Type {
-	case token.MINUS:
-		returnValue = i.subtract(left, right)
 	case token.PLUS:
-		if i.checkStringOperand(left) || i.checkStringOperand(right) {
-			returnValue = fmt.Sprint(left, right)
-		} else {
-			returnValue = i.add(left, right)
-		}
+		returnValue = add(left, right)
+	case token.MINUS:
+		returnValue = subtract(left, right)
 	case token.SLASH:
 		if isZero(left) || isZero(right) {
 			panic(errors.NewRuntimeError(errors.DivisionByZero))
 		}
-		returnValue = i.divide(left, right)
+		returnValue = divide(left, right)
 	case token.STAR:
-		returnValue = i.multiply(left, right)
+		returnValue = multiply(left, right)
 	case token.GREATER:
-		returnValue = i.greaterThan(left, right)
+		returnValue = greaterThan(left, right)
 	case token.GREATER_EQUAL:
-		returnValue = i.greaterThanOrEqual(left, right)
+		returnValue = greaterThanOrEqual(left, right)
 	case token.LESS:
-		returnValue = i.lessThan(left, right)
+		returnValue = lessThan(left, right)
 	case token.LESS_EQUAL:
-		returnValue = i.lessThanOrEqual(left, right)
+		returnValue = lessThanOrEqual(left, right)
 	case token.BANG_EQUAL:
-		returnValue = i.notEqual(left, right)
+		returnValue = notEqual(left, right)
 	case token.DOUBLE_EQUAL:
-		returnValue = i.equal(left, right)
+		returnValue = equal(left, right)
 	}
 	return returnValue
 }
@@ -262,45 +258,6 @@ func (i *Interpreter) checkStringOperand(val interface{}) bool {
 		return true
 	}
 	return false
-}
-
-// func (i *Interpreter) checkNumberOperands(left, right *interface{}) (interface{}, interface{}) {
-// 	leftType := reflect.TypeOf(left)
-// 	rightType := reflect.TypeOf(right)
-
-// 	if leftType != rightType {
-// 		// if one is an int and the other is a float, convert both to floats
-// 	}
-
-// 	// panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
-// }
-
-func (i *Interpreter) subtract(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left).String()
-	rightType := reflect.TypeOf(right).String()
-
-	if (leftType == rightType) && leftType == "int" {
-		return left.(int) - right.(int)
-	}
-
-	leftFloat, _ := interfaceToFloat(left)
-	rightFloat, _ := interfaceToFloat(right)
-
-	return leftFloat - rightFloat
-}
-
-func (i *Interpreter) add(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
-		return left.(int) + right.(int)
-	}
-
-	leftFloat, _ := interfaceToFloat(left)
-	rightFloat, _ := interfaceToFloat(right)
-
-	return leftFloat + rightFloat
 }
 
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {
