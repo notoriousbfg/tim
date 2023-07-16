@@ -24,41 +24,37 @@ type InterpretedCase struct {
 func TestExpressions(t *testing.T) {
 	cases := map[string]InterpretedCase{
 		"basic expression": {
-			InputString: "(\"hello world\")",
-			Expected:    []interface{}{[]interface{}{"hello world"}},
+			InputString: "(\"hello world\").print()",
+			StdOut:      "(\"hello world\")",
 		},
 		"basic addition: 2 integers": {
-			InputString: "(200 + 200)",
-			Expected:    []interface{}{[]interface{}{400}},
+			InputString: "(200 + 200).print()",
+			StdOut:      "(400)",
 		},
 		"basic addition: 1 integer, 1 float": {
-			InputString: "(200 + 200.45)",
-			Expected:    []interface{}{[]interface{}{400.45}},
+			InputString: "(200 + 200.45).print()",
+			StdOut:      "(400.45)",
 		},
 		"basic subtraction: 2 integers": {
-			InputString: "(300 - 200)",
-			Expected:    []interface{}{[]interface{}{100}},
+			InputString: "(300 - 200).print()",
+			StdOut:      "(100)",
 		},
 		"subtraction: string and number": {
-			InputString: "(\"hello\" - 13)",
+			InputString: "(\"hello\" - 13).print()",
 			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
 		},
 		"concatenation: 2 strings": {
-			InputString: "(\"hello \" + \"world\")",
-			Expected:    []interface{}{[]interface{}{"hello world"}},
+			InputString: "(\"hello \" + \"world\").print()",
+			StdOut:      "(\"hello world\")",
 		},
 		"concatenation: 1 string and 1 number": {
-			InputString: "(\"hello \" + 123)",
-			Expected:    []interface{}{[]interface{}{"hello 123"}},
+			InputString: "(\"hello \" + 123).print()",
+			StdOut:      "(\"hello 123\")",
 		},
 		"division by zero panics": {
-			InputString: "(10 / 0)",
+			InputString: "(10 / 0).print()",
 			Err:         errors.NewRuntimeError(errors.DivisionByZero),
 		},
-		// "print expression": {
-		// 	InputString: "(print \"hello world\")",
-		// 	StdOut:      "hello world\n",
-		// },
 	}
 
 	for name, testcase := range cases {
@@ -71,6 +67,11 @@ func TestExpressions(t *testing.T) {
 				assert.PanicsWithError(t, testcase.Err.Error(), func() {
 					interpreter.Interpret(parsed, false)
 				}, "did not panic with '%s'", testcase.Err.Error())
+			} else if testcase.StdOut != "" {
+				stdOut := captureStdOut(func() {
+					interpreter.Interpret(parsed, true)
+				})
+				assert.Equal(t, testcase.StdOut, stdOut, "expressions do not match", testcase.StdOut, stdOut)
 			} else {
 				actual := interpreter.Interpret(parsed, true)
 				assert.Equal(t, testcase.Expected, actual, "expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))

@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"reflect"
-	"runtime/debug"
 	"tim/env"
 	"tim/errors"
 	"tim/token"
@@ -44,7 +43,7 @@ type Interpreter struct {
 func (i *Interpreter) printToStdErr() {
 	if err := recover(); err != nil {
 		// hide stacktrace
-		debug.SetTraceback("none")
+		// debug.SetTraceback("none")
 		if e, ok := err.(errors.RuntimeError); ok {
 			_, _ = i.stdErr.Write([]byte(e.Error() + "\n"))
 			os.Exit(70)
@@ -75,39 +74,26 @@ func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 		} else {
 			returnValue = i.add(left, right)
 		}
-		// case token.SLASH:
-		// 	i.checkNumberOperands(left, right)
-		// 	if isZero(left) || isZero(right) {
-		// 		panic(errors.NewRuntimeError(errors.DivisionByZero))
-		// 	}
-		// 	returnValue = left.(float64) / right.(float64)
-		// case token.STAR:
-		// 	i.checkNumberOperands(left, right)
-		// 	returnValue = left.(float64) * right.(float64)
-		// case token.GREATER:
-		// 	i.checkNumberOperands(left, right)
-		// 	returnValue = left.(float64) > right.(float64)
-		// case token.GREATER_EQUAL:
-		// 	i.checkNumberOperands(left, right)
-		// 	returnValue = left.(float64) >= right.(float64)
-		// case token.LESS:
-		// 	i.checkNumberOperands(left, right)
-		// 	returnValue = left.(float64) < right.(float64)
-		// case token.LESS_EQUAL:
-		// 	i.checkNumberOperands(left, right)
-		// 	returnValue = left.(float64) <= right.(float64)
-		// case token.BANG_EQUAL:
-		// 	returnValue = left != right
-		// case token.DOUBLE_EQUAL:
-		// 	returnValue = left == right
+	case token.SLASH:
+		if isZero(left) || isZero(right) {
+			panic(errors.NewRuntimeError(errors.DivisionByZero))
+		}
+		returnValue = i.divide(left, right)
+	case token.STAR:
+		returnValue = i.multiply(left, right)
+	case token.GREATER:
+		returnValue = i.greaterThan(left, right)
+	case token.GREATER_EQUAL:
+		returnValue = i.greaterThanOrEqual(left, right)
+	case token.LESS:
+		returnValue = i.lessThan(left, right)
+	case token.LESS_EQUAL:
+		returnValue = i.lessThanOrEqual(left, right)
+	case token.BANG_EQUAL:
+		returnValue = i.notEqual(left, right)
+	case token.DOUBLE_EQUAL:
+		returnValue = i.equal(left, right)
 	}
-	// if returnValue can be expressed as an int, return it as such
-	// if returnFloat, isFloat := returnValue.(float64); isFloat {
-	// 	if wholeFloat := math.Trunc(returnFloat); returnFloat == wholeFloat {
-	// 		return int(wholeFloat)
-	// 	}
-	// 	return returnFloat
-	// }
 	return returnValue
 }
 
@@ -314,7 +300,7 @@ func (i *Interpreter) add(left, right interface{}) interface{} {
 	leftFloat, _ := interfaceToFloat(left)
 	rightFloat, _ := interfaceToFloat(right)
 
-	return leftFloat - rightFloat
+	return leftFloat + rightFloat
 }
 
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {

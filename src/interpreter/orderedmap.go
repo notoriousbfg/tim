@@ -118,7 +118,7 @@ func (l *list) Remove(e *Element) {
 	e.prev = nil // avoid memory leaks
 }
 
-// PushFront inserts a new element e with value v at the front of list l and returns e.
+// PushFront inserts a new element e with value v at the front of list and returns e.
 func (l *list) PushFront(key interface{}, value interface{}) *Element {
 	e := &Element{Key: key, Value: value}
 	if l.root.next == nil {
@@ -134,7 +134,7 @@ func (l *list) PushFront(key interface{}, value interface{}) *Element {
 	return e
 }
 
-// PushBack inserts a new element e with value v at the back of list l and returns e.
+// PushBack inserts a new element e with value v at the back of list and returns e.
 func (l *list) PushBack(key interface{}, value interface{}) *Element {
 	e := &Element{Key: key, Value: value}
 	if l.root.prev == nil {
