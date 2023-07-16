@@ -21,27 +21,27 @@ func (p Print) String() string {
 	return "<native fn>"
 }
 
-type Join struct {
-}
+// type Join struct {
+// }
 
-func (j Join) Arity() int {
-	return 0
-}
+// func (j Join) Arity() int {
+// 	return 0
+// }
 
-func (j Join) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
-	if len(arguments) > 1 {
-		panic(errors.NewRuntimeError("maximum of 1 arguments allowed for method 'join'"))
-	}
-	var delimiter string
-	if len(arguments) == 1 {
-		delimiter = arguments[0].(string)
-	}
-	return joinValues(caller, delimiter)
-}
+// func (j Join) Call(i *Interpreter, caller interface{}, arguments []interface{}) interface{} {
+// 	if len(arguments) > 1 {
+// 		panic(errors.NewRuntimeError("maximum of 1 arguments allowed for method 'join'"))
+// 	}
+// 	var delimiter string
+// 	if len(arguments) == 1 {
+// 		delimiter = arguments[0].(string)
+// 	}
+// 	return joinValues(caller, delimiter)
+// }
 
-func (j Join) String() string {
-	return "<native fn>"
-}
+// func (j Join) String() string {
+// 	return "<native fn>"
+// }
 
 type Range struct {
 }
@@ -82,7 +82,7 @@ func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) i
 	// 	// perhaps lists with variables should return map[string]interface{}?
 	// 	return findVariableInList(t, strSelector)
 	// }
-	case OrderedMap:
+	case *OrderedMap:
 		// if intSelector, ok := selector.(float64); ok {
 		// 	return t[fmt.Sprint(intSelector)]
 		// }
@@ -95,16 +95,13 @@ func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) i
 		return value
 	}
 
-	return nil
+	return "2"
 }
 
-func makeRange(min, max float64) OrderedMap {
-	a := make(map[interface{}]interface{}, int(max-min+1))
-	for i := range a {
-		if iFloat, ok := i.(float64); ok {
-			a[i] = min + iFloat
-		}
-
+func makeRange(min, max float64) *OrderedMap {
+	a := NewOrderedMap()
+	for i := min; i <= max; i++ {
+		a.Set(i, i)
 	}
 	return a
 }
@@ -116,46 +113,55 @@ func (r Range) String() string {
 func printValue(value interface{}) string {
 	var output string
 	switch t := value.(type) {
-	case OrderedMap:
-		// output = "("
-		// for index, item := range t {
-		// 	output += printValue(item)
-		// 	if index < len(t)-1 {
-		// 		output += ", "
-		// 	}
-		// }
-		// output += ")"
+	case *OrderedMap:
+		output = "("
+		for index, key := range t.Keys() {
+			value, _ := t.Get(key)
+			output += printValue(value)
+			if index < t.Len()-1 {
+				output += ", "
+			}
+		}
+		output += ")"
 	case string:
-		output = fmt.Sprintf("\"%s\"", value.(string))
+		output = fmt.Sprintf("\"%s\"", t)
 	default:
 		output = fmt.Sprintf("%v", value)
 	}
 	return output
 }
 
-func joinValues(values interface{}, delimiter string) string {
-	var args []interface{}
-	var format string
-	if values, ok := values.(OrderedMap); ok {
-		// for index, item := range values {
-		// 	if itemValues, ok := item.([]interface{}); ok {
-		// 		format += "%v"
-		// 		args = append(args, joinValues(itemValues, delimiter))
+// func joinValues(values interface{}, delimiter string) string {
+// 	var args []interface{}
+// 	var format string
+// 	if values, ok := values.(OrderedMap); ok {
+// 		for index, key := range values.Keys() {
+// 			item, _ := values.Get(key)
 
-		// 		if len(delimiter) > 0 && index < len(values)-1 {
-		// 			format += "%s"
-		// 			args = append(args, delimiter)
-		// 		}
-		// 	} else {
-		// 		format += "%v"
-		// 		args = append(args, item)
+// 			if itemValues, ok := item.(OrderedMap); ok {
+// 				format += "%v"
+// 				args = append(args, joinValues(itemValues, delimiter))
+// 			}
+// 		}
+// 		// for index, item := range values {
+// 		// 	if itemValues, ok := item.([]interface{}); ok {
+// 		// 		format += "%v"
+// 		// 		args = append(args, joinValues(itemValues, delimiter))
 
-		// 		if len(delimiter) > 0 && index < len(values)-1 {
-		// 			format += "%s"
-		// 			args = append(args, delimiter)
-		// 		}
-		// 	}
-		// }
-	}
-	return fmt.Sprintf(format, args...)
-}
+// 		// 		if len(delimiter) > 0 && index < len(values)-1 {
+// 		// 			format += "%s"
+// 		// 			args = append(args, delimiter)
+// 		// 		}
+// 		// 	} else {
+// 		// 		format += "%v"
+// 		// 		args = append(args, item)
+
+// 		// 		if len(delimiter) > 0 && index < len(values)-1 {
+// 		// 			format += "%s"
+// 		// 			args = append(args, delimiter)
+// 		// 		}
+// 		// 	}
+// 		// }
+// 	}
+// 	return fmt.Sprintf(format, args...)
+// }

@@ -35,6 +35,14 @@ func (m *OrderedMap) Len() int {
 	return len(m.items)
 }
 
+func (m *OrderedMap) Keys() (keys []interface{}) {
+	keys = make([]interface{}, 0, m.Len())
+	for el := m.Front(); el != nil; el = el.Next() {
+		keys = append(keys, el.Key)
+	}
+	return keys
+}
+
 func (m *OrderedMap) Delete(key interface{}) (didDelete bool) {
 	element, ok := m.items[key]
 	if ok {

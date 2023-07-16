@@ -102,3 +102,22 @@ Writing a programming language is like planting a garden.
 
 ### 11/07
 
+The interpreter is converting all ints to float64. That's a problem because when we want to pass an int argument to a function (e.g. .Get(1)), it's actually looking for a float64(1.00) key, which is wrong.
+
+If it's an int, evaluate it as an int. If float, evaluate as float. And so on.
+
+Why the hell did I decide to use floats?
+
+If we're say, performing "2 - 1.2" we know that the left side is an int and the right a float. But Go won't allow us to compare 2 different types. They must both be floats.
+
+However, if performing 2 - 1, we don't want to do 2.00 - 1.00 (converting the ints to floats), we just want to keep the same types and return them.
+
+### 16/07
+
+Everything's broken.
+
+The float issue was actually due to the lexer parsing every number as a float.
+
+I'll still need to fix every comparison (+,-,/ etc) of numbers in the interpreter.
+
+Replacing slices of interfaces for list expressions with an ordered map has broken everything - I borrowed an OrderedMap implementation for the time being which I'm in the process of rolling out.

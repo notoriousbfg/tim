@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"reflect"
 	"runtime/debug"
@@ -57,7 +56,7 @@ func (i *Interpreter) printToStdErr() {
 
 func (i *Interpreter) defineGlobals() {
 	i.Globals.Define("print", Print{})
-	i.Globals.Define("join", Join{})
+	// i.Globals.Define("join", Join{})
 	i.Globals.Define("range", Range{})
 	i.Globals.Define("get", Get{})
 }
@@ -66,52 +65,49 @@ func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 	left := i.Evaluate(expr.Left)
 	right := i.Evaluate(expr.Right)
 
-	// will timlang inherit the same floating-point arithmetic hell as go?
 	var returnValue interface{}
 	switch expr.Operator.Type {
 	case token.MINUS:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) - right.(float64)
+		returnValue = i.subtract(left, right)
 	case token.PLUS:
 		if i.checkStringOperand(left) || i.checkStringOperand(right) {
 			returnValue = fmt.Sprint(left, right)
 		} else {
-			i.checkNumberOperands(left, right)
-			returnValue = left.(float64) + right.(float64)
+			returnValue = i.add(left, right)
 		}
-	case token.SLASH:
-		i.checkNumberOperands(left, right)
-		if isZero(left) || isZero(right) {
-			panic(errors.NewRuntimeError(errors.DivisionByZero))
-		}
-		returnValue = left.(float64) / right.(float64)
-	case token.STAR:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) * right.(float64)
-	case token.GREATER:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) > right.(float64)
-	case token.GREATER_EQUAL:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) >= right.(float64)
-	case token.LESS:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) < right.(float64)
-	case token.LESS_EQUAL:
-		i.checkNumberOperands(left, right)
-		returnValue = left.(float64) <= right.(float64)
-	case token.BANG_EQUAL:
-		returnValue = left != right
-	case token.DOUBLE_EQUAL:
-		returnValue = left == right
+		// case token.SLASH:
+		// 	i.checkNumberOperands(left, right)
+		// 	if isZero(left) || isZero(right) {
+		// 		panic(errors.NewRuntimeError(errors.DivisionByZero))
+		// 	}
+		// 	returnValue = left.(float64) / right.(float64)
+		// case token.STAR:
+		// 	i.checkNumberOperands(left, right)
+		// 	returnValue = left.(float64) * right.(float64)
+		// case token.GREATER:
+		// 	i.checkNumberOperands(left, right)
+		// 	returnValue = left.(float64) > right.(float64)
+		// case token.GREATER_EQUAL:
+		// 	i.checkNumberOperands(left, right)
+		// 	returnValue = left.(float64) >= right.(float64)
+		// case token.LESS:
+		// 	i.checkNumberOperands(left, right)
+		// 	returnValue = left.(float64) < right.(float64)
+		// case token.LESS_EQUAL:
+		// 	i.checkNumberOperands(left, right)
+		// 	returnValue = left.(float64) <= right.(float64)
+		// case token.BANG_EQUAL:
+		// 	returnValue = left != right
+		// case token.DOUBLE_EQUAL:
+		// 	returnValue = left == right
 	}
 	// if returnValue can be expressed as an int, return it as such
-	if returnFloat, isFloat := returnValue.(float64); isFloat {
-		if wholeFloat := math.Trunc(returnFloat); returnFloat == wholeFloat {
-			return int(wholeFloat)
-		}
-		return returnFloat
-	}
+	// if returnFloat, isFloat := returnValue.(float64); isFloat {
+	// 	if wholeFloat := math.Trunc(returnFloat); returnFloat == wholeFloat {
+	// 		return int(wholeFloat)
+	// 	}
+	// 	return returnFloat
+	// }
 	return returnValue
 }
 
@@ -224,8 +220,7 @@ func (i *Interpreter) VisitListStmt(stmt tree.ListStmt) interface{} {
 func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, environment *env.Environment) interface{} {
 	previous := i.Environment
 	i.Environment = environment
-	// values := make(map[string]interface{}, len(items))
-	var values OrderedMap
+	values := NewOrderedMap()
 	for index, item := range items {
 		value := i.Execute(item)
 
@@ -283,13 +278,43 @@ func (i *Interpreter) checkStringOperand(val interface{}) bool {
 	return false
 }
 
-func (i *Interpreter) checkNumberOperands(left interface{}, right interface{}) {
-	if _, ok := left.(float64); ok {
-		if _, ok = right.(float64); ok {
-			return
-		}
+// func (i *Interpreter) checkNumberOperands(left, right *interface{}) (interface{}, interface{}) {
+// 	leftType := reflect.TypeOf(left)
+// 	rightType := reflect.TypeOf(right)
+
+// 	if leftType != rightType {
+// 		// if one is an int and the other is a float, convert both to floats
+// 	}
+
+// 	// panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+// }
+
+func (i *Interpreter) subtract(left, right interface{}) interface{} {
+	leftType := reflect.TypeOf(left).String()
+	rightType := reflect.TypeOf(right).String()
+
+	if (leftType == rightType) && leftType == "int" {
+		return left.(int) - right.(int)
 	}
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+
+	leftFloat, _ := interfaceToFloat(left)
+	rightFloat, _ := interfaceToFloat(right)
+
+	return leftFloat - rightFloat
+}
+
+func (i *Interpreter) add(left, right interface{}) interface{} {
+	leftType := reflect.TypeOf(left)
+	rightType := reflect.TypeOf(right)
+
+	if (leftType == rightType) && leftType.String() == "int" {
+		return left.(int) + right.(int)
+	}
+
+	leftFloat, _ := interfaceToFloat(left)
+	rightFloat, _ := interfaceToFloat(right)
+
+	return leftFloat - rightFloat
 }
 
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {

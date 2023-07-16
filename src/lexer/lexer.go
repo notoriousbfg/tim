@@ -3,6 +3,7 @@ package lexer
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"tim/token"
 	"unicode"
 )
@@ -198,7 +199,15 @@ func (l *Lexer) matchNumber() {
 	}
 
 	text := l.Input[l.Start:l.Current]
-	val, _ := strconv.ParseFloat(text, 64)
+
+	var val interface{}
+	if strings.Contains(text, ".") {
+		val, _ = strconv.ParseFloat(text, 64)
+	} else {
+		intVal, _ := strconv.ParseInt(text, 10, 0)
+		val = int(intVal)
+	}
+
 	l.AddToken(token.NUMBER, text, val)
 }
 
