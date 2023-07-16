@@ -95,7 +95,7 @@ func (g Get) Call(i *Interpreter, caller interface{}, arguments []interface{}) i
 		return value
 	}
 
-	return "2"
+	return nil
 }
 
 func makeRange(min, max float64) *OrderedMap {

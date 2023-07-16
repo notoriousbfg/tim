@@ -207,7 +207,7 @@ func (i *Interpreter) executeList(items []tree.Stmt, functions []tree.CallStmt, 
 		value := i.Execute(item)
 
 		if variableStmt, ok := item.(tree.VariableStmt); ok {
-			values.Set(variableStmt.Name, value)
+			values.Set(variableStmt.Name.Literal, value)
 		} else {
 			values.Set(index, value)
 		}

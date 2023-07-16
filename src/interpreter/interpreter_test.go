@@ -109,7 +109,7 @@ func TestStatements(t *testing.T) {
 			StdOut:      "2",
 		},
 		"get list variable": {
-			InputString: "((one: 1, two: 2, three: 3).get(\"one\")).print()",
+			InputString: "(one: 1, two: 2, three: 3).get(\"one\").print()",
 			StdOut:      "1",
 		},
 	}
