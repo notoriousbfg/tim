@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"tim/interpreter"
 	"tim/lexer"
 	"tim/parser"
 )
@@ -16,17 +17,17 @@ func main() {
 
 	l := lexer.New(input)
 
-	fmt.Printf("%+v", l.Tokens)
-	fmt.Println()
+	// fmt.Printf("%+v", l.Tokens)
+	// fmt.Println()
 
 	p := parser.New(l.Tokens)
 	parsed := p.Parse()
 
-	fmt.Println()
+	// fmt.Println()
 
-	for _, p := range parsed {
-		fmt.Printf("%+v \n\n", p)
-	}
+	// for _, p := range parsed {
+	// 	fmt.Printf("%+v \n\n", p)
+	// }
 
 	// doesn't work
 	// for _, stmt := range parsed {
@@ -36,5 +37,5 @@ func main() {
 	// json, _ := json.Marshal(interpreter.Interpret(parsed, true))
 	// fmt.Println(string(json))
 
-	// interpreter.Interpret(parsed, true)
+	interpreter.Interpret(parsed, true)
 }

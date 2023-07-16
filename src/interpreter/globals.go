@@ -13,7 +13,7 @@ func (p Print) Arity() int {
 }
 
 func (p Print) Call(i *Interpreter, caller interface{}, _ []interface{}) interface{} {
-	fmt.Print(printValue(caller))
+	fmt.Printf("%s\n", printValue(caller))
 	return nil
 }
 

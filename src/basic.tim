@@ -1,8 +1,1 @@
-(
-    helloName: (name) => {
-        >> ("hello", name).join(" ")
-    }
-)
-
-("tim").call(helloName).print() // "hello tim"
-
+("hello", ("one", "two", 3, 4, name: "Tim").get("name")).print()
