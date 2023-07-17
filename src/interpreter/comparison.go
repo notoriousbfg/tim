@@ -7,6 +7,10 @@ import (
 )
 
 func subtract(left, right interface{}) interface{} {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left) && isInt(right) {
 		return left.(int) - right.(int)
 	}
@@ -19,7 +23,7 @@ func subtract(left, right interface{}) interface{} {
 		return leftFloat - rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return nil
 }
 
 func add(left, right interface{}) interface{} {
@@ -36,7 +40,6 @@ func add(left, right interface{}) interface{} {
 	rightFloat, _ := toFloat(right)
 
 	return leftFloat + rightFloat
-
 }
 
 func divide(left, right interface{}) interface{} {
@@ -59,7 +62,7 @@ func divide(left, right interface{}) interface{} {
 		return leftFloat / rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return nil
 }
 
 func multiply(left, right interface{}) interface{} {
@@ -78,7 +81,7 @@ func multiply(left, right interface{}) interface{} {
 		return leftFloat * rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return nil
 }
 
 func greaterThan(left, right interface{}) bool {
@@ -97,7 +100,7 @@ func greaterThan(left, right interface{}) bool {
 		return leftFloat > rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return false
 }
 
 func greaterThanOrEqual(left, right interface{}) bool {
@@ -116,7 +119,7 @@ func greaterThanOrEqual(left, right interface{}) bool {
 		return leftFloat >= rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return false
 }
 
 func lessThan(left, right interface{}) bool {
@@ -135,7 +138,7 @@ func lessThan(left, right interface{}) bool {
 		return leftFloat < rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return false
 }
 
 func lessThanOrEqual(left, right interface{}) bool {
@@ -154,7 +157,7 @@ func lessThanOrEqual(left, right interface{}) bool {
 		return leftFloat <= rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return false
 }
 
 func equal(left, right interface{}) bool {
@@ -173,7 +176,7 @@ func equal(left, right interface{}) bool {
 		return leftFloat == rightFloat
 	}
 
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	return false
 }
 
 func notEqual(left, right interface{}) bool {
