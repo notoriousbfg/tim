@@ -60,6 +60,14 @@ func TestExpressions(t *testing.T) {
 			InputString: "(2.5 / 5).print()",
 			StdOut:      "(0.5)",
 		},
+		"division: 1 integer and 1 string": {
+			InputString: "(2.5 / \"foo\").print()",
+			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
+		},
+		"division by zero panics": {
+			InputString: "(10 / 0).print()",
+			Err:         errors.NewRuntimeError(errors.DivisionByZero),
+		},
 		"greater than: 2 integers": {
 			InputString: "(3 > 2).print()",
 			StdOut:      "(true)",
@@ -99,10 +107,6 @@ func TestExpressions(t *testing.T) {
 		"concatenation: 1 string and 1 number": {
 			InputString: "(\"hello \" + 123).print()",
 			StdOut:      "(\"hello 123\")",
-		},
-		"division by zero panics": {
-			InputString: "(10 / 0).print()",
-			Err:         errors.NewRuntimeError(errors.DivisionByZero),
 		},
 	}
 

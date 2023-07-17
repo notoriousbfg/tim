@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"reflect"
 	"tim/env"
 	"tim/errors"
 	"tim/token"
@@ -71,9 +70,6 @@ func (i *Interpreter) VisitBinaryExpr(expr tree.Binary) interface{} {
 	case token.MINUS:
 		returnValue = subtract(left, right)
 	case token.SLASH:
-		if isZero(left) || isZero(right) {
-			panic(errors.NewRuntimeError(errors.DivisionByZero))
-		}
 		returnValue = divide(left, right)
 	case token.STAR:
 		returnValue = multiply(left, right)
@@ -255,8 +251,4 @@ func (i *Interpreter) Evaluate(expr tree.Expr) interface{} {
 
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {
 	return stmt.Accept(i)
-}
-
-func isZero(v interface{}) bool {
-	return reflect.ValueOf(v).IsZero()
 }

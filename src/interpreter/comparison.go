@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"reflect"
 	"tim/errors"
 )
 
@@ -39,6 +40,14 @@ func add(left, right interface{}) interface{} {
 }
 
 func divide(left, right interface{}) interface{} {
+	if isZero(left) || isZero(right) {
+		panic(errors.NewRuntimeError(errors.DivisionByZero))
+	}
+
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) / right.(int)
 	}
@@ -54,6 +63,10 @@ func divide(left, right interface{}) interface{} {
 }
 
 func multiply(left, right interface{}) interface{} {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) * right.(int)
 	}
@@ -69,6 +82,10 @@ func multiply(left, right interface{}) interface{} {
 }
 
 func greaterThan(left, right interface{}) bool {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) > right.(int)
 	}
@@ -84,6 +101,10 @@ func greaterThan(left, right interface{}) bool {
 }
 
 func greaterThanOrEqual(left, right interface{}) bool {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) >= right.(int)
 	}
@@ -99,6 +120,10 @@ func greaterThanOrEqual(left, right interface{}) bool {
 }
 
 func lessThan(left, right interface{}) bool {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) < right.(int)
 	}
@@ -114,6 +139,10 @@ func lessThan(left, right interface{}) bool {
 }
 
 func lessThanOrEqual(left, right interface{}) bool {
+	if isNaN(left) || isNaN(right) {
+		panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+	}
+
 	if isInt(left, right) {
 		return left.(int) <= right.(int)
 	}
@@ -151,6 +180,10 @@ func notEqual(left, right interface{}) bool {
 	return !equal(left, right)
 }
 
+func isZero(v interface{}) bool {
+	return reflect.ValueOf(v).IsZero()
+}
+
 func toFloat(val interface{}) (float64, error) {
 	switch t := val.(type) {
 	case int:
@@ -165,6 +198,11 @@ func toFloat(val interface{}) (float64, error) {
 }
 
 func isInt(args ...interface{}) bool {
+	if len(args) == 1 {
+		if _, ok := args[0].(int); !ok {
+			return false
+		}
+	}
 	for _, arg := range args {
 		if _, ok := arg.(int); !ok {
 			return false
@@ -174,6 +212,11 @@ func isInt(args ...interface{}) bool {
 }
 
 func isString(args ...interface{}) bool {
+	if len(args) == 1 {
+		if _, ok := args[0].(string); !ok {
+			return false
+		}
+	}
 	for _, arg := range args {
 		if _, ok := arg.(string); !ok {
 			return false
@@ -183,10 +226,29 @@ func isString(args ...interface{}) bool {
 }
 
 func isFloat(args ...interface{}) bool {
+	if len(args) == 1 {
+		if _, ok := args[0].(float64); !ok {
+			return false
+		}
+	}
 	for _, arg := range args {
 		if _, ok := arg.(float64); !ok {
 			return false
 		}
 	}
 	return true
+}
+
+func isNaN(args ...interface{}) bool {
+	if len(args) == 1 {
+		if !isFloat(args[0]) && !isInt(args[0]) {
+			return true
+		}
+	}
+	for _, arg := range args {
+		if !isFloat(arg) && !isInt(arg) {
+			return true
+		}
+	}
+	return false
 }
