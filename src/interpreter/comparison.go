@@ -8,15 +8,16 @@ import (
 
 func subtract(left, right interface{}) interface{} {
 	// if both ints
-	if areInts, ints := isInt(left, right); areInts {
-		return ints[0] - ints[1]
+	// if areInts, ints := isInt(left, right); areInts {
+	// 	return ints[0] - ints[1]
+	// }
+
+	if isInt(left) && isInt(right) {
+		return left.(int) - right.(int)
 	}
 
 	// if either are floats
-	leftIsFloat, _ := isFloat(left)
-	rightIsFloat, _ := isFloat(right)
-
-	if leftIsFloat || rightIsFloat {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -27,17 +28,13 @@ func subtract(left, right interface{}) interface{} {
 }
 
 func add(left, right interface{}) interface{} {
-	// if either are strings
-	leftIsString, _ := isString(left)
-	rightIsString, _ := isString(right)
-
-	if leftIsString || rightIsString {
+	if isString(left) || isString(right) {
 		return fmt.Sprint(left, right)
 	}
 
 	// if both are ints
-	if areInts, ints := isInt(left, right); areInts {
-		return ints[0] + ints[1]
+	if isInt(left, right) {
+		return left.(int) + right.(int)
 	}
 
 	leftFloat, _ := toFloat(left)
@@ -48,14 +45,11 @@ func add(left, right interface{}) interface{} {
 }
 
 func divide(left, right interface{}) interface{} {
-	if areInts, ints := isInt(left, right); areInts {
-		return ints[0] / ints[1]
+	if isInt(left, right) {
+		return left.(int) / right.(int)
 	}
 
-	leftIsFloat, _ := isFloat(left)
-	rightIsFloat, _ := isFloat(right)
-
-	if leftIsFloat || rightIsFloat {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -212,44 +206,32 @@ func toFloat(val interface{}) (float64, error) {
 	}
 }
 
-func isInt(args ...interface{}) (bool, []int) {
-	ints := make([]int, 0)
-
+func isInt(args ...interface{}) bool {
 	for _, arg := range args {
-		if thisInt, ok := arg.(int); ok {
-			ints = append(ints, thisInt)
-		} else {
-			return false, []int{}
+		if _, ok := arg.(int); !ok {
+			return false
 		}
 	}
 
-	return true, ints
+	return true
 }
 
-func isString(args ...interface{}) (bool, []string) {
-	ints := make([]string, 0)
-
+func isString(args ...interface{}) bool {
 	for _, arg := range args {
-		if thisString, ok := arg.(string); ok {
-			ints = append(ints, thisString)
-		} else {
-			return false, []string{}
+		if _, ok := arg.(string); !ok {
+			return false
 		}
 	}
 
-	return true, ints
+	return true
 }
 
-func isFloat(args ...interface{}) (bool, []float64) {
-	floats := make([]float64, 0)
-
+func isFloat(args ...interface{}) bool {
 	for _, arg := range args {
-		if thisFloat, ok := arg.(float64); ok {
-			floats = append(floats, thisFloat)
-		} else {
-			return false, []float64{}
+		if _, ok := arg.(float64); !ok {
+			return false
 		}
 	}
 
-	return true, floats
+	return true
 }
