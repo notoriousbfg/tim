@@ -7,18 +7,12 @@ import (
 )
 
 func subtract(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
-		return left.(int) - right.(int)
+	if areInts, ints := isInt(left, right); areInts {
+		return ints[0] - ints[1]
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
-		leftFloat, _ := interfaceToFloat(left)
-		rightFloat, _ := interfaceToFloat(right)
-
-		return leftFloat - rightFloat
+	if areFloats, floats := isFloat(left, right); areFloats {
+		return floats[0] - floats[1]
 	}
 
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
@@ -205,4 +199,32 @@ func interfaceToFloat(val interface{}) (float64, error) {
 	default:
 		return 0, fmt.Errorf("could not convert value of type '%t' to float64", val)
 	}
+}
+
+func isInt(args ...interface{}) (bool, []int) {
+	ints := make([]int, 0)
+
+	for _, arg := range args {
+		if thisInt, ok := arg.(int); ok {
+			ints = append(ints, thisInt)
+		} else {
+			return false, []int{}
+		}
+	}
+
+	return true, ints
+}
+
+func isFloat(args ...interface{}) (bool, []float64) {
+	floats := make([]float64, 0)
+
+	for _, arg := range args {
+		if thisFloat, ok := arg.(float64); ok {
+			floats = append(floats, thisFloat)
+		} else {
+			return false, []float64{}
+		}
+	}
+
+	return true, floats
 }
