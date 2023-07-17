@@ -92,12 +92,36 @@ func TestExpressions(t *testing.T) {
 			InputString: "(2 >= 2).print()",
 			StdOut:      "(true)",
 		},
+		"greater than or equal to: 2 strings": {
+			InputString: "(\"foo\" >= \"bar\").print()",
+			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
+		},
+		"greater than or equal to: 1 integer and 1 float": {
+			InputString: "(3 >= 3.0).print()",
+			StdOut:      "(true)",
+		},
 		"less than: 2 integers": {
 			InputString: "(1 < 3).print()",
 			StdOut:      "(true)",
 		},
+		"less than: 2 strings": {
+			InputString: "(\"foo\" < \"bar\").print()",
+			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
+		},
+		"less than: 1 integer and 1 float": {
+			InputString: "(3 < 3.5).print()",
+			StdOut:      "(true)",
+		},
 		"less than or equal to: 2 integers": {
 			InputString: "(1 <= 1).print()",
+			StdOut:      "(true)",
+		},
+		"less than or equal to: 2 strings": {
+			InputString: "(\"foo\" <= \"bar\").print()",
+			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
+		},
+		"less than or equal to: 1 integer and 1 float": {
+			InputString: "(3 <= 3.0).print()",
 			StdOut:      "(true)",
 		},
 		"equality: 2 integers": {
@@ -107,6 +131,14 @@ func TestExpressions(t *testing.T) {
 		"equality: 2 strings": {
 			InputString: "(\"foo\" == \"foo\").print()",
 			StdOut:      "(true)",
+		},
+		"equality: 1 integer and 1 float": {
+			InputString: "(3 == 3.0).print()",
+			StdOut:      "(true)",
+		},
+		"equality: a float and a string": {
+			InputString: "(\"foo\" == 2).print()",
+			StdOut:      "(false)",
 		},
 		"inequality: 2 integers": {
 			InputString: "(1 != 1).print()",

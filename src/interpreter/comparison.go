@@ -161,22 +161,14 @@ func lessThanOrEqual(left, right interface{}) bool {
 }
 
 func equal(left, right interface{}) bool {
-	if isString(left) || isString(right) {
-		return left.(string) == right.(string)
-	}
-
-	if isInt(left, right) {
-		return left.(int) == right.(int)
-	}
-
-	if isFloat(left) || isFloat(right) {
+	if isNumber(left, right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
 		return leftFloat == rightFloat
 	}
 
-	return false
+	return left == right
 }
 
 func notEqual(left, right interface{}) bool {
@@ -236,6 +228,20 @@ func isFloat(args ...interface{}) bool {
 	}
 	for _, arg := range args {
 		if _, ok := arg.(float64); !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func isNumber(args ...interface{}) bool {
+	if len(args) == 1 {
+		if isFloat(args[0]) || isInt(args[0]) {
+			return true
+		}
+	}
+	for _, arg := range args {
+		if !isFloat(arg) && !isInt(arg) {
 			return false
 		}
 	}
