@@ -44,6 +44,46 @@ func TestExpressions(t *testing.T) {
 			InputString: "(\"hello\" - 13).print()",
 			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
 		},
+		"multiplication: 2 integers": {
+			InputString: "(300 * 2).print()",
+			StdOut:      "(600)",
+		},
+		"division: 2 integers": {
+			InputString: "(300 / 2).print()",
+			StdOut:      "(150)",
+		},
+		"greater than: 2 integers": {
+			InputString: "(3 > 2).print()",
+			StdOut:      "(true)",
+		},
+		"greater than or equal to: 2 integers": {
+			InputString: "(2 >= 2).print()",
+			StdOut:      "(true)",
+		},
+		"less than: 2 integers": {
+			InputString: "(1 < 3).print()",
+			StdOut:      "(true)",
+		},
+		"less than or equal to: 2 integers": {
+			InputString: "(1 <= 1).print()",
+			StdOut:      "(true)",
+		},
+		"equality: 2 integers": {
+			InputString: "(1 == 1).print()",
+			StdOut:      "(true)",
+		},
+		"equality: 2 strings": {
+			InputString: "(\"foo\" == \"foo\").print()",
+			StdOut:      "(true)",
+		},
+		"inequality: 2 integers": {
+			InputString: "(1 != 1).print()",
+			StdOut:      "(false)",
+		},
+		"inequality: 2 strings": {
+			InputString: "(\"foo\" != \"foo\").print()",
+			StdOut:      "(false)",
+		},
 		"concatenation: 2 strings": {
 			InputString: "(\"hello \" + \"world\").print()",
 			StdOut:      "(\"hello world\")",
@@ -77,16 +117,6 @@ func TestExpressions(t *testing.T) {
 				actual := interpreter.Interpret(parsed, true)
 				assert.Equal(t, testcase.Expected, actual, "expressions do not match", fmt.Sprintf("%t", testcase.Expected), fmt.Sprintf("%t", actual))
 			}
-
-			// if len(testcase.StdOut) > 0 {
-			// 	actual = []interface{}{
-			// 		captureStdOut(func() {
-			// 			interpreter.Interpret(parsed, false)
-			// 		}),
-			// 	}
-			// 	assert.Equal(t, testcase.StdOut, actual)
-			// 	return
-			// }
 		})
 	}
 }

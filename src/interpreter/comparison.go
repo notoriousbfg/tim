@@ -154,6 +154,10 @@ func equal(left, right interface{}) interface{} {
 	leftType := reflect.TypeOf(left)
 	rightType := reflect.TypeOf(right)
 
+	if leftType.String() == "string" || rightType.String() == "string" {
+		return left.(string) == right.(string)
+	}
+
 	if (leftType == rightType) && leftType.String() == "int" {
 		return left.(int) == right.(int)
 	}
@@ -171,6 +175,10 @@ func equal(left, right interface{}) interface{} {
 func notEqual(left, right interface{}) interface{} {
 	leftType := reflect.TypeOf(left)
 	rightType := reflect.TypeOf(right)
+
+	if leftType.String() == "string" || rightType.String() == "string" {
+		return left.(string) != right.(string)
+	}
 
 	if (leftType == rightType) && leftType.String() == "int" {
 		return left.(int) != right.(int)
