@@ -2,16 +2,10 @@ package interpreter
 
 import (
 	"fmt"
-	"reflect"
 	"tim/errors"
 )
 
 func subtract(left, right interface{}) interface{} {
-	// if both ints
-	// if areInts, ints := isInt(left, right); areInts {
-	// 	return ints[0] - ints[1]
-	// }
-
 	if isInt(left) && isInt(right) {
 		return left.(int) - right.(int)
 	}
@@ -60,14 +54,11 @@ func divide(left, right interface{}) interface{} {
 }
 
 func multiply(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
+	if isInt(left, right) {
 		return left.(int) * right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -77,15 +68,12 @@ func multiply(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func greaterThan(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
+func greaterThan(left, right interface{}) bool {
+	if isInt(left, right) {
 		return left.(int) > right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -95,15 +83,12 @@ func greaterThan(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func greaterThanOrEqual(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
+func greaterThanOrEqual(left, right interface{}) bool {
+	if isInt(left, right) {
 		return left.(int) >= right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -113,15 +98,12 @@ func greaterThanOrEqual(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func lessThan(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
+func lessThan(left, right interface{}) bool {
+	if isInt(left, right) {
 		return left.(int) < right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -131,15 +113,12 @@ func lessThan(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func lessThanOrEqual(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if (leftType == rightType) && leftType.String() == "int" {
+func lessThanOrEqual(left, right interface{}) bool {
+	if isInt(left, right) {
 		return left.(int) <= right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -149,19 +128,16 @@ func lessThanOrEqual(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func equal(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if leftType.String() == "string" || rightType.String() == "string" {
+func equal(left, right interface{}) bool {
+	if isString(left) || isString(right) {
 		return left.(string) == right.(string)
 	}
 
-	if (leftType == rightType) && leftType.String() == "int" {
+	if isInt(left, right) {
 		return left.(int) == right.(int)
 	}
 
-	if leftType.String() == "float64" && rightType.String() == "float64" {
+	if isFloat(left) || isFloat(right) {
 		leftFloat, _ := toFloat(left)
 		rightFloat, _ := toFloat(right)
 
@@ -171,26 +147,8 @@ func equal(left, right interface{}) interface{} {
 	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
 }
 
-func notEqual(left, right interface{}) interface{} {
-	leftType := reflect.TypeOf(left)
-	rightType := reflect.TypeOf(right)
-
-	if leftType.String() == "string" || rightType.String() == "string" {
-		return left.(string) != right.(string)
-	}
-
-	if (leftType == rightType) && leftType.String() == "int" {
-		return left.(int) != right.(int)
-	}
-
-	if leftType.String() == "float64" && rightType.String() == "float64" {
-		leftFloat, _ := toFloat(left)
-		rightFloat, _ := toFloat(right)
-
-		return leftFloat != rightFloat
-	}
-
-	panic(errors.NewRuntimeError(errors.OperandsMustBeNumber))
+func notEqual(left, right interface{}) bool {
+	return !equal(left, right)
 }
 
 func toFloat(val interface{}) (float64, error) {
@@ -212,7 +170,6 @@ func isInt(args ...interface{}) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -222,7 +179,6 @@ func isString(args ...interface{}) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -232,6 +188,5 @@ func isFloat(args ...interface{}) bool {
 			return false
 		}
 	}
-
 	return true
 }
