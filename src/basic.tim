@@ -1,1 +1,5 @@
-("hello", ("one", "two", 3, 4, name: "Tim").get("name")).print()
+("hello", ("one", "two", 3, 4, name: "Tim").get("name")).join(" ").print()
+
+(1, 2, 3, four: "four")
+
+(four).print()

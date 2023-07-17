@@ -121,3 +121,7 @@ The float issue was actually due to the lexer parsing every number as a float.
 I'll still need to fix every comparison (+,-,/ etc) of numbers in the interpreter.
 
 Replacing slices of interfaces for list expressions with an ordered map has broken everything - I borrowed an OrderedMap implementation for the time being which I'm in the process of rolling out.
+
+Later...
+
+There are lots of errors in simple operations we could perform before. My test coverage isn't good enough.

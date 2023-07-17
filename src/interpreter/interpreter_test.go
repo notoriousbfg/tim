@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"testing"
 	"tim/errors"
 	"tim/interpreter"
@@ -154,5 +155,5 @@ func captureStdOut(f func()) string {
 	os.Stdout = old // restoring the real stdout
 	out := <-outC
 	// reading our temp stdout
-	return out
+	return strings.TrimSuffix(out, "\n")
 }
