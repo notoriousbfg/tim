@@ -202,6 +202,44 @@ func TestStatements(t *testing.T) {
 				},
 			},
 		},
+		"variable declaration and statement": {
+			InputString: `
+				(myVariable: "testvariable")
+				(myVariable)
+			`,
+			Statements: []tree.Stmt{
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.VariableStmt{
+							Name: token.Token{
+								Type:     token.IDENTIFIER,
+								Text:     "myVariable",
+								Literal:  "myVariable",
+								Position: 1,
+								Line:     1,
+							},
+							Initializer: tree.ExpressionStmt{
+								Expr: tree.Literal{
+									Value: "testvariable",
+								},
+							},
+						},
+					},
+				},
+				tree.ListStmt{
+					Items: []tree.Stmt{
+						tree.ExpressionStmt{
+							Expr: tree.Variable{
+								Name: token.Token{
+									Type:    token.IDENTIFIER,
+									Literal: "myVariable",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"list function": {
 			InputString: "(\"hello\").print()",
 			Statements: []tree.Stmt{
