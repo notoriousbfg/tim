@@ -54,7 +54,6 @@ func (p *Parser) Declaration() tree.Stmt {
 
 func (p *Parser) Iterable() tree.Stmt {
 	var items []tree.Stmt
-
 	for !p.check(token.RIGHT_PAREN) && !p.isAtEnd() {
 		if p.check(token.COMMA) {
 			p.advance()

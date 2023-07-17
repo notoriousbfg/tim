@@ -38,12 +38,12 @@ func (l *Lexer) ReadInput() error {
 		if err != nil {
 			return err
 		}
+		if l.insertSemi {
+			l.insertSemi = false
+			l.AddToken(token.SEMICOLON, ";", "\\n")
+		}
 	}
 	l.Start++
-	if l.insertSemi {
-		l.insertSemi = false
-		l.AddToken(token.SEMICOLON, ";", "\\n")
-	}
 	l.AddToken(token.EOF, "", "")
 	return nil
 }
@@ -55,7 +55,9 @@ func (l *Lexer) ReadChar() error {
 	case "(":
 		l.AddToken(token.LEFT_PAREN, char, char)
 	case ")":
-		canInsertSemi = true
+		if !l.matchNext(".") {
+			canInsertSemi = true
+		}
 		l.AddToken(token.RIGHT_PAREN, char, char)
 	case "{":
 		l.AddToken(token.LEFT_BRACE, char, char)
@@ -70,14 +72,14 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.DOT, char, char)
 	case "+":
 		if l.matchNext("+") {
-			canInsertSemi = true
+			// canInsertSemi = true
 			l.AddToken(token.INCREMENT, "++", "++")
 		} else {
 			l.AddToken(token.PLUS, char, char)
 		}
 	case "-":
 		if l.matchNext("-") {
-			canInsertSemi = true
+			// canInsertSemi = true
 			l.AddToken(token.DECREMENT, "--", "--")
 		} else {
 			l.AddToken(token.MINUS, char, char)
@@ -120,7 +122,7 @@ func (l *Lexer) ReadChar() error {
 		l.AddToken(token.COLON, char, char)
 	case "\"":
 		l.matchString()
-		canInsertSemi = true
+		// canInsertSemi = true
 	case "\n":
 		// canInsertSemi = false
 		// l.AddToken(token.SEMICOLON, ";", "\\n")
@@ -129,10 +131,10 @@ func (l *Lexer) ReadChar() error {
 		break
 	default:
 		if isDigit(char) {
-			canInsertSemi = true
+			// canInsertSemi = true
 			l.matchNumber()
 		} else if isLetter(char) {
-			canInsertSemi = true
+			// canInsertSemi = true
 			l.matchIdentifier()
 		} else {
 			return fmt.Errorf("unsupported type: %s", char)

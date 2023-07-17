@@ -131,3 +131,7 @@ There are lots of errors in simple operations we could perform before. My test c
 vscode-go has a feature where you can visualise test coverage for a piece of code. It's very useful for seeing which parts of the interpreter we know work. I've found how impossible any of this would be without tests.
 
 I think alot of the type checking I wrote yesterday with reflection will be slow. I should try to refactor it with a type switch.
+
+I was actually feeling quite dispirited by all of the Go type stuff. Writing about it here made the problem seem smaller and more manageable. Hopefully I can get back on track by implementing new language features soon.
+
+The lexer doesn't appear to be adding semicolons at the end of lists. I think I previously implemented this wrong.
