@@ -253,13 +253,6 @@ func (i *Interpreter) Evaluate(expr tree.Expr) interface{} {
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) checkStringOperand(val interface{}) bool {
-	if _, ok := val.(string); ok {
-		return true
-	}
-	return false
-}
-
 func (i *Interpreter) Execute(stmt tree.Stmt) interface{} {
 	return stmt.Accept(i)
 }

@@ -44,6 +44,10 @@ func TestExpressions(t *testing.T) {
 			InputString: "(\"hello\" - 13).print()",
 			Err:         errors.NewRuntimeError(errors.OperandsMustBeNumber),
 		},
+		"subtraction: integer and float": {
+			InputString: "(5 - 2.5).print()",
+			StdOut:      "(2.5)",
+		},
 		"multiplication: 2 integers": {
 			InputString: "(300 * 2).print()",
 			StdOut:      "(600)",
@@ -51,6 +55,10 @@ func TestExpressions(t *testing.T) {
 		"division: 2 integers": {
 			InputString: "(300 / 2).print()",
 			StdOut:      "(150)",
+		},
+		"division: 1 float and 1 integer": {
+			InputString: "(2.5 / 5).print()",
+			StdOut:      "(0.5)",
 		},
 		"greater than: 2 integers": {
 			InputString: "(3 > 2).print()",
