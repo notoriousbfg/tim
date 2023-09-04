@@ -6,6 +6,8 @@ import (
 	"strings"
 	"tim/token"
 	"unicode"
+
+	"golang.org/x/exp/slices"
 )
 
 func New(input string) Lexer {
@@ -55,22 +57,26 @@ func (l *Lexer) ReadChar() error {
 	case "(":
 		l.AddToken(token.LEFT_PAREN, char, char)
 	case ")":
-		if !l.matchNext(".") {
+		l.AddToken(token.RIGHT_PAREN, char, char)
+		if !slices.Contains([]string{".", ")", ",", "}", "=>"}, l.peek()) {
 			canInsertSemi = true
 		}
-		l.AddToken(token.RIGHT_PAREN, char, char)
 	case "{":
+		canInsertSemi = false
 		l.AddToken(token.LEFT_BRACE, char, char)
 	case "}":
-		canInsertSemi = true
+		canInsertSemi = false
 		l.AddToken(token.RIGHT_BRACE, char, char)
 	case ",":
+		canInsertSemi = false
 		l.AddToken(token.COMMA, char, char)
 	// case ";":
 	// 	l.AddToken(token.SEMICOLON, char, char)
 	case ".":
+		canInsertSemi = false
 		l.AddToken(token.DOT, char, char)
 	case "+":
+		canInsertSemi = false
 		if l.matchNext("+") {
 			// canInsertSemi = true
 			l.AddToken(token.INCREMENT, "++", "++")
@@ -78,25 +84,30 @@ func (l *Lexer) ReadChar() error {
 			l.AddToken(token.PLUS, char, char)
 		}
 	case "-":
+		canInsertSemi = false
 		if l.matchNext("-") {
-			// canInsertSemi = true
 			l.AddToken(token.DECREMENT, "--", "--")
 		} else {
 			l.AddToken(token.MINUS, char, char)
 		}
 	case "*":
+		canInsertSemi = false
 		l.AddToken(token.STAR, char, char)
 	case "/":
+		canInsertSemi = false
 		l.AddToken(token.SLASH, char, char)
 	case "?":
+		canInsertSemi = false
 		l.AddToken(token.QUESTION, char, char)
 	case "!":
+		canInsertSemi = false
 		if l.matchNext("=") {
 			l.AddToken(token.BANG_EQUAL, "!=", "!=")
 		} else {
 			l.AddToken(token.BANG, char, char)
 		}
 	case "=":
+		canInsertSemi = false
 		if l.matchNext(">") {
 			l.AddToken(token.DOUBLE_ARROW, "=>", "=>")
 		} else if l.matchNext("=") {
@@ -105,12 +116,14 @@ func (l *Lexer) ReadChar() error {
 			l.AddToken(token.EQUAL, char, char)
 		}
 	case "<":
+		canInsertSemi = false
 		if l.matchNext("=") {
 			l.AddToken(token.LESS_EQUAL, "<=", "<=")
 		} else {
 			l.AddToken(token.LESS, char, char)
 		}
 	case ">":
+		canInsertSemi = false
 		if l.matchNext("=") {
 			l.AddToken(token.GREATER_EQUAL, ">=", ">=")
 		} else if l.matchNext(">") {
@@ -119,22 +132,24 @@ func (l *Lexer) ReadChar() error {
 			l.AddToken(token.GREATER, char, char)
 		}
 	case ":":
+		canInsertSemi = false
 		l.AddToken(token.COLON, char, char)
 	case "\"":
+		canInsertSemi = false
 		l.matchString()
 		// canInsertSemi = true
 	case "\n":
+		canInsertSemi = false
 		// canInsertSemi = false
 		// l.AddToken(token.SEMICOLON, ";", "\\n")
 		l.Line++
 	case " ", "\r", "\t":
 		break
 	default:
+		canInsertSemi = false
 		if isDigit(char) {
-			// canInsertSemi = true
 			l.matchNumber()
 		} else if isLetter(char) {
-			// canInsertSemi = true
 			l.matchIdentifier()
 		} else {
 			return fmt.Errorf("unsupported type: %s", char)
@@ -182,7 +197,7 @@ func (l *Lexer) peek() string {
 
 func (l *Lexer) peekNext() string {
 	if l.Current+1 >= len(l.Input) {
-		return "0"
+		return ""
 	}
 	return string(l.Input[l.Current+1])
 }

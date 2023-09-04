@@ -135,3 +135,15 @@ I think alot of the type checking I wrote yesterday with reflection will be slow
 I was actually feeling quite dispirited by all of the Go type stuff. Writing about it here made the problem seem smaller and more manageable. Hopefully I can get back on track by implementing new language features soon.
 
 The lexer doesn't appear to be adding semicolons at the end of lists. I think I previously implemented this wrong.
+
+### 18/07
+
+Given the statement:
+```
+(isTrue: (5 * 10) == 50)
+```
+How would we evaluate the expression 5 * 10 without parentheses? The parser will think this is a list with a single value.
+
+If it _is_ a list, we could write this as `(5 * 10) == (50)`, in which case we would still need to compare the equality of two lists. This would likely be much slower (unless we write an extra condition for when a list contains a single expression).
+
+Or should I use a separate token for expressions?
