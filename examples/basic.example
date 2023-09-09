@@ -73,6 +73,8 @@ func addAge (person, index) {
 var people (pipe (map names addAge) (join ", "))
 
 // debugging ?
+debug people // prints "{{name: "Tim"}, {name: "Jen"}}"
+debug (sayHello "tim") // prints "<sayHello> "hello tim"
 
 
 

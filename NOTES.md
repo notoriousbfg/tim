@@ -167,4 +167,16 @@ What problem/s am I trying to solve?
 
 ### 09/09
 
-I think I've figured out a rough syntax I like. The implementation will influence the design as much as the paradigms in play
+I think I've figured out a rough syntax I like. The implementation will influence the design as much as the paradigms will.
+
+Now for a name...
+
+Shortlist:
+- Swing
+- Crest
+- Mantle
+- Keyes
+- Kynes
+- Gurney
+
+I think I will clone/fork this repo.
