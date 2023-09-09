@@ -147,3 +147,24 @@ How would we evaluate the expression 5 * 10 without parentheses? The parser will
 If it _is_ a list, we could write this as `(5 * 10) == (50)`, in which case we would still need to compare the equality of two lists. This would likely be much slower (unless we write an extra condition for when a list contains a single expression).
 
 Or should I use a separate token for expressions?
+
+### 05/09
+#### First Light
+This has been too hard. Twice I've put down timlang because implementing my original vision has been too challenging.
+
+I think the problem in its simplest form has been that telling the parser to start looking backwards _and_ forwards when it encounters a token is a lot more complicated than using keywords. So from here on, by using keywords it will only need to search forwards. This will likely also make it much faster.
+
+I'm still figuring out the syntax. I'll also keep the old code in the repo. I intend to change "timlang" to something else - it's a bit of a joke gone too far.
+
+### 06/09
+
+What problem/s am I trying to solve?
+- It can be hard to perceive data structures (like key/value pairs) when the structure of the code does not mirror the data
+- key/value structures and indexed can't usually be interacted with in the same way, which requires knowing their type ahead of time
+    - a data structure usually contains a mixture of things that we know and things we don't
+    - we should be able to debug data in code
+- Function libraries can be inconsistent i.e. order of args
+
+### 09/09
+
+I think I've figured out a rough syntax I like. The implementation will influence the design as much as the paradigms in play

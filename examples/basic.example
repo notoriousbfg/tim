@@ -1,0 +1,85 @@
+// strings
+"hello"
+"hello " + "tim" // "hello tim"
+join " " {"hello", "tim"} // "hello tim"
+intpl "%s: %d" "Age" 29
+
+// ints/floats
+10
+0.5
+
+// bool
+true
+
+// lists - much like associative arrays i.e. ordered maps
+{1, 2, 3}
+{hello: "hello", names: {"John", "Jack"}}
+
+// retrieving list values is the same whether using a key or an index because keys are ordered by their insertion order
+var people {{name: "Tim"}, {name: "Jen"}}
+var tim people[0][0]
+// is the same as
+var timsName tim[0]["name"]
+
+// you may wildcard a key using "*"
+var names people[*]["name"]
+
+// variables
+var five 5
+var ten 10
+
+var names {"Tim", "James"}
+
+// functions
+func hello (name) {
+    return "hello " + name
+}
+
+// function calls
+sayHello "Tim"
+
+// if statements
+if (cond) {
+    // do this
+} (othercond) { 
+    // do this 
+}
+
+// loops
+each (range 20 100) (num, index) {
+    print num
+}
+
+// list functions
+// when a function is used as a list function, the first argument is the value and the second the index/key
+var helloNames (map {"Tim", "Sarah", "Jack", "Muhammad"} sayHello)
+
+// variables are mutable
+var myName "Tim"
+myName "James"
+print myName // "James"
+
+// variables can be cloned
+var myName "Tim"
+var mySurname ((clone myName) "White")
+print (intpl "%s %s" myName mySurname)
+
+// method chaining/pipes ?
+var people {{name: "Tim"}, {name: "Jen"}}
+var ages {29, 30}
+func addAge (person, index) {
+    return { name: person["name"], age: ages[index] }
+}
+var people (pipe (map names addAge) (join ", "))
+
+// debugging ?
+
+
+
+
+
+
+
+
+
+
